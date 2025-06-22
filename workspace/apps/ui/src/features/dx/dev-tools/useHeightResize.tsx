@@ -35,7 +35,6 @@ export const useHeightResize = (
 
   useEffect(() => {
     if (isDragging) {
-      // Prevent text selection during drag
       document.body.style.userSelect = "none";
       document.body.style.cursor = "ns-resize";
 
@@ -44,7 +43,7 @@ export const useHeightResize = (
       return () => {
         document.removeEventListener("mousemove", handleMove);
         document.removeEventListener("mouseup", handleStop);
-        // Restore text selection and cursor
+
         document.body.style.userSelect = "";
         document.body.style.cursor = "";
       };
