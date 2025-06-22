@@ -1,0 +1,5 @@
+.vscode
+.tanstack
+dist
+vendor
+node_modules

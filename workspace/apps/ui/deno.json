@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "deno.window",
+      "deno.ns",
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+    "noErrorTruncation": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "name": "@nimir/app-ui",
+  "version": "0.0.0",
+  "exports": "./src/app.ts",
+  "tasks": {
+    "dev": {
+      "description": "Run the ui application",
+      "command": "deno run -A npm:@rsbuild/core@^1.3.22 dev"
+    },
+    "build": {
+      "description": "Build the ui application",
+      "command": "deno run -A npm:@rsbuild/core@^1.3.22 build"
+    },
+    "test": {
+      "description": "Test the ui application",
+      "command": "deno test"
+    }
+  },
+  "imports": {
+    "@components/": "./src/components/",
+    "@features/": "./src/features/",
+    "react": "npm:react@19.1.0",
+    "react-dom": "npm:react-dom@19.1.0",
+    "@tanstack/react-query": "npm:@tanstack/react-query@5.81.2",
+    "@rsbuild/core": "npm:@rsbuild/core@^1.3.22",
+    "@rsbuild/plugin-react": "npm:@rsbuild/plugin-react@^1.3.2",
+    "@tailwindcss/postcss": "npm:@tailwindcss/postcss@^4.1.10",
+    "tailwindcss": "npm:tailwindcss@^4.1.10",
+    "@headlessui/react": "npm:@headlessui/react@^2.2.4",
+    "@tanstack/react-router": "npm:@tanstack/react-router@^1.121.27",
+    "@tanstack/router-plugin": "npm:@tanstack/router-plugin@^1.121.27",
+    "clsx": "npm:clsx@^2.1.1"
+  }
+}
