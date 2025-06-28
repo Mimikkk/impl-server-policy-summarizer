@@ -1,0 +1,17 @@
+services:
+  prod-ui:
+    build:
+      dockerfile: ./workspace/apps/ui/docker/Dockerfile
+    container_name: policy-summarizer-ui
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge

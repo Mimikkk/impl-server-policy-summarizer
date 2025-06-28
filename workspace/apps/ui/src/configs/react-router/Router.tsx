@@ -4,7 +4,7 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import { memo } from "react";
-import { routeTree } from "./routeTree.gen.ts";
+import { routeTree } from "./RouteTree.gen.ts";
 
 const router = createRouter({
   routeTree,
