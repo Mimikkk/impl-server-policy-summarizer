@@ -8,8 +8,6 @@
       "proseWrap": "always",
       "semiColons": true,
       "singleQuote": false,
-      "jsx": "react-jsx",
-      "jsxImportSource": "react",
       "useTabs": false
     },
     "include": ["**/*.ts", "**/*.json"],
