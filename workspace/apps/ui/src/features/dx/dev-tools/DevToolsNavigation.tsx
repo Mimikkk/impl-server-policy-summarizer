@@ -2,7 +2,6 @@ import { For } from "@components/utility/For.tsx";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import cx from "clsx";
 import { type ComponentProps, memo, useCallback, useMemo } from "react";
-import { ColorPaletteView } from "../color-pallete/ColorPaletteView.tsx";
 
 const DevToolsTab = memo(function DevToolsTab({
   children,
@@ -67,21 +66,9 @@ export const DevToolsNavigation = memo(
           </For>
         </TabList>
         <TabPanels className="flex-1 min-h-0">
-          <DevToolsPanel>
-            <ColorPaletteView />
-          </DevToolsPanel>
-          <DevToolsPanel>
-            <div className="text-center py-8">
-              <h3 className="text-lg font-medium mb-2">Components</h3>
-              <p>Component inspector coming soon...</p>
-            </div>
-          </DevToolsPanel>
-          <DevToolsPanel>
-            <div className="text-center py-8">
-              <h3 className="text-lg font-medium mb-2">Network</h3>
-              <p>Network requests monitor coming soon...</p>
-            </div>
-          </DevToolsPanel>
+          <For each={items}>
+            {(item) => <DevToolsPanel key={item.key}>{item.component}</DevToolsPanel>}
+          </For>
         </TabPanels>
       </TabGroup>
     );
