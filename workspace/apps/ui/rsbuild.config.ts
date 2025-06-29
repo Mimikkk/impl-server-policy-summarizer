@@ -14,10 +14,14 @@ export default defineConfig({
   },
   output: {
     target: "web",
+    sourceMap: true,
   },
   resolve: {
     alias: {
-      "@components": "./src/components",
+      "@components": "./src/core/components",
+      "@utilities": "./src/core/utilities",
+      "@services": "./src/core/services",
+      "@hooks": "./src/core/hooks",
       "@features": "./src/features",
     },
   },

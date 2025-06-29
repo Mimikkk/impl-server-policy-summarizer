@@ -54,18 +54,18 @@ const warning = [
   "bg-warning-dark",
 ];
 
-const error = [
-  "bg-error-light",
-  "bg-error-1",
-  "bg-error-2",
-  "bg-error-3",
-  "bg-error-4",
-  "bg-error-5",
-  "bg-error-6",
-  "bg-error-7",
-  "bg-error-8",
-  "bg-error-9",
-  "bg-error-dark",
+const danger = [
+  "bg-danger-light",
+  "bg-danger-1",
+  "bg-danger-2",
+  "bg-danger-3",
+  "bg-danger-4",
+  "bg-danger-5",
+  "bg-danger-6",
+  "bg-danger-7",
+  "bg-danger-8",
+  "bg-danger-9",
+  "bg-danger-dark",
 ];
 
 const success = [
@@ -82,11 +82,26 @@ const success = [
   "bg-success-dark",
 ];
 
+const info = [
+  "bg-info-light",
+  "bg-info-1",
+  "bg-info-2",
+  "bg-info-3",
+  "bg-info-4",
+  "bg-info-5",
+  "bg-info-6",
+  "bg-info-7",
+  "bg-info-8",
+  "bg-info-9",
+  "bg-info-dark",
+];
+
 export const colors = {
   primary,
   secondary,
   accent,
   warning,
-  error,
+  error: danger,
   success,
+  info,
 };
