@@ -1,7 +1,7 @@
 import { memo, type ReactNode } from "react";
 
 export type ShowProps = {
-  when: boolean;
+  when: any;
   children: ReactNode;
   fallback?: ReactNode;
 };
