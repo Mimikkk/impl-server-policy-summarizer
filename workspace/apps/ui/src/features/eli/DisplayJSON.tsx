@@ -1,7 +1,7 @@
 import { ThemeButton } from "@components/actions/ThemeButton.tsx";
 import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
 import { useQuery } from "@tanstack/react-query";
-import { type Nil } from "@utilities/common.ts";
+import type { Nil } from "@utilities/common.ts";
 import cx from "clsx";
 import { codeToHtml } from "shiki";
 import { DisplayError } from "../../core/components/typography/DisplayError.tsx";
