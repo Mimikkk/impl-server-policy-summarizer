@@ -1,8 +1,4 @@
-import {
-  createRouter,
-  ErrorComponent,
-  RouterProvider,
-} from "@tanstack/react-router";
+import { createRouter, ErrorComponent, RouterProvider } from "@tanstack/react-router";
 import { memo } from "react";
 import { routeTree } from "./RouteTree.gen.ts";
 

@@ -8,52 +8,52 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './../../routes/__root'
-import { Route as DxColorPaletteRouteImport } from './../../routes/dx/color-palette'
+import { Route as rootRouteImport } from "./../../routes/__root";
+import { Route as DxColorPaletteRouteImport } from "./../../routes/dx/color-palette";
 
 const DxColorPaletteRoute = DxColorPaletteRouteImport.update({
-  id: '/dx/color-palette',
-  path: '/dx/color-palette',
+  id: "/dx/color-palette",
+  path: "/dx/color-palette",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/dx/color-palette': typeof DxColorPaletteRoute
+  "/dx/color-palette": typeof DxColorPaletteRoute;
 }
 export interface FileRoutesByTo {
-  '/dx/color-palette': typeof DxColorPaletteRoute
+  "/dx/color-palette": typeof DxColorPaletteRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/dx/color-palette': typeof DxColorPaletteRoute
+  __root__: typeof rootRouteImport;
+  "/dx/color-palette": typeof DxColorPaletteRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dx/color-palette'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/dx/color-palette'
-  id: '__root__' | '/dx/color-palette'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/dx/color-palette";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/dx/color-palette";
+  id: "__root__" | "/dx/color-palette";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  DxColorPaletteRoute: typeof DxColorPaletteRoute
+  DxColorPaletteRoute: typeof DxColorPaletteRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/dx/color-palette': {
-      id: '/dx/color-palette'
-      path: '/dx/color-palette'
-      fullPath: '/dx/color-palette'
-      preLoaderRoute: typeof DxColorPaletteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    "/dx/color-palette": {
+      id: "/dx/color-palette";
+      path: "/dx/color-palette";
+      fullPath: "/dx/color-palette";
+      preLoaderRoute: typeof DxColorPaletteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   DxColorPaletteRoute: DxColorPaletteRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();

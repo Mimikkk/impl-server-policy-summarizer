@@ -2,14 +2,7 @@ import { Button } from "@components/actions/Button.tsx";
 import { Show } from "@components/utility/Show.tsx";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import cx from "clsx";
-import {
-  type ComponentProps,
-  forwardRef,
-  memo,
-  type Ref,
-  useCallback,
-  useState,
-} from "react";
+import { type ComponentProps, forwardRef, memo, type Ref, useCallback, useState } from "react";
 import { ColorPaletteView } from "../color-pallete/ColorPaletteView.tsx";
 import { useHeightResize } from "../dev-tools/useHeightResize.tsx";
 
@@ -56,9 +49,16 @@ const DevToolsResizer = memo(
   }),
 );
 
-const DevToolsNavigation = memo(function DevToolsNavigation() {
+const DevToolsNavigation = memo(function DevToolsNavigation({
+  height,
+}: {
+  height: number;
+}) {
   return (
-    <TabGroup className="flex flex-col h-full">
+    <TabGroup
+      className="bg-accent-2 border-t border-accent-3 shadow-lg flex flex-col"
+      style={{ height }}
+    >
       <TabList className="flex border-b border-accent-3 bg-accent-1 flex-shrink-0">
         <DevToolsTab>Colors</DevToolsTab>
         <DevToolsTab>Components</DevToolsTab>
@@ -95,21 +95,30 @@ export const DevTools = memo(function DevTools() {
   return (
     <div className="absolute bottom-0 left-0 w-full">
       <Show when={isOpen}>
-        <div
-          className="bg-accent-2 border-t border-accent-3 shadow-lg flex flex-col"
-          style={{ height }}
-        >
-          <DevToolsNavigation />
-        </div>
+        <DevToolsNavigation height={height} />
         <DevToolsResizer ref={setRef} />
       </Show>
-      <Button
-        className="rounded-b-none rounded-l-none"
-        style={{ bottom: isOpen ? height : 0 }}
-        onClick={toggle}
-      >
-        DevTools
-      </Button>
+      <DevToolsToggleButton isOpen={isOpen} height={height} onClick={toggle} />
     </div>
   );
 });
+
+interface DevToolsToggleButtonProps {
+  isOpen: boolean;
+  height: number;
+  onClick: () => void;
+}
+
+const DevToolsToggleButton = memo<DevToolsToggleButtonProps>(
+  function DevToolsToggleButton({ isOpen, height, onClick }) {
+    return (
+      <Button
+        className="rounded-b-none rounded-l-none"
+        style={{ bottom: isOpen ? height : 0 }}
+        onClick={onClick}
+      >
+        DevTools
+      </Button>
+    );
+  },
+);
