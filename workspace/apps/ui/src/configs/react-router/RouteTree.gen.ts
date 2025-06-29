@@ -9,8 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './../../routes/__root'
+import { Route as EliIndexRouteImport } from './../../routes/eli/index'
 import { Route as DxColorPaletteRouteImport } from './../../routes/dx/color-palette'
 
+const EliIndexRoute = EliIndexRouteImport.update({
+  id: '/eli/',
+  path: '/eli/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DxColorPaletteRoute = DxColorPaletteRouteImport.update({
   id: '/dx/color-palette',
   path: '/dx/color-palette',
@@ -19,28 +25,39 @@ const DxColorPaletteRoute = DxColorPaletteRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/dx/color-palette': typeof DxColorPaletteRoute
+  '/eli': typeof EliIndexRoute
 }
 export interface FileRoutesByTo {
   '/dx/color-palette': typeof DxColorPaletteRoute
+  '/eli': typeof EliIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/dx/color-palette': typeof DxColorPaletteRoute
+  '/eli/': typeof EliIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/dx/color-palette'
+  fullPaths: '/dx/color-palette' | '/eli'
   fileRoutesByTo: FileRoutesByTo
-  to: '/dx/color-palette'
-  id: '__root__' | '/dx/color-palette'
+  to: '/dx/color-palette' | '/eli'
+  id: '__root__' | '/dx/color-palette' | '/eli/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   DxColorPaletteRoute: typeof DxColorPaletteRoute
+  EliIndexRoute: typeof EliIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/eli/': {
+      id: '/eli/'
+      path: '/eli'
+      fullPath: '/eli'
+      preLoaderRoute: typeof EliIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dx/color-palette': {
       id: '/dx/color-palette'
       path: '/dx/color-palette'
@@ -53,6 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   DxColorPaletteRoute: DxColorPaletteRoute,
+  EliIndexRoute: EliIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
