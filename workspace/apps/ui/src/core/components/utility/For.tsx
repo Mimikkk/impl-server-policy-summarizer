@@ -4,7 +4,7 @@ export type ForProps<T, Tag extends keyof JSX.IntrinsicElements> =
   & Omit<JSX.IntrinsicElements[Tag], "children">
   & {
     children: (item: T, index: number, items: T[]) => React.ReactNode;
-    items: T[];
+    each: T[];
     as?: Tag;
     header?: React.ReactNode;
     footer?: React.ReactNode;
@@ -13,7 +13,7 @@ export type ForProps<T, Tag extends keyof JSX.IntrinsicElements> =
 export const For = memo(
   function For<T, Tag extends keyof JSX.IntrinsicElements>({
     children,
-    items,
+    each,
     as: As,
     header,
     footer,
@@ -23,7 +23,7 @@ export const For = memo(
       return (
         <>
           {header}
-          {items.map(children)}
+          {each.map(children)}
           {footer}
         </>
       );
@@ -33,7 +33,7 @@ export const For = memo(
       /* @ts-expect-error - override */
       <As {...props}>
         {header}
-        {items.map(children)}
+        {each.map(children)}
         {footer}
       </As>
     );

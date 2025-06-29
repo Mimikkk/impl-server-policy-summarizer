@@ -12,7 +12,7 @@ const ColorShade = memo(function ColorShade({ color }: { color: string }) {
           color,
         )}
       />
-      <span className="text-xs">{color}</span>
+      <span className="text-xs">{color.replace("bg-", "")}</span>
     </div>
   );
 });
@@ -27,12 +27,12 @@ const ColorHeader = memo(function ColorHeader({ color }: { color: string }) {
 
 export const ColorPaletteView = memo(function ColorPaletteView() {
   return (
-    <For items={Object.entries(colors)}>
+    <For each={Object.entries(colors)}>
       {([color, shades]) => (
         <For
           key={color}
           header={<ColorHeader color={color} />}
-          items={shades}
+          each={shades}
           as="div"
           className="grid grid-cols-12 gap-2"
         >
