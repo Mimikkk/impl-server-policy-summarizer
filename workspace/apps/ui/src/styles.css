@@ -207,5 +207,5 @@
 
 body {
   @apply text-primary-dark font-sans;
-  @apply bg-neutral-light;
+  @apply bg-neutral-light text-sm;
 }
