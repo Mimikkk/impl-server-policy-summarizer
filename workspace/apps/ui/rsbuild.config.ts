@@ -14,7 +14,6 @@ export default defineConfig({
   },
   output: {
     target: "web",
-    sourceMap: true,
   },
   resolve: {
     alias: {
