@@ -5,11 +5,12 @@ import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
 import cx from "clsx";
-import { Clipboard } from "lucide-react";
+import { Clipboard, Download } from "lucide-react";
 import prettier from "prettier";
 import html from "prettier/plugins/html";
 import { type MouseEvent, useCallback, useMemo } from "react";
 import { codeToHtml } from "shiki";
+import { saveToFile } from "../../utilities/saveToFile.tsx";
 import { Card } from "../containers/Card.tsx";
 import { DisplayError } from "../typography/DisplayError.tsx";
 
@@ -24,7 +25,7 @@ const createCodeQueryOptions = (content: string, theme: "dark" | "light", langua
   queryFn: async () => {
     if (language === "HTML") {
       return codeToHtml(
-        await prettier.format(content, { parser: "html", plugins: [html] }),
+        await prettier.format(content, { parser: "html", plugins: [html], printWidth: 120, tabWidth: 2 }),
         { lang: "html", theme: theme === "dark" ? "vitesse-dark" : "vitesse-light" },
       );
     }
@@ -45,6 +46,13 @@ export const DisplayCode = ({ className, content, language }: DisplayCodeProps) 
     return navigator.clipboard.writeText(asString);
   }, [asString]);
 
+  const handleSave = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    saveToFile(asString, language.toLowerCase());
+  }, [asString, language]);
+
   return (
     <Card className={cx("relative", className)}>
       <StatusBarrier
@@ -58,15 +66,26 @@ export const DisplayCode = ({ className, content, language }: DisplayCodeProps) 
           />
         </div>
       </StatusBarrier>
-      <Button
-        variant="text"
-        className="absolute top-3 right-3 h-6 w-6 opacity-50 hover:opacity-100"
-        onClick={handleCopy}
-        title="Copy to clipboard"
-        aria-label="Copy to clipboard"
-      >
-        <Icon className="w-4 h-4" icon={Clipboard} />
-      </Button>
+      <div className="absolute top-3 right-3 flex gap-2">
+        <Button
+          variant="text"
+          className="h-6 w-6 opacity-50 hover:opacity-100"
+          onClick={handleSave}
+          title="Save to file"
+          aria-label="Save to file"
+        >
+          <Icon className="w-4 h-4" icon={Download} />
+        </Button>
+        <Button
+          variant="text"
+          className="h-6 w-6 opacity-50 hover:opacity-100"
+          onClick={handleCopy}
+          title="Copy to clipboard"
+          aria-label="Copy to clipboard"
+        >
+          <Icon className="w-4 h-4" icon={Clipboard} />
+        </Button>
+      </div>
     </Card>
   );
 };
