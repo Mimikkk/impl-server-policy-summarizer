@@ -1,6 +1,7 @@
 import { Button } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
+import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
 import cx from "clsx";
@@ -9,10 +10,8 @@ import prettier from "prettier";
 import html from "prettier/plugins/html";
 import { type MouseEvent, useCallback, useMemo } from "react";
 import { codeToHtml } from "shiki";
-import { useTheme } from "../../../features/ux/theme/ThemeProvider.tsx";
-import { DisplayError } from "../typography/DisplayError.tsx";
-import { DisplayText } from "../typography/DisplayText.tsx";
 import { Card } from "../containers/Card.tsx";
+import { DisplayError } from "../typography/DisplayError.tsx";
 
 export interface DisplayCodeProps {
   className?: string;
@@ -51,7 +50,6 @@ export const DisplayCode = ({ className, content, language }: DisplayCodeProps) 
       <StatusBarrier
         status={status}
         error={<DisplayError theme={theme}>Failed to display code</DisplayError>}
-        loading={<DisplayText theme={theme}>Loading...</DisplayText>}
       >
         <div className="max-h-full overflow-auto rounded-sm">
           <div
