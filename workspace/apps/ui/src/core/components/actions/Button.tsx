@@ -5,7 +5,7 @@ import { forwardRef, memo } from "react";
 type Variant = "text" | "solid" | "text-light";
 const variants: Record<Variant, string> = {
   "solid":
-    "bg-primary-5 hover:bg-primary-6 active:bg-primary-4 border-secondary-5 hover:border-secondary-6 active:border-secondary-4 border transition-colors px-1 rounded-sm",
+    "bg-primary-3 hover:bg-primary-5 active:bg-primary-3 border-secondary-4 hover:border-secondary-5 active:border-secondary-4 border transition-colors px-1 rounded-sm",
   "text":
     "p-0 flex items-center justify-center hover:bg-primary-1 active:bg-primary-2 transition-colors rounded-sm text-primary-dark",
   "text-light":
@@ -23,7 +23,12 @@ export const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(
         type="button"
         ref={ref}
         {...props}
-        className={cx("cursor-pointer", variants[variant], className)}
+        className={cx(
+          "text-sm",
+          variants[variant],
+          props.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+          className,
+        )}
       >
         {children}
       </ButtonHeadless>

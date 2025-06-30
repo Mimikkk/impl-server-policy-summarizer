@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 export const Route = createRootRouteWithContext()({
   component: () => {
-    const { mode, theme, setNextMode } = useTheme();
+    const { mode, theme, setMode: setMode } = useTheme();
 
     useEffect(() => {
       document.body.setAttribute("data-theme", theme);
@@ -16,7 +16,12 @@ export const Route = createRootRouteWithContext()({
       <div className="min-h-screen relative">
         <Outlet />
         <DevTools />
-        <ThemeButton className="absolute bottom-0 right-0" mode={mode} theme={theme} onClick={setNextMode} />
+        <ThemeButton
+          className="absolute bottom-0 right-0"
+          mode={mode}
+          theme={theme}
+          onChangeMode={setMode}
+        />
       </div>
     );
   },

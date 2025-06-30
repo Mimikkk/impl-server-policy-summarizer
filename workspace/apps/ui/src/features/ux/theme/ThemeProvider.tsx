@@ -1,8 +1,8 @@
 import { createLocalStorageOptions, useLocalStorage } from "@hooks/useLocalStorage.ts";
 import { identity } from "@utilities/common.ts";
 import { createContext } from "@utilities/createContext.tsx";
-import { useCallback, useMemo } from "react";
-import { type ThemeMode, ThemeService } from "./ThemeService.tsx";
+import { useMemo } from "react";
+import { type ThemeMode } from "./ThemeService.tsx";
 
 const createThemeLocalStorageOptions = (key: string) =>
   createLocalStorageOptions({
@@ -23,7 +23,5 @@ export const [useTheme, ThemeProvider] = createContext(function Theme({ storage 
     [mode],
   );
 
-  const setNextMode = useCallback(() => setMode(ThemeService.next), []);
-
-  return { theme, mode, setMode, setNextMode };
+  return { theme, mode, setMode };
 });

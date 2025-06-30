@@ -1,4 +1,5 @@
-import { DisplayJSON } from "@features/eli/DisplayJSON.tsx";
+import { DisplayHTML } from "@components/displays/DisplayHTML.tsx";
+import { DisplayJSON } from "@components/displays/DisplayJSON.tsx";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { EliActService } from "../../features/eli/EliActService.ts";
@@ -17,14 +18,26 @@ const createEliActOptions = ({
     queryFn: () => EliActService.details({ publisher, year, position }),
   });
 
+const createEliActHTMLOptions = ({
+  publisher,
+  year,
+  position,
+}: EliActService.ActParameters) =>
+  queryOptions({
+    queryKey: ["eli", publisher, year, position, "html"],
+    queryFn: () => EliActService.html({ publisher, year, position }).then((file) => file.text()),
+  });
+
 const DU20210001: EliActService.ActParameters = { publisher: "DU", year: 2021, position: 1 };
 
 function RouteComponent() {
   const { data: act } = useQuery(createEliActOptions(DU20210001));
+  const { data: actHTML } = useQuery(createEliActHTMLOptions(DU20210001));
 
   return (
-    <div>
-      <DisplayJSON className="h-[200px] max-w-lg" content={act} />
+    <div className="flex flex-col gap-4">
+      <DisplayJSON className="h-[200px] container" content={act} />
+      <DisplayHTML className="h-[200px] container" content={actHTML} />
     </div>
   );
 }
