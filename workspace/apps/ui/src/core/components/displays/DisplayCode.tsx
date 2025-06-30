@@ -2,13 +2,14 @@ import { Button } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
+import { Transition } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
 import cx from "clsx";
 import { Clipboard, Download } from "lucide-react";
 import prettier from "prettier";
 import html from "prettier/plugins/html";
-import { type MouseEvent, useCallback, useMemo } from "react";
+import { type MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { codeToHtml } from "shiki";
 import { saveToFile } from "../../utilities/saveToFile.tsx";
 import { Card } from "../containers/Card.tsx";
@@ -38,13 +39,28 @@ export const DisplayCode = ({ className, content, language }: DisplayCodeProps) 
   const { theme } = useTheme();
   const asString = useMemo(() => content ?? "", [content]);
   const { data: code = "", status } = useQuery(createCodeQueryOptions(asString, theme, language));
+  const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
 
+  let timeoutId: Nil<number> = null;
   const handleCopy = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
-    return navigator.clipboard.writeText(asString);
+    navigator.clipboard.writeText(asString).then(() => {
+      setShowCopiedTooltip(true);
+
+      timeoutId = setTimeout(() => setShowCopiedTooltip(false), 1000);
+    });
   }, [asString]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+  }, [timeoutId]);
 
   const handleSave = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -66,7 +82,7 @@ export const DisplayCode = ({ className, content, language }: DisplayCodeProps) 
           />
         </div>
       </StatusBarrier>
-      <div className="absolute top-3 right-3 flex gap-2">
+      <div className="absolute top-3 right-3 flex gap-2 items-center">
         <Button
           variant="text"
           className="h-6 w-6 opacity-50 hover:opacity-100"
@@ -76,15 +92,30 @@ export const DisplayCode = ({ className, content, language }: DisplayCodeProps) 
         >
           <Icon className="w-4 h-4" icon={Download} />
         </Button>
-        <Button
-          variant="text"
-          className="h-6 w-6 opacity-50 hover:opacity-100"
-          onClick={handleCopy}
-          title="Copy to clipboard"
-          aria-label="Copy to clipboard"
-        >
-          <Icon className="w-4 h-4" icon={Clipboard} />
-        </Button>
+        <div className="relative">
+          <Button
+            variant="text"
+            className="h-6 w-6 opacity-50 hover:opacity-100"
+            onClick={handleCopy}
+            title="Copy to clipboard"
+            aria-label="Copy to clipboard"
+          >
+            <Icon className="w-4 h-4" icon={Clipboard} />
+          </Button>
+          <Transition
+            show={showCopiedTooltip}
+            enter="transition-all duration-300 ease-out"
+            enterFrom="opacity-0 scale-75"
+            enterTo="opacity-100 scale-100"
+            leave="transition-all duration-200 ease-in"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-75"
+          >
+            <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-secondary-2 border border-secondary-3 text-xs px-2 py-0.5 rounded whitespace-nowrap">
+              Copied!
+            </div>
+          </Transition>
+        </div>
       </div>
     </Card>
   );
