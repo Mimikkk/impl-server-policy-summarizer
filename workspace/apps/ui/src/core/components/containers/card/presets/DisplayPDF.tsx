@@ -2,16 +2,16 @@ import { useBlobUrl } from "@hooks/useBlobUrl.ts";
 import type { Nil } from "@utilities/common.ts";
 import { AlertCircle } from "lucide-react";
 import { memo } from "react";
-import { Icon } from "../badges/Icon.tsx";
-import { Card } from "../containers/Card.tsx";
-import { StatusBarrier } from "../utility/StatusBarrier.tsx";
+import { Icon } from "../../../badges/Icon.tsx";
+import { StatusBarrier } from "../../../utility/StatusBarrier.tsx";
+import { Card } from "../Card.tsx";
 
-export interface DisplayPDFProps {
+export interface CardPDFProps {
   className?: string;
   url: Nil<string>;
 }
 
-export const DisplayPDF = memo(function DisplayPDF({ className, url }: DisplayPDFProps) {
+export const CardPDF = memo(function CardPDF({ className, url }: CardPDFProps) {
   const { data: pdfUrl, status } = useBlobUrl(url);
 
   return (

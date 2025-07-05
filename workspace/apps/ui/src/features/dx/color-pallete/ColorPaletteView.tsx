@@ -1,44 +1,20 @@
 import { For } from "@components/utility/For.tsx";
-import cx from "clsx";
-import { memo } from "react";
-import { colors } from "./ColorPalette.ts";
-
-const ColorShade = memo(function ColorShade({ color }: { color: string }) {
-  return (
-    <div className="flex flex-col items-center">
-      <div
-        className={cx(
-          "w-12 h-12 rounded-sm border border-gray-400",
-          color,
-        )}
-      />
-      <span className="text-xs">{color.replace("bg-", "")}</span>
-    </div>
-  );
-});
-
-const ColorHeader = memo(function ColorHeader({ color }: { color: string }) {
-  return (
-    <h3 className="text-lg font-semibold">
-      {color}
-    </h3>
-  );
-});
+import { Fragment, memo } from "react";
+import { colors } from "../../ux/theme/ColorPalette.ts";
 
 export const ColorPaletteView = memo(function ColorPaletteView() {
   return (
-    <For each={Object.entries(colors)}>
-      {([color, shades]) => (
-        <For
-          key={color}
-          header={<ColorHeader color={color} />}
-          each={shades}
-          as="div"
-          className="grid grid-cols-12 gap-2"
-        >
-          {(shade) => <ColorShade key={shade} color={shade} />}
-        </For>
-      )}
+    <For each={colors.names} as="div" className="grid grid-cols-[auto_1fr] items-center gap-2">
+      {(name) => {
+        return (
+          <Fragment key={name}>
+            <div className="text-sm font-semibold">{name}</div>
+            <For key={name} each={colors.shades} as="div" className="flex border rounded-sm w-fit overflow-hidden">
+              {(shade) => <span key={shade} className={`w-8 h-12 bg-${name}-${shade}`} />}
+            </For>
+          </Fragment>
+        );
+      }}
     </For>
   );
 });

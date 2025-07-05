@@ -12,8 +12,10 @@ const sizes = {
   lg: SizeLg,
 };
 
+export type IconType = ComponentType<LucideProps>;
+
 export interface IconProps extends LucideProps {
-  icon: ComponentType<LucideProps>;
+  icon: IconType;
   size?: Size;
 }
 

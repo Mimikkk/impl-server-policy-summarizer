@@ -1,45 +1,50 @@
+import { Icon, type IconType } from "@components/badges/Icon.tsx";
 import { For } from "@components/utility/For.tsx";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import cx from "clsx";
-import { type ComponentProps, memo, useCallback, useMemo } from "react";
+import { type ComponentProps, memo, type ReactNode, useCallback, useMemo } from "react";
 
-const DevToolsTab = memo(function DevToolsTab({
-  children,
-  ...props
-}: React.ComponentProps<typeof Tab>) {
-  return (
-    <Tab
-      {...props}
-      className={({ selected }: { selected: boolean }) =>
-        cx(
-          "px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
-          "focus:outline-none focus:ring-2 focus:ring-primary-4 focus:ring-offset-2",
-          selected ? "bg-primary-2 text-primary-dark border-b-2 border-primary-5" : "hover:bg-primary-2",
-        )}
-    >
-      {children}
-    </Tab>
-  );
-});
+const Header = memo(
+  function DevToolsTab({ children, icon, ...props }: ComponentProps<typeof Tab> & { icon: IconType }) {
+    return (
+      <Tab
+        {...props}
+        className="
+        px-4 py-2 
+        cursor-pointer transition-colors 
+        text-primary-11 data-active:text-primary-12 data-selected:text-primary-12 
+        bg-primary-3 hover:bg-primary-4 data-active:bg-primary-5 data-selected:bg-primary-5
+        "
+      >
+        <div className="flex items-center gap-1">
+          <Icon icon={icon} size="sm" />
+          {children as ReactNode}
+        </div>
+      </Tab>
+    );
+  },
+);
 
-const DevToolsPanel = memo(function DevToolsPanel({
+const Panel = memo(function DevToolsPanel({
   children,
   ...props
 }: ComponentProps<typeof TabPanel>) {
   return (
-    <TabPanel className="h-full overflow-auto py-2 px-4" {...props}>
+    <TabPanel className="container mx-auto overflow-auto py-4" {...props}>
       {children}
     </TabPanel>
   );
 });
 
+export interface DevToolsItem {
+  key: string;
+  label: string;
+  icon: IconType;
+  component: ReactNode;
+}
+
 export interface DevToolsNavigationProps {
   height: number;
-  items: {
-    key: string;
-    label: string;
-    component: React.ReactNode;
-  }[];
+  items: DevToolsItem[];
   tab: string;
   onChange: (key: string) => void;
 }
@@ -54,20 +59,20 @@ export const DevToolsNavigation = memo(
 
     return (
       <TabGroup
-        className="bg-primary-5 border-t border-accent-5 shadow-lg flex flex-col"
+        className="border-t border-primary-6 bg-primary-2"
         style={{ height }}
         tabIndex={index}
         defaultIndex={index}
         onChange={handleChange}
       >
-        <TabList className="flex border-b border-accent-5 bg-primary-1 flex-shrink-0">
+        <TabList className="flex border-y bg-primary-1 divide-x-1 divide-primary-6 border-primary-6">
           <For each={items}>
-            {(item) => <DevToolsTab key={item.key}>{item.label}</DevToolsTab>}
+            {(item) => <Header key={item.key} icon={item.icon}>{item.label}</Header>}
           </For>
         </TabList>
-        <TabPanels className="flex-1 min-h-0">
+        <TabPanels className="overflow-auto" style={{ maxHeight: height - 40 }}>
           <For each={items}>
-            {(item) => <DevToolsPanel key={item.key}>{item.component}</DevToolsPanel>}
+            {(item) => <Panel key={item.key}>{item.component}</Panel>}
           </For>
         </TabPanels>
       </TabGroup>

@@ -1,10 +1,14 @@
 import { Show } from "@components/utility/Show.tsx";
+import { useEventListener } from "@hooks/useEventListener.ts";
 import { createLocalStorageOptions, useLocalStorage } from "@hooks/useLocalStorage.ts";
+import { ComponentIcon, PaletteIcon, RouteIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { ColorPaletteView } from "../color-pallete/ColorPaletteView.tsx";
+import { ComponentsView } from "../components/ComponentsView.tsx";
 import { useHeightResize } from "../dev-tools/useHeightResize.tsx";
+import { RouteView } from "../routes/RouteView.tsx";
 import { DevToolsToggleButton } from "./DevToolsButton.tsx";
-import { DevToolsNavigation } from "./DevToolsNavigation.tsx";
+import { DevToolsItem, DevToolsNavigation } from "./DevToolsNavigation.tsx";
 import { DevToolsResizer } from "./DevToolsResizer.tsx";
 
 export const DevToolsHeightOptions = createLocalStorageOptions<number>({
@@ -41,10 +45,29 @@ const useIsOpen = () => {
 const DevToolsTabIndexOptions = createLocalStorageOptions<string>({
   key: "dev-tools-tab-index",
   serialize: (value) => value.toString(),
-  deserialize: (value) => value === null ? "colors" : value,
+  deserialize: (value) => value === null ? "routes" : value,
 });
 
 const useTabIndex = () => useLocalStorage(DevToolsTabIndexOptions);
+
+const useItems = () => {
+  return useMemo((): DevToolsItem[] => [{
+    key: "routes",
+    label: "Routes",
+    icon: RouteIcon,
+    component: <RouteView />,
+  }, {
+    key: "colors",
+    label: "Colors",
+    icon: PaletteIcon,
+    component: <ColorPaletteView />,
+  }, {
+    key: "components",
+    label: "Components",
+    icon: ComponentIcon,
+    component: <ComponentsView />,
+  }], []);
+};
 
 export const DevTools = memo(function DevTools() {
   const [ref, setRef] = useState<HTMLDivElement | null>(null);
@@ -52,15 +75,14 @@ export const DevTools = memo(function DevTools() {
   const height = useHeight(ref);
   const [selectedTab, setSelectedTab] = useTabIndex();
 
-  const items = useMemo(() => [{
-    key: "colors",
-    label: "Colors",
-    component: <ColorPaletteView />,
-  }, {
-    key: "components",
-    label: "Components",
-    component: <div>Components</div>,
-  }], []);
+  const items = useItems();
+
+  useEventListener("keydown", (event) => {
+    if (!event.altKey || !event.ctrlKey || event.key !== "d") return;
+
+    event.preventDefault();
+    toggle();
+  });
 
   return (
     <div className="absolute bottom-0 left-0 w-full">

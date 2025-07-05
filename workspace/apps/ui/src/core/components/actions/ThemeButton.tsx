@@ -1,6 +1,6 @@
-import { Button, ButtonProps } from "@components/actions/Button.tsx";
+import { Button, type ButtonProps } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
-import { ThemeMode, ThemeService } from "@features/ux/theme/ThemeService.tsx";
+import { type ThemeMode, ThemeService } from "@features/ux/theme/ThemeService.tsx";
 import { Moon, Settings, Sun } from "lucide-react";
 import { memo, useCallback } from "react";
 

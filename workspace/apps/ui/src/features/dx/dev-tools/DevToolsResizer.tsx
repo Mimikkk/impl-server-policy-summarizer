@@ -5,7 +5,14 @@ export const DevToolsResizer = memo(
     return (
       <div
         ref={ref}
-        className="absolute top-0 left-0 right-0 h-1 -mt-1 bg-primary-5 cursor-ns-resize hover:bg-primary-4 active:bg-primary-3 transition-colors"
+        className="
+        absolute top-0 left-0 right-0 
+        h-2 -mt-2 
+        bg-primary-3 hover:bg-primary-4 active:bg-primary-5 
+        border-t border-primary-7  hover:border-primary-8 active:border-primary-8
+        cursor-ns-resize 
+        transition-colors
+        "
       />
     );
   }),

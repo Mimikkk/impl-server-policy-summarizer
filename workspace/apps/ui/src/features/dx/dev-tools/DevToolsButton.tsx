@@ -12,11 +12,15 @@ export const DevToolsToggleButton = memo<DevToolsToggleButtonProps>(
   function DevToolsToggleButton({ height, onClick }) {
     return (
       <Button
-        className="rounded-b-none rounded-l-none absolute bottom-0 left-0 flex items-center gap-1"
+        className="
+        absolute bottom-0 left-0 
+        flex items-center gap-1
+        border-b-0 border-l-0 rounded-b-none rounded-l-none 
+        "
         style={{ bottom: height }}
         onClick={onClick}
       >
-        <Icon className="w-4 h-4" icon={Settings} />
+        <Icon size="sm" icon={Settings} />
         DevTools
       </Button>
     );
