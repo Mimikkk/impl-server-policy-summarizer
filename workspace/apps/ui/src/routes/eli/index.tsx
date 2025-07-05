@@ -1,11 +1,11 @@
 import { Button } from "@components/actions/Button.tsx";
-import { Card } from "@components/containers/Card.tsx";
-import { DisplayHTML } from "@components/displays/DisplayHTML.tsx";
-import { DisplayJSON } from "@components/displays/DisplayJSON.tsx";
-import { DisplayPDF } from "@components/displays/DisplayPDF.tsx";
+import { CardPDF } from "@components/containers/card/presets/DisplayPDF.tsx";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { Card } from "../../core/components/containers/card/Card.tsx";
+import { CardHTML } from "../../core/components/containers/card/presets/CardHTML.tsx";
+import { CardJSON } from "../../core/components/containers/card/presets/CardJSON.tsx";
 import { EliActService } from "../../features/eli/EliActService.ts";
 
 export const Route = createFileRoute("/eli/")({
@@ -144,9 +144,9 @@ function RouteComponent() {
     <div className="flex flex-col gap-6 items-center py-4 min-h-screen">
       <ActForm onSubmit={setActParams} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 container items-center flex-1 w-full">
-        <DisplayJSON className="h-[400px] container" content={actDetails} />
-        <DisplayHTML className="h-[400px] container" content={actHtml} />
-        <DisplayPDF className="h-[600px] col-span-1 md:col-span-2 lg:col-span-2 container" url={actPdfUrl} />
+        <CardJSON className="h-[400px] container" content={actDetails} />
+        <CardHTML className="h-[400px] container" content={actHtml} />
+        <CardPDF className="h-[600px] col-span-1 md:col-span-2 lg:col-span-2 container" url={actPdfUrl} />
       </div>
     </div>
   );
