@@ -7,14 +7,13 @@ import { Show } from "../../utility/Show.tsx";
 export interface CardProps extends PropsWithChildren {
   color?: ColorName;
   className?: string;
-  center?: boolean;
   label?: string;
   compact?: boolean;
   active?: boolean;
 }
 
 export const Card = memo(
-  function Card({ children, className, center, label, compact, color = "primary", active = false }: CardProps) {
+  function Card({ children, className, label, compact, color = "primary", active = false }: CardProps) {
     return (
       <div
         data-active={active ? "" : undefined}
@@ -29,7 +28,6 @@ export const Card = memo(
         shadow-sm
         transition-colors
         `,
-          center && "flex items-center justify-center",
           label && "mt-2",
           !compact && "p-4",
           className,
