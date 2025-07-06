@@ -25,7 +25,7 @@ export const Card = memo(
         border rounded-sm
         border-${color}-6 
         hover:border-${color}-10
-        data-active:border-${color}-10
+        active:border-${color}-10
         shadow-sm
         transition-colors
         `,
