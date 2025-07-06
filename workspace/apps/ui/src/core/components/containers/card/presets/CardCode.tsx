@@ -111,7 +111,7 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-75"
           >
-            <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-secondary-2 border border-secondary-3 text-xs px-2 py-0.5 rounded whitespace-nowrap">
+            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-secondary-2 border border-secondary-3 text-xs px-2 py-0.5 rounded whitespace-nowrap z-10">
               Copied!
             </div>
           </Transition>
