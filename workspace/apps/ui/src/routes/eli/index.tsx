@@ -1,12 +1,15 @@
 import { Button } from "@components/actions/Button.tsx";
 import { Card } from "@components/containers/card/Card.tsx";
+import { CardHTML } from "@components/containers/card/presets/CardHTML.tsx";
+import { CardJSON } from "@components/containers/card/presets/CardJSON.tsx";
 import { CardPDF } from "@components/containers/card/presets/DisplayPDF.tsx";
+import { InputField } from "@components/forms/inputs/InputField.tsx";
+import type { Option } from "@components/forms/selects/Option.tsx";
+import { SelectField } from "@components/forms/selects/SelectField.tsx";
+import { EliActService } from "@features/eli/EliActService.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { memo, useState } from "react";
-import { CardHTML } from "../../core/components/containers/card/presets/CardHTML.tsx";
-import { CardJSON } from "../../core/components/containers/card/presets/CardJSON.tsx";
-import { EliActService } from "../../features/eli/EliActService.ts";
+import { type FormEvent, useCallback, useState } from "react";
 
 export const Route = createFileRoute("/eli/")({
   component: RouteComponent,
@@ -45,99 +48,47 @@ const createEliActPDFOptions = ({
     enabled: !!publisher && !!year && !!position,
   });
 
-const Field = memo(function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
-  return (
-    <div className="relative flex flex-col gap-2">
-      <label
-        htmlFor={id}
-        className="absolute -top-1.5 left-2 text-xs px-1 rounded-xs bg-primary-2 text-primary-11"
-      >
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-});
-
 function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters) => void }) {
   const [publisher, setPublisher] = useState<EliActService.Publisher>("DU");
   const [year, setYear] = useState<number>(2021);
   const [position, setPosition] = useState<number>(1);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback((event: FormEvent) => {
+    event.preventDefault();
+
     onSubmit({ publisher, year, position });
-  };
+  }, [publisher, year, position, onSubmit]);
+
+  const publisherOptions: Option<EliActService.Publisher>[] = [
+    { label: "Dziennik Ustaw (DU)", value: "DU" },
+  ];
 
   return (
-    <Card label="Act Form">
+    <Card label="Act form">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Field id="publisher" label="Publisher">
-          <select
-            id="publisher"
-            value={publisher}
-            onChange={(e) => setPublisher(e.target.value as EliActService.Publisher)}
-            className="
-            px-3 py-2 border 
-            bg-primary-2
-            border-primary-6 focus-within:border-primary-7 active:border-primary-7 hover:border-primary-8
-            rounded-xs
-            disabled:opacity-50
-            "
-          >
-            <option value="DU">Dziennik Ustaw (DU)</option>
-          </select>
-        </Field>
-
-        <Field id="year" label="Year">
-          <input
-            id="year"
-            type="number"
-            value={year}
-            onChange={(e) => setYear(parseInt(e.target.value))}
-            onPaste={(e) => e.preventDefault()}
-            onCut={(e) => e.preventDefault()}
-            className="
-            px-3 py-2 border 
-            bg-primary-2
-            border-primary-6 focus-within:border-primary-7 active:border-primary-7 hover:border-primary-8
-            rounded-xs
-            disabled:opacity-50
-            "
-          />
-        </Field>
-
-        <Field id="position" label="Position">
-          <input
-            id="position"
-            type="number"
-            value={position}
-            onChange={(e) => {
-              const value = parseInt(e.target.value);
-
-              if (value < 1) {
-                setPosition(1);
-              } else {
-                setPosition(value);
-              }
-            }}
-            onPaste={(e) => e.preventDefault()}
-            onCut={(e) => e.preventDefault()}
-            className="
-            px-3 py-2 border 
-            bg-primary-2
-            border-primary-6 focus-within:border-primary-7 active:border-primary-7 hover:border-primary-8
-            rounded-xs
-            disabled:opacity-50
-            "
-          />
-        </Field>
-
-        <Button
-          type="submit"
-          className="h-8"
-        >
-          Load Act
+        <SelectField
+          id="publisher"
+          label="Publisher"
+          options={publisherOptions}
+          value={publisher}
+          onValueChange={(value) => setPublisher(value)}
+        />
+        <InputField
+          type="number"
+          id="year"
+          label="Year"
+          value={year}
+          onValueChange={(value) => setYear(parseInt(value))}
+        />
+        <InputField
+          type="number"
+          id="position"
+          label="Position"
+          value={position}
+          onValueChange={(value) => setPosition(parseInt(value))}
+        />
+        <Button type="submit" className="h-8">
+          Load act
         </Button>
       </form>
     </Card>
