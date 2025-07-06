@@ -12,7 +12,7 @@ export const ComponentsView = memo(function ComponentsView() {
       </Card>
       <div className="flex flex-col gap-2">
         <Text>Button components</Text>
-        <Button>Button</Button>
+        <Button color="secondary">Button</Button>
       </div>
     </div>
   );

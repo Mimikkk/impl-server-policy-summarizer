@@ -1,20 +1,20 @@
+import { Card } from "@components/containers/card/Card.tsx";
 import { For } from "@components/utility/For.tsx";
-import { Fragment, memo } from "react";
+import { memo } from "react";
 import { colors } from "../../ux/theme/ColorPalette.ts";
 
 export const ColorPaletteView = memo(function ColorPaletteView() {
+  const { names, shades } = colors;
+
   return (
-    <For each={colors.names} as="div" className="grid grid-cols-[auto_1fr] items-center gap-2">
-      {(name) => {
-        return (
-          <Fragment key={name}>
-            <div className="text-sm font-semibold">{name}</div>
-            <For key={name} each={colors.shades} as="div" className="flex border rounded-sm w-fit overflow-hidden">
-              {(shade) => <span key={shade} className={`w-8 h-12 bg-${name}-${shade}`} />}
-            </For>
-          </Fragment>
-        );
-      }}
+    <For each={names} as="div" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      {(name) => (
+        <Card compact label={name} key={name} color={name} className="flex flex-col gap-2">
+          <For each={shades} as="div" className="flex rounded-sm overflow-hidden">
+            {(shade) => <span key={shade} className={`w-full h-12 bg-${name}-${shade}`} />}
+          </For>
+        </Card>
+      )}
     </For>
   );
 });
