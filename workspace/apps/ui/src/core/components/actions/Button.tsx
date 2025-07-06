@@ -5,10 +5,21 @@ import { ButtonHTMLAttributes, forwardRef, memo } from "react";
 
 type Variant = "text" | "solid";
 const variants: Record<Variant, string> = {
-  "text":
-    "p-0 flex items-center justify-center hover:bg-primary-1 active:bg-primary-2 transition-colors rounded-sm text-primary-dark",
-  "solid":
-    "bg-primary-3 hover:bg-primary-5 active:bg-primary-3 border-secondary-4 hover:border-secondary-5 active:border-secondary-4 border transition-colors px-1 rounded-sm",
+  "text": `
+    px-2
+    flex items-center justify-center
+    hover:bg-{{color}}-4 active:bg-{{color}}-5
+    transition-colors
+    rounded-sm
+    `,
+  "solid": `
+    bg-{{color}}-3 hover:bg-{{color}}-4 active:bg-{{color}}-5
+    border-{{color}}-6 hover:border-{{color}}-8 active:border-{{color}}-7
+    border
+    px-2
+    transition-colors
+    rounded-sm
+    `,
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,8 +35,7 @@ export const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
         className={cx(
-          variants[variant],
-          `bg-${color}`,
+          variants[variant].replace("{{color}}", color),
           props.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
           className,
         )}

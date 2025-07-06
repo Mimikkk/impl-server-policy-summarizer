@@ -1,7 +1,8 @@
 import { Button } from "@components/actions/Button.tsx";
 import { Text } from "@components/typography/Text.tsx";
+import { For } from "@components/utility/For.tsx";
 import { Route, useRouter } from "@tanstack/react-router";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "../../../core/components/containers/card/Card.tsx";
 
 interface RouteNode {
@@ -11,87 +12,60 @@ interface RouteNode {
   children?: RouteNode[];
 }
 
-const RouteTreeItem = memo<{
+export interface RouteTreeItemProps {
   route: RouteNode;
-  level: number;
-  onNavigate: (path: string) => void;
-  currentPath: string;
-}>(({ route, level, onNavigate, currentPath }) => {
-  const isActive = currentPath === route.fullPath;
-  const hasChildren = route.children && route.children.length > 0;
+  path: string;
+  depth?: number;
+  onPathChange: (path: string) => void;
+}
+
+const Tree = memo<RouteTreeItemProps>(({ route, path, depth = 1, onPathChange }) => {
+  const isActive = path === route.fullPath;
+
+  const handleClick = useCallback(() => {
+    onPathChange(route.fullPath);
+  }, [onPathChange, route.fullPath]);
 
   return (
-    <div className="space-y-1">
-      <div
-        className={`
-          flex items-center gap-2 p-2 rounded-md transition-colors
-          ${isActive ? "bg-primary/20 text-primary border border-primary/30" : "hover:bg-muted/50"}
-        `}
-        style={{ paddingLeft: `${level * 16 + 8}px` }}
-      >
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <Text
-              className={`font-mono text-sm ${isActive ? "font-semibold" : ""}`}
-            >
-              {route.path}
-            </Text>
-            {route.id !== route.path && (
-              <Text className="text-muted-foreground">
-                ({route.id})
-              </Text>
-            )}
-          </div>
-          {route.fullPath !== route.path && (
-            <Text className="text-muted-foreground">
-              Full: {route.fullPath}
-            </Text>
-          )}
-        </div>
-        <Button
-          variant="text"
-          onClick={() => onNavigate(route.fullPath)}
-          disabled={isActive}
-          className="text-xs px-2 py-1"
-        >
+    <Card className="flex flex-col gap-1" active={isActive}>
+      <div className="flex items-center justify-between">
+        <span className="flex items-center gap-2">
+          <Text color="info">
+            {depth}
+          </Text>
+          <span>-</span>
+          <Text light={!isActive}>
+            {route.path}
+          </Text>
+        </span>
+        <Button variant="text" onClick={handleClick} disabled={isActive} className="text-xs px-2 w-16">
           {isActive ? "Current" : "Navigate"}
         </Button>
       </div>
-      {hasChildren && (
-        <div className="space-y-1">
-          {route.children!.map((child) => (
-            <RouteTreeItem
-              key={child.id}
-              route={child}
-              level={level + 1}
-              onNavigate={onNavigate}
-              currentPath={currentPath}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+      <For each={route.children}>
+        {(child) => <Tree key={child.id} route={child} path={path} depth={depth + 1} onPathChange={onPathChange} />}
+      </For>
+    </Card>
   );
 });
 
-const buildRouteTree = (route: Route): RouteNode => {
-  const node: RouteNode = {
-    id: route.id || route.path || "/",
-    path: route.path || "/",
-    fullPath: route.fullPath || route.path || "/",
-  };
+const extractRoutes = (route: Route): RouteNode => ({
+  id: route.id,
+  path: route.path,
+  fullPath: route.fullPath,
+  children: route.children ? Object.values(route.children).map(extractRoutes) : undefined,
+});
 
-  if (route.children && Object.keys(route.children).length > 0) {
-    node.children = Object.values(route.children).map(buildRouteTree);
-  }
-
-  return node;
-};
-
-const useRouteStats = (routeTreeData: RouteNode) => {
+const useRoutes = () => {
   const router = useRouter();
 
-  const routeStats = useMemo(() => {
+  return useMemo(() => extractRoutes(router.routeTree), [router.routeTree]);
+};
+
+const useRouteStats = (data: RouteNode) => {
+  const router = useRouter();
+
+  const stats = useMemo(() => {
     const countRoutes = (node: RouteNode): number => {
       let count = 1;
       if (node.children) {
@@ -101,46 +75,51 @@ const useRouteStats = (routeTreeData: RouteNode) => {
       return count;
     };
 
-    const totalRoutes = countRoutes(routeTreeData);
+    const totalRoutes = countRoutes(data);
     const activeRoute = router.state.location.pathname;
     const routeDepth = activeRoute.split("/").filter(Boolean).length;
 
-    return { totalRoutes, activeRoute, routeDepth };
-  }, [router.state.location.pathname]);
+    return { total: totalRoutes, active: activeRoute, maxDepth: routeDepth };
+  }, [router.state.location.pathname, data]);
 
-  return routeStats;
+  return stats;
+};
+
+const useCurrentRouterPath = () => {
+  const router = useRouter();
+  const [current, setCurrent] = useState(router.state.location.pathname);
+
+  useEffect(() =>
+    router.subscribe("onBeforeNavigate", (state) => {
+      setCurrent(state.toLocation.pathname);
+    }), []);
+
+  return current;
 };
 
 export const RouteView = memo(function RouteView() {
   const router = useRouter();
 
   const handleNavigate = useCallback((path: string) => router.navigate({ to: path }), [router]);
-
-  const paths = useMemo(() => buildRouteTree(router.routeTree), []);
+  const current = useCurrentRouterPath();
+  const paths = useRoutes();
   const stats = useRouteStats(paths);
-
-  console.log(paths);
 
   return (
     <div className="flex flex-col gap-2">
       <Card label="Route stats">
         <div className="grid grid-cols-[auto_1fr] gap-2">
-          <Text>Total Routes:</Text>
-          <Text>{stats.totalRoutes}</Text>
           <Text>Current Route:</Text>
-          <Text>{stats.activeRoute}</Text>
+          <Text light>{stats.active}</Text>
+          <Text>Total Routes:</Text>
+          <Text light>{stats.total}</Text>
           <Text>Route Depth:</Text>
-          <Text>{stats.routeDepth}</Text>
+          <Text light>{stats.maxDepth}</Text>
         </div>
       </Card>
       <Card label="Navigation">
         <div className="max-h-96 overflow-auto">
-          <RouteTreeItem
-            route={paths}
-            level={0}
-            onNavigate={handleNavigate}
-            currentPath={router.state.location.pathname}
-          />
+          <Tree route={paths} path={current} onPathChange={handleNavigate} />
         </div>
       </Card>
     </div>
