@@ -70,7 +70,7 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
   }, [asString, language]);
 
   return (
-    <Card className={cx("relative", className)}>
+    <Card compact className={cx("relative", className)}>
       <StatusBarrier
         status={status}
         error={<Text color="error">Failed to display code</Text>}

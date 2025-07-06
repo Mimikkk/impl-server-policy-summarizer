@@ -7,7 +7,6 @@ type Variant = "text" | "solid";
 const variantClass = (variant: Variant, color: ColorName) => {
   if (variant === "text") {
     return `
-    px-2
     flex items-center justify-center
     hover:bg-${color}-4 active:bg-${color}-5
     transition-colors
