@@ -398,3 +398,8 @@ body {
   @apply bg-background;
   @apply text-primary-12;
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary-6) transparent;
+}
