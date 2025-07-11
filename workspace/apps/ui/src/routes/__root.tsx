@@ -21,7 +21,7 @@ export const Route = createRootRouteWithContext()({
         <Outlet />
         <DevTools />
         <ThemeButton
-          className="absolute bottom-0 right-0"
+          className="fixed bottom-0 right-0"
           mode={mode}
           theme={theme}
           onChangeMode={setMode}

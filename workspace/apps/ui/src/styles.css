@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@source inline("{hover:,active:,}{bg,text,outline,border,ring,shadow,fill,stroke}-{primary,secondary,info,success,warning,error}-{1..12}");
+@source inline("{hover:,active:,focus-within:,focus:,}{!,}{bg,text,outline,border,ring,shadow,fill,stroke}-{primary,secondary,info,success,warning,error}-{1..12}");
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap");
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));

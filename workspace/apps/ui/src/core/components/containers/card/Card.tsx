@@ -25,15 +25,15 @@ export const Card = memo(
           {...props}
           className={cx(
             `
-        relative
-        bg-${color}-1
-        border rounded-sm
-        border-${color}-6 
-        hover:border-${color}-10
-        active:border-${color}-10
-        shadow-sm
-        transition-colors
-        `,
+            relative
+            bg-${color}-1
+            border rounded-sm
+            border-${color}-6 
+            hover:border-${color}-10
+            active:border-${color}-10
+            shadow-sm
+            transition-colors
+            `,
             label && "mt-2",
             !compact && "p-4",
             className,
