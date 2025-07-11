@@ -5,6 +5,7 @@ import { type ComponentProps, memo, type ReactNode, useMemo, useState } from "re
 import { Field } from "../Field.tsx";
 import type { Option } from "./Option.tsx";
 
+import { useDebounceState } from "@hooks/useDebounceState.tsx";
 import { uiElementClass } from "@utilities/uiElementClass.tsx";
 import { Command as CMDK } from "cmdk";
 import { useLayoutEffect } from "react";
@@ -52,6 +53,15 @@ export const SelectField = memo(
       [options, selected],
     );
 
+    const [query, setQuery] = useState("");
+    const [searchValue, setSearchValue] = useDebounceState(query, setQuery);
+
+    const filteredOptions = useMemo(() => {
+      if (!searchValue) return options;
+
+      return options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase()));
+    }, [options, query]);
+
     return (
       <Field color={color} id={id} label={label} className={className} disabled={disabled}>
         <Popover.Root open={open && !disabled} onOpenChange={setOpen}>
@@ -80,11 +90,16 @@ export const SelectField = memo(
             sideOffset={10}
           >
             <SelectDropdown className="flex flex-col gap-2">
-              <SelectSearch color={color} placeholder="Search options..." />
+              <SelectSearch
+                value={searchValue}
+                onValueChange={setSearchValue}
+                color={color}
+                placeholder="Search options..."
+              />
               <SelectSeparator color={color} />
               <SelectList>
                 <SelectEmpty>No options found.</SelectEmpty>
-                <For each={options}>
+                <For each={filteredOptions}>
                   {({ value, label }) => (
                     <SelectOption
                       key={value}
@@ -119,7 +134,12 @@ export const SelectField = memo(
 
 function SelectDropdown({ className, ...props }: ComponentProps<typeof CMDK>) {
   return (
-    <CMDK data-slot="command" className={cx("flex h-full w-full flex-col overflow-hidden", className)} {...props} />
+    <CMDK
+      shouldFilter={false}
+      data-slot="command"
+      className={cx("flex h-full w-full flex-col overflow-hidden", className)}
+      {...props}
+    />
   );
 }
 
@@ -151,8 +171,7 @@ function SelectSeparator(
   { color, className, ...props }: ComponentProps<typeof CMDK.Separator> & { color: ColorName },
 ) {
   return (
-    <CMDK.Separator
-      data-slot="command-separator"
+    <div
       className={cx(
         uiElementClass({ color, variant: "solid", interactive: false }),
         "border-b-0",
