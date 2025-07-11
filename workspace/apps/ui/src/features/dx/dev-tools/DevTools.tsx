@@ -1,11 +1,12 @@
 import { Show } from "@components/utility/Show.tsx";
 import { useEventListener } from "@hooks/useEventListener.ts";
 import { createLocalStorageOptions, useLocalStorage } from "@hooks/useLocalStorage.ts";
-import { ComponentIcon, PaletteIcon, RouteIcon } from "lucide-react";
+import { ComponentIcon, IceCreamConeIcon, PaletteIcon, RouteIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { ColorPaletteView } from "../color-pallete/ColorPaletteView.tsx";
 import { ComponentsView } from "../components/ComponentsView.tsx";
 import { useHeightResize } from "../dev-tools/useHeightResize.tsx";
+import { IconPalleteView } from "../icon-pallete/IconPalleteView.tsx";
 import { RouteView } from "../routes/RouteView.tsx";
 import { DevToolsToggleButton } from "./DevToolsButton.tsx";
 import { DevToolsItem, DevToolsNavigation } from "./DevToolsNavigation.tsx";
@@ -66,6 +67,11 @@ const useItems = () => {
     label: "Components",
     icon: ComponentIcon,
     component: <ComponentsView />,
+  }, {
+    key: "icons",
+    label: "Icons",
+    icon: IceCreamConeIcon,
+    component: <IconPalleteView />,
   }], []);
 };
 

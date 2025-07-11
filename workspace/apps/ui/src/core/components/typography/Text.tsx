@@ -4,7 +4,7 @@ import { type HTMLAttributes, memo, type PropsWithChildren } from "react";
 
 interface TextProps extends PropsWithChildren, HTMLAttributes<HTMLDivElement> {
   color?: ColorName;
-  light?: boolean;
+  light?: boolean | null;
   className?: string;
 }
 export const Text = memo(function Text({ color = "primary", light, children, className }: TextProps) {

@@ -24,6 +24,7 @@ export const InputField = memo(
             px-3 py-2 border 
             bg-primary-2
             border-primary-6 focus-within:border-primary-7 active:border-primary-7 hover:border-primary-8
+            outline-none
             rounded-xs
             disabled:opacity-50
             "
