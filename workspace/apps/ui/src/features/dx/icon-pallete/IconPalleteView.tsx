@@ -59,7 +59,7 @@ export const IconPalleteView = () => {
           fallback={
             <Text className="flex items-center justify-center gap-1">
               <Icon icon={Search} />
-              No icons
+              <Text>No icons</Text>
             </Text>
           }
         >

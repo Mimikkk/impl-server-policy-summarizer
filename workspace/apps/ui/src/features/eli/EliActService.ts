@@ -5,20 +5,85 @@ export namespace EliActService {
   const url = "https://api.sejm.gov.pl/eli/acts";
   const api = ky.create({ prefixUrl: url });
 
-  /** Dziennik ustaw
-   * @see {@link https://dziennikustaw.gov.pl/DU}
-   */
-  export type Publisher = "DU";
+  export interface PublisherDetails {
+    /** liczba aktów */
+    actsCount: number;
+    /** Kod wydawnictwa */
+    code: string;
+    /** Nazwa wydawnictwa */
+    name: string;
+    /** Skrócona nazwa wydawnictwa */
+    shortName: string;
+    /** Lista lat w których były akty  */
+    years: number[];
+  }
+
+  export const publishers = () => api.get<PublisherDetails[]>("").json();
+
+  export interface PublisherParameters {
+    publisher: string;
+  }
+
+  export const publisher = ({ publisher }: PublisherParameters) =>
+    api.get<PublisherDetails>(`publishers/${publisher}`).json();
+
+  export interface YearItem {
+    /** Identifikator ELI  */
+    ELI: string;
+    /** Symbol wydawnictwa */
+    address: string;
+    /** Rok wydania */
+    year: number;
+    /** Nr zeszytu */
+    volume: number;
+    /** Pozycja aktu w roku */
+    pos: number;
+    /** Tytuł aktu */
+    title: string;
+    /** Adres do wyświetlenia */
+    displayAddress: string;
+    /** Data wydania */
+    promulgation: string;
+    /** Data ogłoszenia */
+    announcementDate: string;
+    /** Czy akt ma tekst w postaci PDF */
+    textPDF: boolean;
+    /** Czy akt ma tekst w postaci HTML */
+    textHTML: boolean;
+    /** Data ostatniej zmiany */
+    changeDate: string;
+    /** Typ aktu */
+    type: string;
+    /** Status obowiązywania */
+    status: string;
+  }
+
+  export interface YearResponse {
+    /** Liczba aktów w roku */
+    totalCount: number;
+    /** Indeks pierwszego aktu */
+    offset: number;
+    /** Liczba aktów w odpowiedzi */
+    count: number;
+    /** lista aktów */
+    items: YearItem[];
+  }
+
+  export interface YearParameters extends PublisherParameters {
+    year: number;
+  }
+
+  export const year = ({ publisher, year }: YearParameters) =>
+    api.get<PublisherDetails>(`publishers/${publisher}/${year}`).json();
 
   export interface ActParameters {
-    publisher: Publisher;
+    publisher: string;
     year: number;
     position: number;
   }
 
   export interface ActResponse {
   }
-
   export const details = async ({ publisher, year, position }: ActParameters): Promise<ActResponse> => {
     return await api.get<ActResponse>(`${publisher}/${year}/${position}`).json();
   };

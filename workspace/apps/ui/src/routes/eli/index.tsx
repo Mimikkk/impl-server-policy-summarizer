@@ -6,10 +6,11 @@ import { CardPDF } from "@components/containers/card/presets/DisplayPDF.tsx";
 import { InputField } from "@components/forms/inputs/InputField.tsx";
 import type { Option } from "@components/forms/selects/Option.tsx";
 import { SelectField } from "@components/forms/selects/SelectField.tsx";
+import { Text } from "@components/typography/Text.tsx";
 import { EliActService } from "@features/eli/EliActService.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { type FormEvent, useCallback, useState } from "react";
+import { type FormEvent, useCallback, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/eli/")({
   component: RouteComponent,
@@ -48,49 +49,72 @@ const createEliActPDFOptions = ({
     enabled: !!publisher && !!year && !!position,
   });
 
+const createEliPublishersOptions = () =>
+  queryOptions({
+    queryKey: ["eli", "publishers"],
+    queryFn: EliActService.publishers,
+  });
+
 function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters) => void }) {
-  const [publisher, setPublisher] = useState<EliActService.Publisher>("DU");
-  const [year, setYear] = useState<number>(2021);
-  const [position, setPosition] = useState<number>(1);
+  const [publisher, setPublisher] = useState<string | null>(null);
+  const [year, setYear] = useState<string>("");
+  const [position, setPosition] = useState<string>("");
 
   const handleSubmit = useCallback((event: FormEvent) => {
     event.preventDefault();
 
-    onSubmit({ publisher, year, position });
+    if (!publisher || !year || !position) return;
+
+    onSubmit({ publisher, year: +year, position: +position });
   }, [publisher, year, position, onSubmit]);
 
-  const publisherOptions: Option<EliActService.Publisher>[] = [
-    { label: "Dziennik Ustaw (DU)", value: "DU" },
-  ];
+  const { data: publishers, isSuccess, isLoading } = useQuery(createEliPublishersOptions());
+
+  const publisherOptions: Option<string>[] = useMemo(() =>
+    publishers?.map((publisher) => ({
+      value: publisher.code,
+      label: `(${publisher.shortName}):${publisher.actsCount} ${publisher.name}`,
+    })) ?? [], [publishers]);
+
+  const isYearDisabled = useMemo(() => !publisher, [publisher]);
+  const isPositionDisabled = useMemo(() => !publisher, [publisher]);
 
   return (
-    <Card label="Act form">
+    <Card label="Act form" className="grid grid-cols-3 gap-2">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <SelectField
           id="publisher"
           label="Publisher"
+          disabled={!isSuccess || isLoading}
           options={publisherOptions}
-          value={publisher}
-          onValueChange={(value) => setPublisher(value)}
+          value={publisher!}
+          onValueChange={setPublisher}
         />
         <InputField
           type="number"
           id="year"
           label="Year"
           value={year}
-          onValueChange={(value) => setYear(parseInt(value))}
+          onValueChange={setYear}
+          disabled={isYearDisabled}
         />
         <InputField
           type="number"
           id="position"
           label="Position"
           value={position}
-          onValueChange={(value) => setPosition(parseInt(value))}
+          onValueChange={setPosition}
+          disabled={isPositionDisabled}
         />
         <Button type="submit" className="h-8">
           Load act
         </Button>
       </form>
+      <div className="col-span-2">
+        <Text>
+          Act form
+        </Text>
+      </div>
     </Card>
   );
 }
