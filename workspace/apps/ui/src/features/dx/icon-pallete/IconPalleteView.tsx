@@ -5,18 +5,12 @@ import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
 import { icons } from "lucide-react";
-import { startTransition, useCallback, useMemo, useRef, useState } from "react";
-import { useDebounceState } from "../../../core/hooks/useDebounceState.tsx";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useResponsiveValue } from "../../../core/hooks/useResponsiveValue.tsx";
 
 const preparedIcons = Object.entries(icons);
 export const IconPalleteView = () => {
   const [query, setQuery] = useState("");
-
-  const [value, setValue] = useDebounceState(
-    query,
-    useCallback((value) => startTransition(() => setQuery(value)), [setQuery]),
-  );
 
   const filteredIcons = useMemo(
     () => {
@@ -31,15 +25,15 @@ export const IconPalleteView = () => {
   const columns = useResponsiveValue({ xl: 12, lg: 8, md: 6, sm: 4, xs: 3 });
   const rowCount = Math.ceil(filteredIcons.length / columns);
 
-  const rowVirtualizer = useVirtualizer({
+  const virtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 80,
     overscan: 4,
   });
 
-  const size = rowVirtualizer.getTotalSize();
-  const rows = rowVirtualizer.getVirtualItems();
+  const size = virtualizer.getTotalSize();
+  const rows = virtualizer.getVirtualItems();
 
   const rowsStyle = useMemo(() => ({ height: `${size}px` }), [size]);
 
@@ -47,8 +41,8 @@ export const IconPalleteView = () => {
     <div className="flex flex-col gap-2">
       <InputField
         placeholder="Search..."
-        value={value}
-        onValueChange={setValue}
+        value={query}
+        onValueChange={setQuery}
       />
       <Card ref={parentRef} className="h-[480px] overflow-auto">
         <For
