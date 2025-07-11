@@ -34,7 +34,7 @@ export const Route = createRootRouteWithContext()({
       <Card className="w-full flex flex-col items-center" color="info">
         <Text className="flex items-center text-2xl gap-1">
           <Icon icon={CatIcon} size="lg" />
-          404
+          Oh no! 404
         </Text>
         <Text light>Page not found</Text>
         <div className="flex gap-2">
