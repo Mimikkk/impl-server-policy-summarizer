@@ -1,7 +1,6 @@
 import { Show } from "@components/utility/Show.tsx";
 import { useEventListener } from "@hooks/useEventListener.ts";
 import { createLocalStorageOptions, useLocalStorage } from "@hooks/useLocalStorage.ts";
-import { ComponentIcon, IceCreamConeIcon, PaletteIcon, RouteIcon } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { ColorPaletteView } from "../color-pallete/ColorPaletteView.tsx";
 import { ComponentsView } from "../components/ComponentsView.tsx";
@@ -9,7 +8,7 @@ import { useHeightResize } from "../dev-tools/useHeightResize.tsx";
 import { IconPalleteView } from "../icon-pallete/IconPalleteView.tsx";
 import { RouteView } from "../routes/RouteView.tsx";
 import { DevToolsToggleButton } from "./DevToolsButton.tsx";
-import { DevToolsItem, DevToolsNavigation } from "./DevToolsNavigation.tsx";
+import { type DevToolsItem, DevToolsNavigation } from "./DevToolsNavigation.tsx";
 import { DevToolsResizer } from "./DevToolsResizer.tsx";
 
 export const DevToolsHeightOptions = createLocalStorageOptions<number>({
@@ -44,33 +43,33 @@ const useIsOpen = () => {
 };
 
 const DevToolsTabIndexOptions = createLocalStorageOptions<string>({
-  key: "dev-tools-tab-index",
+  key: "dev-tools-selected-tab",
   serialize: (value) => value.toString(),
   deserialize: (value) => value === null ? "routes" : value,
 });
 
-const useTabIndex = () => useLocalStorage(DevToolsTabIndexOptions);
+const useSelectedTab = () => useLocalStorage(DevToolsTabIndexOptions);
 
 const useItems = () => {
   return useMemo((): DevToolsItem[] => [{
-    key: "routes",
+    value: "routes",
     label: "Routes",
-    icon: RouteIcon,
+    icon: "Route",
     component: <RouteView />,
   }, {
-    key: "colors",
+    value: "colors",
     label: "Colors",
-    icon: PaletteIcon,
+    icon: "Palette",
     component: <ColorPaletteView />,
   }, {
-    key: "components",
+    value: "components",
     label: "Components",
-    icon: ComponentIcon,
+    icon: "Component",
     component: <ComponentsView />,
   }, {
-    key: "icons",
+    value: "icons",
     label: "Icons",
-    icon: IceCreamConeIcon,
+    icon: "IceCreamCone",
     component: <IconPalleteView />,
   }], []);
 };
@@ -79,21 +78,21 @@ export const DevTools = memo(function DevTools() {
   const [ref, setRef] = useState<HTMLDivElement | null>(null);
   const [isOpen, toggle] = useIsOpen();
   const height = useHeight(ref);
-  const [selectedTab, setSelectedTab] = useTabIndex();
+  const [selectedTab, setSelectedTab] = useSelectedTab();
 
   const items = useItems();
 
   useEventListener("keydown", (event) => {
     if (!event.altKey || !event.ctrlKey || event.key !== "d") return;
-
     event.preventDefault();
+
     toggle();
   });
 
   return (
     <div className="fixed bottom-0 left-0 w-full">
       <Show when={isOpen}>
-        <DevToolsNavigation height={height} items={items} tab={selectedTab} onChange={setSelectedTab} />
+        <DevToolsNavigation height={height} items={items} value={selectedTab} onValueChange={setSelectedTab} />
         <DevToolsResizer ref={setRef} />
       </Show>
       <DevToolsToggleButton height={isOpen ? height : 0} onClick={toggle} />

@@ -2,14 +2,12 @@ import { Button } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
-import { Transition } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
 import cx from "clsx";
-import { Clipboard, Download } from "lucide-react";
 import prettier from "prettier";
 import html from "prettier/plugins/html";
-import { type MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { type MouseEvent, useCallback, useEffect, useMemo } from "react";
 import { codeToHtml } from "shiki";
 import { saveToFile } from "../../../../utilities/saveToFile.tsx";
 import { Text } from "../../../typography/Text.tsx";
@@ -39,18 +37,13 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
   const { theme } = useTheme();
   const asString = useMemo(() => content ?? "", [content]);
   const { data: code = "", status } = useQuery(createCodeQueryOptions(asString, theme, language));
-  const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
 
   let timeoutId: Nil<number> = null;
   const handleCopy = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
-    navigator.clipboard.writeText(asString).then(() => {
-      setShowCopiedTooltip(true);
-
-      timeoutId = setTimeout(() => setShowCopiedTooltip(false), 1000);
-    });
+    navigator.clipboard.writeText(asString);
   }, [asString]);
 
   useEffect(() => {
@@ -90,7 +83,7 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
           title="Save to file"
           aria-label="Save to file"
         >
-          <Icon className="w-4 h-4" icon={Download} />
+          <Icon name="Download" className="w-4 h-4" />
         </Button>
         <div className="relative">
           <Button
@@ -100,21 +93,8 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
             title="Copy to clipboard"
             aria-label="Copy to clipboard"
           >
-            <Icon className="w-4 h-4" icon={Clipboard} />
+            <Icon name="Clipboard" className="w-4 h-4" />
           </Button>
-          <Transition
-            show={showCopiedTooltip}
-            enter="transition-all duration-300 ease-out"
-            enterFrom="opacity-0 scale-75"
-            enterTo="opacity-100 scale-100"
-            leave="transition-all duration-200 ease-in"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-75"
-          >
-            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-secondary-2 border border-secondary-3 text-xs px-2 py-0.5 rounded whitespace-nowrap z-10">
-              Copied!
-            </div>
-          </Transition>
         </div>
       </div>
     </Card>

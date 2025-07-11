@@ -1,6 +1,5 @@
 import { Button } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
-import { Settings } from "lucide-react";
 import { memo } from "react";
 
 export interface DevToolsToggleButtonProps {
@@ -20,7 +19,7 @@ export const DevToolsToggleButton = memo<DevToolsToggleButtonProps>(
         style={{ bottom: height }}
         onClick={onClick}
       >
-        <Icon size="sm" icon={Settings} />
+        <Icon name="Settings" size="sm" />
         DevTools
       </Button>
     );

@@ -33,14 +33,14 @@ export const Route = createRootRouteWithContext()({
     <div className="container mx-auto py-4">
       <Card className="w-full flex flex-col items-center" color="info">
         <Text className="flex items-center text-2xl gap-1">
-          <Icon icon={CatIcon} size="lg" />
+          <Icon name="Cat" size="lg" />
           Oh no! 404
         </Text>
         <Text light>Page not found</Text>
         <div className="flex gap-2">
           <Link to="/eli">
             <span className="flex items-center gap-1 underline hover:text-primary-11 active:text-primary-12 text-primary-12 hover:no-underline">
-              <Icon icon={ArrowRightIcon} size="sm" />
+              <Icon name="ArrowRight" size="sm" />
               Move to eli
             </span>
           </Link>

@@ -1,7 +1,6 @@
 import { Button, type ButtonProps } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { type ThemeMode, ThemeService } from "@features/ux/theme/ThemeService.tsx";
-import { Moon, Settings, Sun } from "lucide-react";
 import { memo, useCallback } from "react";
 
 export interface ThemeButtonProps extends ButtonProps {
@@ -37,9 +36,9 @@ export const ThemeButton = memo(
           aria-label={title}
           {...props}
         >
-          {theme === "dark" && <Icon icon={Moon} />}
-          {theme === "light" && <Icon icon={Sun} />}
-          {mode === "system" && <Icon icon={Settings} className="absolute top-0 right-0 w-3 h-3 stroke-3" />}
+          {theme === "dark" && <Icon name="Moon" />}
+          {theme === "light" && <Icon name="Sun" />}
+          {mode === "system" && <Icon name="Settings" className="absolute top-0 right-0 !w-3 !h-3 stroke-3" />}
         </Button>
       </div>
     );
