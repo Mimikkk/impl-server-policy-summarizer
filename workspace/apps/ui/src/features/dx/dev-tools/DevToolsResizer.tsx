@@ -11,7 +11,7 @@ export const DevToolsResizer = memo(
         bg-primary-3 hover:bg-primary-4 active:bg-primary-5 
         border-t border-primary-7  hover:border-primary-8 active:border-primary-8
         cursor-ns-resize 
-        transition-colors
+        transition-colors duration-100
         "
       />
     );

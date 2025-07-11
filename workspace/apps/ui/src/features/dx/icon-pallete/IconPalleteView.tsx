@@ -1,9 +1,10 @@
+import { Icon } from "@components/badges/Icon.tsx";
 import { Card } from "@components/containers/card/Card.tsx";
 import { InputField } from "@components/forms/inputs/InputField.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
-import { icons } from "lucide-react";
+import { icons, Search } from "lucide-react";
 import { startTransition, useCallback, useMemo, useRef, useState } from "react";
 import { useDebounceState } from "../../../core/hooks/useDebounceState.tsx";
 import { useResponsiveValue } from "../../../core/hooks/useResponsiveValue.tsx";
@@ -50,7 +51,18 @@ export const IconPalleteView = () => {
         onValueChange={setValue}
       />
       <Card ref={parentRef} className="h-[480px] overflow-auto">
-        <For each={rows} as="div" className="relative w-full" style={rowsStyle}>
+        <For
+          each={rows}
+          as="div"
+          className="relative w-full"
+          style={rowsStyle}
+          fallback={
+            <Text className="flex items-center justify-center gap-1">
+              <Icon icon={Search} />
+              No icons
+            </Text>
+          }
+        >
           {useCallback(({ key, index, start }: VirtualItem, i: number) => (
             <For
               key={key}

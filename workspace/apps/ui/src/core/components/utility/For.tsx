@@ -35,7 +35,7 @@ export const For = memo(
       /* @ts-expect-error - override */
       <As {...props}>
         {header}
-        {each?.map(children) ?? fallback}
+        {each?.length ? each.map(children) : fallback}
         {footer}
       </As>
     );
