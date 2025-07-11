@@ -9,7 +9,7 @@ const variantClass = (variant: Variant, color: ColorName) => {
     return `
     flex items-center justify-center
     hover:bg-${color}-4 active:bg-${color}-5
-    transition-colors
+    transition-colors duration-100
     rounded-sm
     `;
   }
@@ -19,7 +19,7 @@ const variantClass = (variant: Variant, color: ColorName) => {
     border
     border-${color}-6 hover:border-${color}-8 active:border-${color}-7
     px-2
-    transition-colors
+    transition-colors duration-100
     rounded-sm
     `;
 };

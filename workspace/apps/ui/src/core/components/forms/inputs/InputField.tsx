@@ -1,3 +1,4 @@
+import { Input } from "@headlessui/react";
 import { type ChangeEvent, type InputHTMLAttributes, memo, useCallback } from "react";
 import { Field } from "../Field.tsx";
 
@@ -16,19 +17,7 @@ export const InputField = memo(
 
     return (
       <Field id={id} label={label} className={className}>
-        <input
-          id={id}
-          {...props}
-          onChange={handleChange}
-          className="
-            px-3 py-2 border 
-            bg-primary-2
-            border-primary-6 focus-within:border-primary-7 active:border-primary-7 hover:border-primary-8
-            outline-none
-            rounded-xs
-            disabled:opacity-50
-            "
-        />
+        <Input id={id} {...props} onChange={handleChange} className="px-3 py-2 outline-none" />
       </Field>
     );
   },

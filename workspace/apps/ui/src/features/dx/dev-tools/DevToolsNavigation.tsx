@@ -10,7 +10,7 @@ const Header = memo(
         {...props}
         className="
         px-4 py-2 
-        cursor-pointer transition-colors 
+        cursor-pointer transition-colors duration-100
         text-primary-11 data-active:text-primary-12 data-selected:text-primary-12 
         bg-primary-3 hover:bg-primary-4 data-active:bg-primary-5 data-selected:bg-primary-5
         "

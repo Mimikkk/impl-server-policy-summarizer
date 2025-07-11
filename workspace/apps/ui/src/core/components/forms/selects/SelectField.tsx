@@ -1,5 +1,6 @@
 import { For } from "@components/utility/For.tsx";
-import { type ChangeEvent, memo, ReactNode, type SelectHTMLAttributes, useCallback } from "react";
+import { Select } from "@headlessui/react";
+import { type ChangeEvent, memo, type ReactNode, type SelectHTMLAttributes, useCallback } from "react";
 import { Field } from "../Field.tsx";
 import type { Option } from "./Option.tsx";
 
@@ -20,18 +21,7 @@ export const SelectField = memo(
 
     return (
       <Field id={id} label={label} className={className}>
-        <select
-          id={id}
-          {...props}
-          onChange={handleChange}
-          className="
-            px-3 py-2 border 
-            bg-primary-2
-            border-primary-6 focus-within:border-primary-7 active:border-primary-7 hover:border-primary-8
-            rounded-xs
-            disabled:opacity-50
-            "
-        >
+        <Select id={id} {...props} onChange={handleChange} className="px-3 py-2 outline-none">
           <For each={options}>
             {(option) => (
               <option key={option.value} value={option.value}>
@@ -39,7 +29,7 @@ export const SelectField = memo(
               </option>
             )}
           </For>
-        </select>
+        </Select>
       </Field>
     );
   },
