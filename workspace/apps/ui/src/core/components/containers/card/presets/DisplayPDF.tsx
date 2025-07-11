@@ -1,6 +1,5 @@
 import { useBlobUrl } from "@hooks/useBlobUrl.ts";
 import type { Nil } from "@utilities/common.ts";
-import { AlertCircle } from "lucide-react";
 import { memo } from "react";
 import { Icon } from "../../../badges/Icon.tsx";
 import { StatusBarrier } from "../../../utility/StatusBarrier.tsx";
@@ -20,7 +19,7 @@ export const CardPDF = memo(function CardPDF({ className, url }: CardPDFProps) {
         status={status}
         error={
           <div className="flex items-center gap-2 !text-danger-5">
-            <Icon icon={AlertCircle} className="!text-danger-5" />
+            <Icon name="TriangleAlert" className="!text-danger-5" />
             Failed to load PDF.
           </div>
         }

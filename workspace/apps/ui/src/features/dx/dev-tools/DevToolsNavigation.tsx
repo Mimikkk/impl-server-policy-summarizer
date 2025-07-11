@@ -1,12 +1,12 @@
-import { Icon, type IconType } from "@components/badges/Icon.tsx";
+import { Icon, type IconName } from "@components/badges/Icon.tsx";
 import { For } from "@components/utility/For.tsx";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import { type ComponentProps, memo, type ReactNode, useCallback, useMemo } from "react";
+import { Tabs } from "radix-ui";
+import { type ComponentProps, memo, type ReactNode } from "react";
 
 const Header = memo(
-  function DevToolsTab({ children, icon, ...props }: ComponentProps<typeof Tab> & { icon: IconType }) {
+  function DevToolsTab({ children, icon, ...props }: ComponentProps<typeof Tabs.Trigger> & { icon: IconName }) {
     return (
-      <Tab
+      <Tabs.Trigger
         {...props}
         className="
         px-4 py-2 
@@ -16,10 +16,10 @@ const Header = memo(
         "
       >
         <div className="flex items-center gap-1">
-          <Icon icon={icon} size="sm" />
+          <Icon name={icon} size="sm" />
           {children as ReactNode}
         </div>
-      </Tab>
+      </Tabs.Trigger>
     );
   },
 );
@@ -27,55 +27,47 @@ const Header = memo(
 const Panel = memo(function DevToolsPanel({
   children,
   ...props
-}: ComponentProps<typeof TabPanel>) {
+}: ComponentProps<typeof Tabs.Content>) {
   return (
-    <TabPanel className="container mx-auto overflow-auto py-4" {...props}>
+    <Tabs.Content className="container mx-auto overflow-auto py-4" {...props}>
       {children}
-    </TabPanel>
+    </Tabs.Content>
   );
 });
 
 export interface DevToolsItem {
-  key: string;
+  value: string;
   label: string;
-  icon: IconType;
+  icon: IconName;
   component: ReactNode;
 }
 
 export interface DevToolsNavigationProps {
   height: number;
   items: DevToolsItem[];
-  tab: string;
-  onChange: (key: string) => void;
+  value: string;
+  onValueChange: (key: string) => void;
 }
 
 export const DevToolsNavigation = memo(
-  function DevToolsNavigation({ height, items, tab, onChange }: DevToolsNavigationProps) {
-    const handleChange = useCallback((index: number) => {
-      onChange(items[index].key);
-    }, [items, onChange]);
-
-    const index = useMemo(() => items.findIndex((item) => item.key === tab), [items, tab]);
-
+  function DevToolsNavigation({ height, items, value, onValueChange }: DevToolsNavigationProps) {
     return (
-      <TabGroup
+      <Tabs.Root
         className="border-t border-primary-6 bg-primary-2"
         style={{ height }}
-        tabIndex={index}
-        defaultIndex={index}
-        onChange={handleChange}
+        value={value}
+        defaultValue={value}
+        onValueChange={onValueChange}
       >
-        <TabList className="flex border-y bg-primary-1 divide-x-1 divide-primary-6 border-primary-6">
+        <Tabs.List className="flex border-y bg-primary-1 divide-x-1 divide-primary-6 border-primary-6">
           <For each={items}>
-            {(item) => <Header key={item.key} icon={item.icon}>{item.label}</Header>}
+            {({ value, label, icon }) => <Header key={value} value={value} icon={icon}>{label}</Header>}
           </For>
-        </TabList>
-        <TabPanels className="overflow-auto" style={{ maxHeight: height - 40 }}>
-          <For each={items}>
-            {(item) => <Panel key={item.key}>{item.component}</Panel>}
-          </For>
-        </TabPanels>
-      </TabGroup>
+        </Tabs.List>
+        <For each={items} as="div" style={{ height: height - 40 }}>
+          {({ value, component }) => <Panel key={value} value={value}>{component}</Panel>}
+        </For>
+      </Tabs.Root>
     );
   },
 );

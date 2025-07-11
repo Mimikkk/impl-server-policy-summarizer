@@ -4,7 +4,7 @@ import { InputField } from "@components/forms/inputs/InputField.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
-import { icons, Search } from "lucide-react";
+import { icons } from "lucide-react";
 import { startTransition, useCallback, useMemo, useRef, useState } from "react";
 import { useDebounceState } from "../../../core/hooks/useDebounceState.tsx";
 import { useResponsiveValue } from "../../../core/hooks/useResponsiveValue.tsx";
@@ -46,7 +46,7 @@ export const IconPalleteView = () => {
   return (
     <div className="flex flex-col gap-2">
       <InputField
-        placeholder="Search"
+        placeholder="Search..."
         value={value}
         onValueChange={setValue}
       />
@@ -58,7 +58,7 @@ export const IconPalleteView = () => {
           style={rowsStyle}
           fallback={
             <Text className="flex items-center justify-center gap-1">
-              <Icon icon={Search} />
+              <Icon name="Search" />
               <Text>No icons</Text>
             </Text>
           }

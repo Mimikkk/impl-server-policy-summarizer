@@ -80,12 +80,11 @@ function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters)
   const isPositionDisabled = useMemo(() => !publisher, [publisher]);
 
   return (
-    <Card label="Act form" className="grid grid-cols-3 gap-2">
+    <Card label="Act form" className="grid grid-cols-3 gap-2 container">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <SelectField
           id="publisher"
           label="Publisher"
-          disabled={!isSuccess || isLoading}
           options={publisherOptions}
           value={publisher!}
           onValueChange={setPublisher}

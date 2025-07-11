@@ -1,23 +1,31 @@
-import { type ColorName } from "@features/ux/theme/ColorPalette.ts";
-import { Button as ButtonHeadless } from "@headlessui/react";
+import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import { uiElementClass } from "@utilities/uiElementClass.tsx";
 import cx from "clsx";
-import { ButtonHTMLAttributes, forwardRef, memo } from "react";
+import { type ButtonHTMLAttributes, forwardRef, memo } from "react";
 
 type Variant = "text" | "solid";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   color?: ColorName;
   variant?: Variant;
   compact?: boolean;
+  as?: "button" | "span";
 }
 
 export const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
-    { children, variant = "solid", color = "secondary", className, compact = variant === "text", ...props },
+    {
+      children,
+      variant = "solid",
+      color = "secondary",
+      className,
+      compact = variant === "text",
+      as: As = "button",
+      ...props
+    },
     ref,
   ) {
     return (
-      <ButtonHeadless
+      <As
         type="button"
         ref={ref}
         {...props}
@@ -29,7 +37,7 @@ export const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       >
         {children}
-      </ButtonHeadless>
+      </As>
     );
   },
 ));
