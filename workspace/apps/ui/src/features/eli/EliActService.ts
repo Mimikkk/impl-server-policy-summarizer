@@ -24,8 +24,7 @@ export namespace EliActService {
     publisher: string;
   }
 
-  export const publisher = ({ publisher }: PublisherParameters) =>
-    api.get<PublisherDetails>(`publishers/${publisher}`).json();
+  export const publisher = ({ publisher }: PublisherParameters) => api.get<PublisherDetails>(`${publisher}`).json();
 
   export interface YearItem {
     /** Identifikator ELI  */
@@ -73,8 +72,18 @@ export namespace EliActService {
     year: number;
   }
 
-  export const year = ({ publisher, year }: YearParameters) =>
-    api.get<PublisherDetails>(`publishers/${publisher}/${year}`).json();
+  export interface YearResponse {
+    /** Liczba aktów w roku */
+    totalCount: number;
+    /** Indeks pierwszego aktu */
+    offset: number;
+    /** Liczba aktów w odpowiedzi */
+    count: number;
+    /** lista aktów */
+    items: YearItem[];
+  }
+
+  export const year = ({ publisher, year }: YearParameters) => api.get<YearResponse>(`${publisher}/${year}`).json();
 
   export interface ActParameters {
     publisher: string;

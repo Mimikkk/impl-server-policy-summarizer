@@ -1,23 +1,23 @@
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import cx from "clsx";
 import { Popover } from "radix-ui";
-import { type ComponentProps, memo, type ReactNode, useMemo, useState } from "react";
+import { type ComponentProps, forwardRef, memo, type ReactNode, useCallback, useMemo, useState } from "react";
 import { Field } from "../Field.tsx";
 import type { Option } from "./Option.tsx";
 
 import { useDebounceState } from "@hooks/useDebounceState.tsx";
 import { uiElementClass } from "@utilities/uiElementClass.tsx";
 import { Command as CMDK } from "cmdk";
-import { useLayoutEffect } from "react";
+import { useResizer } from "../../../hooks/useResizer.tsx";
 import { Button } from "../../actions/Button.tsx";
 import { Icon } from "../../badges/Icon.tsx";
+import { List } from "../../containers/List.tsx";
 import { Text } from "../../typography/Text.tsx";
-import { For } from "../../utility/For.tsx";
 
 export interface SelectFieldProps<T extends string> {
   color?: ColorName;
   label?: string;
-  value: T;
+  value: T | null;
   disabled?: boolean;
   onValueChange?: (value: T | null) => void;
   options: Option<T>[];
@@ -31,36 +31,28 @@ export const SelectField = memo(
   ) {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState<T | null>(value ?? null);
-    const [triggerRef, setTriggerRef] = useState<HTMLButtonElement | null>(null);
-    const [triggerSize, setTriggerSize] = useState(0);
-
-    useLayoutEffect(() => {
-      if (!triggerRef) return;
-
-      const updateSize = () => {
-        setTriggerSize(triggerRef.getBoundingClientRect().width + 1);
-      };
-
-      updateSize();
-      const observer = new ResizeObserver(updateSize);
-      observer.observe(triggerRef);
-
-      return () => observer.disconnect();
-    }, [triggerRef]);
-
-    const selectedLabel = useMemo(
-      () => options.find((option) => option.value === selected)?.label ?? "Select option...",
-      [options, selected],
-    );
+    const { size: triggerSize, setRef: setTriggerRef } = useResizer();
 
     const [query, setQuery] = useState("");
-    const [searchValue, setSearchValue] = useDebounceState(query, setQuery);
-
     const filteredOptions = useMemo(() => {
-      if (!searchValue) return options;
+      if (!query) return options;
 
       return options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase()));
     }, [options, query]);
+
+    const selectedLabel = useMemo(
+      () => options.find((o) => o.value === selected)?.label ?? "Select option...",
+      [options, selected],
+    );
+
+    const handleSelect = useCallback((value: string) => {
+      const next = value === selected ? null : (value as T);
+
+      setSelected(next);
+      onValueChange?.(next);
+
+      setOpen(false);
+    }, [selected, onValueChange]);
 
     return (
       <Field color={color} id={id} label={label} className={className} disabled={disabled}>
@@ -91,38 +83,35 @@ export const SelectField = memo(
           >
             <SelectDropdown className="flex flex-col gap-2">
               <SelectSearch
-                value={searchValue}
-                onValueChange={setSearchValue}
+                value={query}
+                onValueChange={setQuery}
                 color={color}
                 placeholder="Search options..."
               />
               <SelectSeparator color={color} />
               <SelectList>
                 <SelectEmpty>No options found.</SelectEmpty>
-                <For each={filteredOptions}>
-                  {({ value, label }) => (
+                <List items={filteredOptions} estimateSize={28} maxHeight={400}>
+                  {({ item, key, size, start }) => (
                     <SelectOption
-                      key={value}
-                      value={value}
-                      onSelect={(value) => {
-                        const next = value === selected ? null : (value as T);
-
-                        setSelected(next);
-                        onValueChange?.(next);
-
-                        setOpen(false);
-                      }}
-                      className={selected === value ? `bg-${color}-5` : undefined}
+                      key={key}
+                      value={item.value}
+                      onSelect={handleSelect}
+                      className={cx(
+                        "absolute top-0 left-0 w-full",
+                        selected === item.value ? `bg-${color}-5` : undefined,
+                      )}
+                      style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
                     >
                       <Icon
                         name="Check"
                         size="sm"
-                        className={selected !== value ? "opacity-0" : undefined}
+                        className={selected !== item.value ? "opacity-0" : undefined}
                       />
-                      {label}
+                      {item.label}
                     </SelectOption>
                   )}
-                </For>
+                </List>
               </SelectList>
             </SelectDropdown>
           </Popover.Content>
@@ -144,6 +133,8 @@ function SelectDropdown({ className, ...props }: ComponentProps<typeof CMDK>) {
 }
 
 function SelectSearch({ color, className, ...props }: ComponentProps<typeof CMDK.Input> & { color: ColorName }) {
+  const [value, setValue] = useDebounceState(props.value ?? "", props.onValueChange!);
+
   return (
     <div data-slot="command-input-wrapper" className="flex items-center gap-2">
       <CMDK.Input
@@ -154,14 +145,16 @@ function SelectSearch({ color, className, ...props }: ComponentProps<typeof CMDK
           "w-full outline-none px-2 py-1",
         )}
         {...props}
+        value={value}
+        onValueChange={setValue}
       />
     </div>
   );
 }
 
-function SelectList(props: ComponentProps<typeof CMDK.List>) {
-  return <CMDK.List data-slot="command-list" {...props} />;
-}
+const SelectList = forwardRef<HTMLDivElement, ComponentProps<typeof CMDK.List>>(function SelectList(props, ref) {
+  return <CMDK.List ref={ref} data-slot="command-list" {...props} />;
+});
 
 function SelectEmpty(props: ComponentProps<typeof CMDK.Empty>) {
   return <CMDK.Empty data-slot="command-empty" {...props} />;
