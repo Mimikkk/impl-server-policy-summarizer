@@ -3,13 +3,12 @@ import { Card } from "@components/containers/card/Card.tsx";
 import { CardHTML } from "@components/containers/card/presets/CardHTML.tsx";
 import { CardJSON } from "@components/containers/card/presets/CardJSON.tsx";
 import { CardPDF } from "@components/containers/card/presets/DisplayPDF.tsx";
-import { InputField } from "@components/forms/inputs/InputField.tsx";
-import type { Option } from "@components/forms/selects/Option.tsx";
 import { SelectField } from "@components/forms/selects/SelectField.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { EliActService } from "@features/eli/EliActService.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Nil } from "@utilities/common.ts";
 import { type FormEvent, useCallback, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/eli/")({
@@ -55,29 +54,91 @@ const createEliPublishersOptions = () =>
     queryFn: EliActService.publishers,
   });
 
+const useEliPublishers = () => useQuery(createEliPublishersOptions());
+
+const createEliPublisherOptions = (publisherId: Nil<string>) =>
+  queryOptions({
+    queryKey: ["eli", publisherId, "years"],
+    queryFn: () => EliActService.publisher({ publisher: publisherId! }),
+    enabled: !!publisherId,
+  });
+
+const useEliPublisher = (publisherId: Nil<string>) => useQuery(createEliPublisherOptions(publisherId));
+
+const createEliYearOptions = (publisherId: Nil<string>, year: Nil<number>) =>
+  queryOptions({
+    queryKey: ["eli", "publisher", publisherId, "year", year, "acts"],
+    queryFn: () => EliActService.year({ publisher: publisherId!, year: year! }),
+    enabled: !!publisherId && !!year,
+  });
+
+const useEliYear = (publisherId: Nil<string>, year: Nil<number>) => useQuery(createEliYearOptions(publisherId, year));
+
+const useEliPublishersOptions = () => {
+  const { data: publishers, isSuccess, isLoading } = useEliPublishers();
+
+  const options = useMemo(() =>
+    publishers?.map((publisher) => ({
+      value: publisher.code,
+      label: `${publisher.code}: ${publisher.name} (acts: ${publisher.actsCount})`,
+    })) ?? [], [publishers]);
+
+  return { publishers, options, isSuccess, isLoading };
+};
+
+const useEliPublisherYearOptions = (publisherId: Nil<string>) => {
+  const { data: publisher, isSuccess, isLoading } = useEliPublisher(publisherId);
+
+  const options = useMemo(() =>
+    publisher?.years.sort((a, b) => b - a).map((year) => ({
+      value: year.toString(),
+      label: year.toString(),
+    })) ?? [], [publisher]);
+
+  return { publisher, options, isSuccess, isLoading };
+};
+
+const useEliYearActsOptions = (publisherId: Nil<string>, yearId: Nil<number>) => {
+  const { data: year, isSuccess, isLoading } = useEliYear(publisherId, yearId);
+
+  const options = useMemo(() =>
+    year?.items.map((item) => ({
+      value: item.pos.toString(),
+      label: item.pos.toString(),
+    })) ?? [], [year]);
+
+  return { year, options, isSuccess, isLoading };
+};
+
 function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters) => void }) {
-  const [publisher, setPublisher] = useState<string | null>(null);
-  const [year, setYear] = useState<string>("");
-  const [position, setPosition] = useState<string>("");
+  const [publisherStr, setPublisher] = useState<string | null>(null);
+  const [yearStr, setYear] = useState<string | null>(null);
+  const [positionStr, setPosition] = useState<string | null>(null);
 
   const handleSubmit = useCallback((event: FormEvent) => {
     event.preventDefault();
 
-    if (!publisher || !year || !position) return;
+    if (!publisherStr || !yearStr || !positionStr) return;
 
-    onSubmit({ publisher, year: +year, position: +position });
-  }, [publisher, year, position, onSubmit]);
+    onSubmit({ publisher: publisherStr, year: +yearStr, position: +positionStr });
+  }, [publisherStr, yearStr, positionStr, onSubmit]);
 
-  const { data: publishers, isSuccess, isLoading } = useQuery(createEliPublishersOptions());
+  const { publishers, options: publisherOptions, isSuccess: isPublishersSuccess, isLoading: isPublishersLoading } =
+    useEliPublishersOptions();
 
-  const publisherOptions: Option<string>[] = useMemo(() =>
-    publishers?.map((publisher) => ({
-      value: publisher.code,
-      label: `(${publisher.shortName}):${publisher.actsCount} ${publisher.name}`,
-    })) ?? [], [publishers]);
+  const { publisher, options: yearOptions, isSuccess: isYearSuccess, isLoading: isYearLoading } =
+    useEliPublisherYearOptions(
+      publisherStr,
+    );
 
-  const isYearDisabled = useMemo(() => !publisher, [publisher]);
-  const isPositionDisabled = useMemo(() => !publisher, [publisher]);
+  const { year, options: actOptions, isSuccess: isActSuccess, isLoading: isActLoading } = useEliYearActsOptions(
+    publisherStr,
+    yearStr ? +yearStr : null,
+  );
+
+  const isYearDisabled = useMemo(() => !isYearSuccess || isYearLoading, [isYearSuccess, isYearLoading]);
+
+  const isPositionDisabled = useMemo(() => !isActSuccess || isActLoading, [isActSuccess, isActLoading]);
 
   return (
     <Card label="Act form" className="grid grid-cols-3 gap-2 container">
@@ -85,23 +146,24 @@ function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters)
         <SelectField
           id="publisher"
           label="Publisher"
-          options={publisherOptions}
-          value={publisher!}
+          options={opts}
+          value={publisherStr}
           onValueChange={setPublisher}
+          disabled={!isPublishersSuccess || isPublishersLoading}
         />
-        <InputField
-          type="number"
+        <SelectField
           id="year"
           label="Year"
-          value={year}
+          options={yearOptions}
+          value={yearStr}
           onValueChange={setYear}
           disabled={isYearDisabled}
         />
-        <InputField
-          type="number"
+        <SelectField
           id="position"
           label="Position"
-          value={position}
+          options={actOptions}
+          value={positionStr}
           onValueChange={setPosition}
           disabled={isPositionDisabled}
         />
@@ -109,14 +171,22 @@ function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters)
           Load act
         </Button>
       </form>
-      <div className="col-span-2">
+      <div className="flex flex-col gap-1 col-span-2">
         <Text>
-          Act form
+          Available publishers: {publishers?.map((publisher) => publisher.code).join(", ")}
+        </Text>
+        <Text>
+          Available years: {publisher?.years.map((year) => year).join(", ")}
         </Text>
       </div>
     </Card>
   );
 }
+
+const opts = new Array(1000).fill(0).map((_, i) => ({
+  value: i.toString(),
+  label: i.toString(),
+}));
 
 function RouteComponent() {
   const [actParams, setActParams] = useState<EliActService.ActParameters>({
