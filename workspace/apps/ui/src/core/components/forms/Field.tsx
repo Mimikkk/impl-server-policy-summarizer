@@ -19,7 +19,7 @@ export const Field = memo(
       <fieldset
         {...props}
         className={cx(
-          "relative rounded-xs",
+          "min-w-0 relative rounded-xs",
           uiElementClass({ color, variant, disabled, usesDisabled: true }),
           className,
         )}
