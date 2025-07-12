@@ -102,9 +102,9 @@ const useEliYearActsOptions = (publisherId: Nil<string>, yearId: Nil<number>) =>
   const { data: year, isSuccess, isLoading } = useEliYear(publisherId, yearId);
 
   const options = useMemo(() =>
-    year?.items.map((item) => ({
+    year?.items.sort((a, b) => b.pos - a.pos).map((item) => ({
       value: item.pos.toString(),
-      label: item.pos.toString(),
+      label: `${item.pos}: ${item.title}`,
     })) ?? [], [year]);
 
   return { year, options, isSuccess, isLoading };
@@ -146,7 +146,7 @@ function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters)
         <SelectField
           id="publisher"
           label="Publisher"
-          options={opts}
+          options={publisherOptions}
           value={publisherStr}
           onValueChange={setPublisher}
           disabled={!isPublishersSuccess || isPublishersLoading}
@@ -183,11 +183,6 @@ function ActForm({ onSubmit }: { onSubmit: (params: EliActService.ActParameters)
   );
 }
 
-const opts = new Array(1000).fill(0).map((_, i) => ({
-  value: i.toString(),
-  label: i.toString(),
-}));
-
 function RouteComponent() {
   const [actParams, setActParams] = useState<EliActService.ActParameters>({
     publisher: "DU",
@@ -203,9 +198,9 @@ function RouteComponent() {
     <div className="flex flex-col gap-6 items-center py-4 min-h-screen">
       <ActForm onSubmit={setActParams} />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 container items-center flex-1 w-full">
+        <CardPDF className="h-[600px] col-span-1 md:col-span-2 lg:col-span-2 container" url={actPdfUrl} />
         <CardJSON className="h-[400px] container" content={actDetails} />
         <CardHTML className="h-[400px] container" content={actHtml} />
-        <CardPDF className="h-[600px] col-span-1 md:col-span-2 lg:col-span-2 container" url={actPdfUrl} />
       </div>
     </div>
   );

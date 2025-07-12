@@ -1,6 +1,6 @@
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import cx from "clsx";
-import { Popover } from "radix-ui";
+import { Popover, Tooltip } from "radix-ui";
 import { type ComponentProps, forwardRef, memo, type ReactNode, useCallback, useMemo, useState } from "react";
 import { Field } from "../Field.tsx";
 import type { Option } from "./Option.tsx";
@@ -11,8 +11,10 @@ import { Command as CMDK } from "cmdk";
 import { useResizer } from "../../../hooks/useResizer.tsx";
 import { Button } from "../../actions/Button.tsx";
 import { Icon } from "../../badges/Icon.tsx";
+import { Card } from "../../containers/card/Card.tsx";
 import { List } from "../../containers/List.tsx";
 import { Text } from "../../typography/Text.tsx";
+import { Show } from "../../utility/Show.tsx";
 
 export interface SelectFieldProps<T extends string> {
   color?: ColorName;
@@ -64,10 +66,12 @@ export const SelectField = memo(
               role="combobox"
               color={color}
               aria-expanded={open}
-              className="w-full !justify-between gap-2 px-3 py-2 h-9"
+              className="!justify-between gap-2 px-3 py-2 h-9 w-full"
               disabled={disabled}
             >
-              <Text>{selectedLabel}</Text>
+              <Text ellipsis>
+                {selectedLabel}
+              </Text>
               <Button color="secondary" variant="text" as="span" disabled={disabled}>
                 <Icon name="ChevronDown" />
               </Button>
@@ -92,24 +96,41 @@ export const SelectField = memo(
               <SelectList>
                 <SelectEmpty>No options found.</SelectEmpty>
                 <List items={filteredOptions} estimateSize={28} maxHeight={400}>
-                  {({ item, key, size, start }) => (
-                    <SelectOption
-                      key={key}
-                      value={item.value}
-                      onSelect={handleSelect}
-                      className={cx(
-                        "absolute top-0 left-0 w-full",
-                        selected === item.value ? `bg-${color}-5` : undefined,
-                      )}
-                      style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
-                    >
-                      <Icon
-                        name="Check"
-                        size="sm"
-                        className={selected !== item.value ? "opacity-0" : undefined}
-                      />
-                      {item.label}
-                    </SelectOption>
+                  {({ item: { label, value }, key, size, start }) => (
+                    <Tooltip.TooltipProvider key={key} delayDuration={0}>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <div>
+                            <SelectOption
+                              value={value}
+                              onSelect={handleSelect}
+                              className={cx(
+                                "absolute top-0 left-0 w-full",
+                                selected === value ? `bg-${color}-5` : undefined,
+                              )}
+                              style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
+                            >
+                              <Show when={selected === value}>
+                                <Icon name="Check" size="sm" className="flex-shrink-0" />
+                              </Show>
+                              <Text ellipsis>
+                                {label}
+                              </Text>
+                            </SelectOption>
+                          </div>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          side="right"
+                          align="center"
+                          className="max-w-72"
+                          style={{ transform: `translate(0px, ${start + size / 2}px)` }}
+                        >
+                          <Card>
+                            <Text>{label}</Text>
+                          </Card>
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.TooltipProvider>
                   )}
                 </List>
               </SelectList>
@@ -181,7 +202,7 @@ function SelectOption({ className, ...props }: ComponentProps<typeof CMDK.Item>)
       data-slot="command-item"
       className={cx(
         uiElementClass({ color: "secondary", variant: "text" }),
-        "flex items-center gap-2 cursor-pointer py-1 px-1",
+        "flex items-center gap-2 cursor-pointer py-1 px-1 text-ellipsis overflow-hidden whitespace-nowrap",
         className,
       )}
       {...props}
