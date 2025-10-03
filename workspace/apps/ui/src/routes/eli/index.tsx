@@ -195,9 +195,9 @@ function RouteComponent() {
   const { data: actPdfUrl } = useQuery(createEliActPDFOptions(actParams));
 
   return (
-    <div className="flex flex-col gap-6 items-center py-4 min-h-screen">
+    <div className="flex flex-col gap-2 items-center">
       <ActForm onSubmit={setActParams} />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 container items-center flex-1 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 container items-center w-full">
         <CardPDF className="h-[600px] col-span-1 md:col-span-2 lg:col-span-2 container" url={actPdfUrl} />
         <CardJSON className="h-[400px] container" content={actDetails} />
         <CardHTML className="h-[400px] container" content={actHtml} />
