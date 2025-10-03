@@ -104,7 +104,7 @@ const useEliYearActsOptions = (publisherId: Nil<string>, yearId: Nil<number>) =>
   const options = useMemo(() =>
     year?.items.sort((a, b) => b.pos - a.pos).map((item) => ({
       value: item.pos.toString(),
-      label: `${item.pos}: ${item.title}`,
+      label: `${item.promulgation} - ${item.pos}: ${item.title}`,
     })) ?? [], [year]);
 
   return { year, options, isSuccess, isLoading };
