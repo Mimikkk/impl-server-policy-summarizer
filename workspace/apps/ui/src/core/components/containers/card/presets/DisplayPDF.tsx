@@ -14,7 +14,7 @@ export const CardPDF = memo(function CardPDF({ className, url }: CardPDFProps) {
   const { data: pdfUrl, status } = useBlobUrl(url);
 
   return (
-    <Card compact className={className}>
+    <Card compact className={className} maxizable slots={{ iconsPosition: "bottom-right" }}>
       <StatusBarrier
         status={status}
         error={
