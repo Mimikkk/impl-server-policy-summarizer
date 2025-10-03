@@ -1,7 +1,8 @@
-import { Button, type ButtonProps } from "@components/actions/Button.tsx";
+import { type ButtonProps } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { type ThemeMode, ThemeService } from "@features/ux/theme/ThemeService.tsx";
 import { memo, useCallback } from "react";
+import { IconButton } from "./IconButton.tsx";
 
 export interface ThemeButtonProps extends ButtonProps {
   className?: string;
@@ -28,18 +29,16 @@ export const ThemeButton = memo(
 
     return (
       <div className={className}>
-        <Button
-          variant="text"
-          className="relative w-8 h-8"
+        <IconButton
+          className="relative"
           onClick={handleClick}
           title={title}
           aria-label={title}
           {...props}
+          name={theme === "dark" ? "Moon" : "Sun"}
         >
-          {theme === "dark" && <Icon name="Moon" />}
-          {theme === "light" && <Icon name="Sun" />}
-          {mode === "system" && <Icon name="Settings" className="absolute top-0 right-0 !w-3 !h-3 stroke-3" />}
-        </Button>
+          {mode === "system" && <Icon name="Settings" size="xs" className="absolute top-0 right-0 stroke-3" />}
+        </IconButton>
       </div>
     );
   },

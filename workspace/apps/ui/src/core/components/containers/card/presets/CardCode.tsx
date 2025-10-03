@@ -1,5 +1,3 @@
-import { Button } from "@components/actions/Button.tsx";
-import { Icon } from "@components/badges/Icon.tsx";
 import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +8,7 @@ import html from "prettier/plugins/html";
 import { type MouseEvent, useCallback, useEffect, useMemo } from "react";
 import { codeToHtml } from "shiki";
 import { saveToFile } from "../../../../utilities/saveToFile.tsx";
+import { IconButton } from "../../../actions/IconButton.tsx";
 import { Text } from "../../../typography/Text.tsx";
 import { Card } from "../Card.tsx";
 
@@ -63,7 +62,30 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
   }, [asString, language]);
 
   return (
-    <Card compact className={cx("relative", className)}>
+    <Card
+      compact
+      className={cx("relative", className)}
+      slots={useMemo(() => ({
+        icons: [
+          <IconButton
+            key="save"
+            className="opacity-50 hover:opacity-100"
+            onClick={handleSave}
+            title="Save to file"
+            aria-label="Save to file"
+            name="Download"
+          />,
+          <IconButton
+            key="copy"
+            className="opacity-50 hover:opacity-100"
+            onClick={handleCopy}
+            title="Copy to clipboard"
+            aria-label="Copy to clipboard"
+            name="Clipboard"
+          />,
+        ],
+      }), [handleSave, handleCopy])}
+    >
       <StatusBarrier
         status={status}
         error={<Text color="error">Failed to display code</Text>}
@@ -75,28 +97,6 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
           />
         </div>
       </StatusBarrier>
-      <div className="absolute top-3 right-3 flex gap-2 items-center">
-        <Button
-          variant="text"
-          className="h-6 w-6 opacity-50 hover:opacity-100"
-          onClick={handleSave}
-          title="Save to file"
-          aria-label="Save to file"
-        >
-          <Icon name="Download" className="w-4 h-4" />
-        </Button>
-        <div className="relative">
-          <Button
-            variant="text"
-            className="h-6 w-6 opacity-50 hover:opacity-100"
-            onClick={handleCopy}
-            title="Copy to clipboard"
-            aria-label="Copy to clipboard"
-          >
-            <Icon name="Clipboard" className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
     </Card>
   );
 };

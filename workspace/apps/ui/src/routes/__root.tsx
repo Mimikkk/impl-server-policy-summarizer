@@ -11,7 +11,7 @@ import { useEffect, useMemo } from "react";
 const Breadcrumbs = ({ parts }: { parts: string[] }) => {
   return (
     <div className="flex items-center gap-1">
-      <Text light>Lokacja:</Text>
+      <Text light>Location:</Text>
       <span className="flex items-center gap-1">
         <Button variant="text" className="flex px-1 gap-1">
           <Icon name="HdmiPort" /> Home
