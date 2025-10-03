@@ -1,12 +1,29 @@
+import { Button } from "@components/actions/Button.tsx";
 import { ThemeButton } from "@components/actions/ThemeButton.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { Card } from "@components/containers/card/Card.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { DevTools } from "@features/dx/dev-tools/DevTools.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
-import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
-import { ArrowRightIcon, CatIcon } from "lucide-react";
-import { useEffect } from "react";
+import { createRootRouteWithContext, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { useEffect, useMemo } from "react";
+
+const Breadcrumbs = ({ parts }: { parts: string[] }) => {
+  return (
+    <div className="flex items-center gap-1">
+      <Text light>Lokacja:</Text>
+      <span className="flex items-center gap-1">
+        <Button variant="text" className="flex px-1 gap-1">
+          <Icon name="HdmiPort" /> Home
+        </Button>
+        {parts.length && <span>/</span>}
+        {parts.map((part, index, parts) => (
+          <Button variant="text" className="px-1" key={part}>{part}{index < parts.length - 1 && <span>/</span>}</Button>
+        ))}
+      </span>
+    </div>
+  );
+};
 
 export const Route = createRootRouteWithContext()({
   component: () => {
@@ -16,8 +33,14 @@ export const Route = createRootRouteWithContext()({
       document.body.setAttribute("data-theme", theme);
     }, [theme]);
 
+    const state = useRouterState();
+    const parts = useMemo(() => state.location.pathname.split("/").filter(Boolean), [state.location.pathname]);
+
     return (
       <div className="min-h-screen relative">
+        <div className="container mx-auto py-1">
+          <Breadcrumbs parts={parts} />
+        </div>
         <Outlet />
         <DevTools />
         <ThemeButton
