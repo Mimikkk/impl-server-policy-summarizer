@@ -65,11 +65,11 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
     <Card
       compact
       className={cx("relative", className)}
+      maxizable
       slots={useMemo(() => ({
         icons: [
           <IconButton
             key="save"
-            className="opacity-50 hover:opacity-100"
             onClick={handleSave}
             title="Save to file"
             aria-label="Save to file"
@@ -77,7 +77,6 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
           />,
           <IconButton
             key="copy"
-            className="opacity-50 hover:opacity-100"
             onClick={handleCopy}
             title="Copy to clipboard"
             aria-label="Copy to clipboard"
