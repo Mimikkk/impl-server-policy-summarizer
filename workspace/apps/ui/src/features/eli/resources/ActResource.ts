@@ -1,2 +1,78 @@
 export interface ActResource {
+  /* Identifikator ELI */
+  ELI: string;
+  /* Adres */
+  address: string;
+  /* Data ogłoszenia */
+  announcementDate: DateString;
+  /* Data ostatniej zmiany */
+  changeDate: DateTimeString;
+  /* Adres do wyświetlenia */
+  displayAddress: string;
+  /* Pozycja aktu w roku */
+  pos: number;
+  /* Data wydania */
+  promulgation: DateString;
+  /** @see PublisherResource */
+  publisher: string;
+  status: string;
+  textHTML: boolean;
+  textPDF: boolean;
+  title: string;
+  type: string;
+  volume: number;
+  year: number;
+  authorizedBody: unknown[];
+  directives: Directive[];
+  entryIntoForce: DateString;
+  expirationDate: DateString;
+  inForce: InForce;
+  keywords: string[];
+  keywordsNames: unknown[];
+  obligated: unknown[];
+  previousTitle: unknown[];
+  prints: unknown[];
+  references: Record<string, Reference[]>;
+  releasedBy: string[];
+  texts: ActText[];
+  validFrom: DateString;
+}
+export type DateString = "YYYY-MM-DD";
+export type DateTimeString = "YYYY-MM-DDTHH:MM:SS";
+
+/**
+ * Typ tekstu
+ */
+export type ActTextType = "T" | "O" | "U" | "H" | "I";
+
+export interface ActText {
+  /* Nazwa pliku */
+  fileName: string;
+  /* Typ tekstu */
+  type: ActTextType;
+}
+
+/** Status obowiązywania */
+export enum InForce {
+  Yes = "IN_FORCE",
+  No = "NOT_IN_FORCE",
+  Unknown = "UNKNOWN",
+}
+
+interface Directive {
+  /* Adres */
+  address: string;
+  /* Data */
+  date: DateString;
+  /* Tytuł */
+  title: string;
+}
+
+interface Reference {
+  /* Identifikator ELI */
+  id: string;
+  /** Data */
+  date?: DateString;
+  /** Który art.  */
+  art?: string;
 }
