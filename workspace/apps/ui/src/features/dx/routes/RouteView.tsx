@@ -27,7 +27,7 @@ const Tree = memo<RouteTreeItemProps>(({ route, path, depth = 1, onPathChange })
   }, [onPathChange, route.fullPath]);
 
   return (
-    <Card className="flex flex-col gap-1" active={isActive}>
+    <Card className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-2">
           <Text color="info">

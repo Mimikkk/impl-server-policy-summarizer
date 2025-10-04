@@ -16,7 +16,7 @@ const Breadcrumbs = ({ parts }: { parts: string[] }) => {
         <Button variant="text" className="flex px-1 gap-1">
           <Icon name="HdmiPort" /> Home
         </Button>
-        {parts.length && <span>/</span>}
+        {parts.length ? <span>/</span> : null}
         {parts.map((part, index, parts) => (
           <Button variant="text" className="px-1" key={part}>{part}{index < parts.length - 1 && <span>/</span>}</Button>
         ))}

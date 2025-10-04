@@ -6,7 +6,8 @@ import {
   type PropsWithChildren,
   type ReactNode,
   useCallback,
-  useMemo,
+  useEffect,
+  useEffectEvent,
   useState,
 } from "react";
 import { IconButton } from "../../actions/IconButton.tsx";
@@ -18,7 +19,6 @@ export interface CardProps extends PropsWithChildren<HTMLAttributes<HTMLDivEleme
   className?: string;
   label?: string;
   compact?: boolean;
-  active?: boolean;
   slots?: {
     icons?: ReactNode[];
     iconsPosition?: "top-right" | "bottom-right";
@@ -33,71 +33,95 @@ export const Card = memo<CardProps>(function Card(
     label,
     compact,
     color = "primary",
-    active = false,
     slots,
     maxizable,
     ...props
   },
 ) {
   const [isMaximized, setIsMaximized] = useState(false);
+
   const handleMaximize = useCallback(() => {
     setIsMaximized((x) => !x);
-  }, [setIsMaximized]);
+  }, []);
 
-  const maximize = useMemo(
-    () =>
-      maxizable
-        ? <IconButton key="maximize" name={isMaximized ? "Minimize" : "Maximize"} onClick={handleMaximize} />
-        : undefined,
-    [maxizable, isMaximized, handleMaximize],
+  const onEscapePress = useEffectEvent((event: KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    setIsMaximized(false);
+  });
+
+  useEffect(() => {
+    if (!isMaximized) return;
+
+    document.body.style.overflow = "hidden";
+    globalThis.addEventListener("keydown", onEscapePress);
+    return () => {
+      document.body.style.overflow = "";
+      globalThis.removeEventListener("keydown", onEscapePress);
+    };
+  }, [isMaximized]);
+
+  const maximize = isMaximized && (
+    <IconButton key="maximize" name={isMaximized ? "Minimize" : "Maximize"} onClick={handleMaximize} />
   );
 
-  return (
+  const content = (
     <div
-      className={isMaximized
-        ? "rounded-sm fixed z-50 top-0 left-0 w-full h-full px-10 py-6 mx-auto backdrop-blur-sm [&>*]:h-full flex items-center justify-center"
-        : "contents"}
-    >
-      <div
-        data-active={active ? "" : undefined}
-        {...props}
-        className={cx(
-          `
+      role={isMaximized ? "dialog" : undefined}
+      aria-modal={isMaximized ? "true" : undefined}
+      {...props}
+      className={cx(
+        `
             relative
             bg-${color}-1
-            border rounded-sm
-            border-${color}-6 
+            border rounded-sm border-${color}-6 
             hover:border-${color}-10
             active:border-${color}-10
             shadow-sm
             transition-colors
         `,
-          label && "mt-2",
-          !compact && "p-4",
-          className,
-        )}
-      >
-        <Show when={label}>
-          <Text
-            light
-            className={`absolute -top-2 left-2 bg-${color}-2 border-${color}-6 text-xs px-1 rounded-xs max-w-[calc(100%-1rem)] overflow-hidden text-ellipsis whitespace-nowrap`}
-          >
-            {label}
-          </Text>
-        </Show>
-        {children}
-        <Show when={slots?.icons?.length || maximize}>
-          <div
-            className={cx(
-              "absolute flex gap-0.5",
-              slots?.iconsPosition === "bottom-right" ? "bottom-2 right-2" : "top-2 right-2",
-            )}
-          >
-            {slots?.icons?.map((icon, index) => <div key={index}>{icon}</div>)}
-            {maximize}
-          </div>
-        </Show>
-      </div>
+        label && "mt-2",
+        !compact && "p-4",
+        className,
+      )}
+    >
+      <Show when={label}>
+        <Text
+          light
+          className={`
+            absolute -top-2 left-2
+            max-w-[calc(100%-1rem)]
+            px-1
+            bg-${color}-2 
+            rounded-xs
+            text-xs truncate
+          `}
+        >
+          {label}
+        </Text>
+      </Show>
+      {children}
+      <Show when={slots?.icons?.length || maximize}>
+        <div
+          className={cx(
+            "absolute flex gap-0.5",
+            slots?.iconsPosition === "bottom-right" ? "bottom-2 right-2" : "top-2 right-2",
+          )}
+        >
+          {slots?.icons?.map((icon, index) => <div key={index}>{icon}</div>)}
+          {maximize}
+        </div>
+      </Show>
     </div>
   );
+
+  if (isMaximized) {
+    return (
+      <div className="rounded-sm fixed z-50 top-0 left-0 w-full h-full px-10 py-6 mx-auto backdrop-blur-sm [&>*]:h-full flex items-center justify-center">
+        {content}
+      </div>
+    );
+  }
+
+  return content;
 });

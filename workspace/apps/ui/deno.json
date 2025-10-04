@@ -34,6 +34,7 @@
     "@utilities/": "./src/core/utilities/",
     "@services/": "./src/core/services/",
     "@features/": "./src/features/",
+    "@configs/": "./src/configs/",
     "react": "npm:react@19.2.0",
     "react-dom": "npm:react-dom@19.2.0",
     "@tanstack/react-query": "npm:@tanstack/react-query@5.81.2",

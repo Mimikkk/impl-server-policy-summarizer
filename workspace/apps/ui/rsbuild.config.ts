@@ -22,6 +22,7 @@ export default defineConfig({
       "@services": "./src/core/services",
       "@hooks": "./src/core/hooks",
       "@features": "./src/features",
+      "@configs": "./src/configs",
     },
   },
   tools: {
