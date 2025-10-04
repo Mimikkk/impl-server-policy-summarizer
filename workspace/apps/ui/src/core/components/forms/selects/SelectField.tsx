@@ -1,7 +1,7 @@
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import cx from "clsx";
 import { Popover, Tooltip } from "radix-ui";
-import { type ComponentProps, forwardRef, memo, type ReactNode, useCallback, useMemo, useState } from "react";
+import { type ComponentProps, memo, type ReactNode, useCallback, useMemo, useState } from "react";
 import { Field } from "../Field.tsx";
 import type { Option } from "./Option.tsx";
 
@@ -173,8 +173,8 @@ function SelectSearch({ color, className, ...props }: ComponentProps<typeof CMDK
   );
 }
 
-const SelectList = forwardRef<HTMLDivElement, ComponentProps<typeof CMDK.List>>(function SelectList(props, ref) {
-  return <CMDK.List ref={ref} data-slot="command-list" {...props} />;
+const SelectList = memo(function SelectList(props: ComponentProps<typeof CMDK.List>) {
+  return <CMDK.List data-slot="command-list" {...props} />;
 });
 
 function SelectEmpty(props: ComponentProps<typeof CMDK.Empty>) {
