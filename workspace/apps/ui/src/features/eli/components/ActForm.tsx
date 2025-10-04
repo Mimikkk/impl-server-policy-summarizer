@@ -134,6 +134,8 @@ export function ActForm({ onSubmit }: { onSubmit: (params: EliClient.ActParams) 
         <Text>
           Available years: {publisher?.years.map((year) => year).join(", ")}
         </Text>
+        <Text>
+        </Text>
       </div>
     </Card>
   );

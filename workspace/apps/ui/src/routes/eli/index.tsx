@@ -7,9 +7,7 @@ import { useEliAct, useEliActHTMLText } from "@features/eli/hooks/eli.hooks.ts";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-export const Route = createFileRoute("/eli/")({
-  component: RouteComponent,
-});
+export const Route = createFileRoute("/eli/")({ component: RouteComponent });
 
 function RouteComponent() {
   const [actParams, setActParams] = useState<EliClient.ActParams>({
