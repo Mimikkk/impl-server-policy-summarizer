@@ -1,18 +1,19 @@
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import cx from "clsx";
 import { Popover, Tooltip } from "radix-ui";
-import { type ComponentProps, memo, type ReactNode, useCallback, useMemo, useState } from "react";
+import { type ComponentProps, memo, type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { Field } from "../Field.tsx";
 import type { Option } from "./Option.tsx";
 
 import { useDebounceState } from "@hooks/useDebounceState.tsx";
+import { useResizeObserver } from "@hooks/useResizeObserver.tsx";
 import { uiElementClass } from "@utilities/uiElementClass.tsx";
 import { Command as CMDK } from "cmdk";
-import { useResizer } from "../../../hooks/useResizer.tsx";
 import { Button } from "../../actions/Button.tsx";
+import { IconButton } from "../../actions/IconButton.tsx";
 import { Icon } from "../../badges/Icon.tsx";
 import { Card } from "../../containers/card/Card.tsx";
-import { List } from "../../containers/List.tsx";
+import { List, type ListItem } from "../../containers/List.tsx";
 import { Text } from "../../typography/Text.tsx";
 import { Show } from "../../utility/Show.tsx";
 
@@ -33,7 +34,6 @@ export const SelectField = memo(
   ) {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState<T | null>(value ?? null);
-    const { size: triggerSize, setRef: setTriggerRef } = useResizer();
 
     const [query, setQuery] = useState("");
     const filteredOptions = useMemo(() => {
@@ -56,29 +56,75 @@ export const SelectField = memo(
       setOpen(false);
     }, [selected, onValueChange]);
 
+    const triggerRef = useRef<HTMLButtonElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    const handleResize = useCallback(() => {
+      contentRef.current!.style.width = `${triggerRef.current!.getBoundingClientRect().width}px`;
+    }, [triggerRef, contentRef]);
+
+    const handleContentRef = useCallback((ref: HTMLDivElement) => {
+      contentRef.current = ref;
+      observer.current?.observe(ref);
+      handleResize();
+      return () => observer.current?.unobserve(ref);
+    }, [contentRef]);
+
+    const observer = useResizeObserver({ onChange: handleResize });
+    const RenderItem = useCallback(({ item: { label, value }, size, key, start }: ListItem<Option<T>>) => {
+      return (
+        <Tooltip.Root key={key}>
+          <Tooltip.Trigger asChild>
+            <SelectOption
+              value={value}
+              onSelect={handleSelect}
+              className={cx(
+                "absolute top-0 left-0 w-full",
+                selected === value ? `bg-${color}-5` : undefined,
+              )}
+              style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
+            >
+              <Show when={selected === value}>
+                <Icon name="Check" size="sm" className="flex-shrink-0" />
+              </Show>
+              <Text ellipsis>
+                {label}
+              </Text>
+            </SelectOption>
+          </Tooltip.Trigger>
+          <Tooltip.Content
+            side="right"
+            align="center"
+            className="max-w-72"
+            style={{ transform: `translate(0px, ${start + size / 2}px)` }}
+          >
+            <Card>
+              <Text>{label}</Text>
+            </Card>
+          </Tooltip.Content>
+        </Tooltip.Root>
+      );
+    }, [color, handleSelect, selected]);
+
     return (
       <Field color={color} id={id} label={label} className={className} disabled={disabled}>
         <Popover.Root open={open && !disabled} onOpenChange={setOpen}>
           <Popover.Trigger asChild>
             <Button
-              ref={setTriggerRef}
+              ref={triggerRef}
               variant="text"
               role="combobox"
               color={color}
               aria-expanded={open}
-              className="!justify-between gap-2 px-3 py-2 h-9 w-full"
+              className="!justify-between gap-2 px-3 py-2 h-8 w-full"
               disabled={disabled}
             >
-              <Text ellipsis>
-                {selectedLabel}
-              </Text>
-              <Button color="secondary" variant="text" as="span" disabled={disabled}>
-                <Icon name="ChevronDown" />
-              </Button>
+              <Text ellipsis>{selectedLabel}</Text>
+              <IconButton color="secondary" variant="text" as="span" disabled={disabled} name="ChevronDown" compact />
             </Button>
           </Popover.Trigger>
           <Popover.Content
-            style={{ width: triggerSize }}
+            ref={handleContentRef}
             className={cx(
               uiElementClass({ color, variant: "solid" }),
               "z-10 px-4 py-2 overflow-auto shadow",
@@ -93,47 +139,14 @@ export const SelectField = memo(
                 placeholder="Search options..."
               />
               <SelectSeparator color={color} />
-              <SelectList>
-                <SelectEmpty>No options found.</SelectEmpty>
-                <List items={filteredOptions} estimateSize={28} maxHeight={400}>
-                  {({ item: { label, value }, key, size, start }) => (
-                    <Tooltip.TooltipProvider key={key} delayDuration={0}>
-                      <Tooltip.Root>
-                        <Tooltip.Trigger asChild>
-                          <div>
-                            <SelectOption
-                              value={value}
-                              onSelect={handleSelect}
-                              className={cx(
-                                "absolute top-0 left-0 w-full",
-                                selected === value ? `bg-${color}-5` : undefined,
-                              )}
-                              style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
-                            >
-                              <Show when={selected === value}>
-                                <Icon name="Check" size="sm" className="flex-shrink-0" />
-                              </Show>
-                              <Text ellipsis>
-                                {label}
-                              </Text>
-                            </SelectOption>
-                          </div>
-                        </Tooltip.Trigger>
-                        <Tooltip.Content
-                          side="right"
-                          align="center"
-                          className="max-w-72"
-                          style={{ transform: `translate(0px, ${start + size / 2}px)` }}
-                        >
-                          <Card>
-                            <Text>{label}</Text>
-                          </Card>
-                        </Tooltip.Content>
-                      </Tooltip.Root>
-                    </Tooltip.TooltipProvider>
-                  )}
-                </List>
-              </SelectList>
+              <Tooltip.TooltipProvider delayDuration={0}>
+                <SelectList>
+                  <SelectEmpty>No options found.</SelectEmpty>
+                  <List items={filteredOptions} estimateSize={28} maxHeight={400}>
+                    {RenderItem}
+                  </List>
+                </SelectList>
+              </Tooltip.TooltipProvider>
             </SelectDropdown>
           </Popover.Content>
         </Popover.Root>

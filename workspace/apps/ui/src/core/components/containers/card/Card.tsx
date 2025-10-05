@@ -61,7 +61,7 @@ export const Card = memo<CardProps>(function Card(
     };
   }, [isMaximized]);
 
-  const maximize = isMaximized && (
+  const maximize = maxizable && (
     <IconButton key="maximize" name={isMaximized ? "Minimize" : "Maximize"} onClick={handleMaximize} />
   );
 
@@ -81,7 +81,7 @@ export const Card = memo<CardProps>(function Card(
             transition-colors
         `,
         label && "mt-2",
-        !compact && "p-4",
+        !compact && "p-4 pb-2",
         className,
       )}
     >

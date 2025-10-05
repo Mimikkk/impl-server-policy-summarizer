@@ -1,5 +1,6 @@
 import { useBlobUrl } from "@hooks/useBlobUrl.ts";
 import type { Nil } from "@utilities/common.ts";
+import clsx from "clsx";
 import { memo } from "react";
 import { Icon } from "../../../badges/Icon.tsx";
 import { StatusBarrier } from "../../../utility/StatusBarrier.tsx";
@@ -14,7 +15,7 @@ export const CardPDF = memo(function CardPDF({ className, url }: CardPDFProps) {
   const { data: pdfUrl, status } = useBlobUrl(url);
 
   return (
-    <Card compact className={className} maxizable slots={{ iconsPosition: "bottom-right" }}>
+    <Card compact className={clsx(className, "h-full")} maxizable slots={{ iconsPosition: "bottom-right" }}>
       <StatusBarrier
         status={status}
         error={
@@ -24,12 +25,7 @@ export const CardPDF = memo(function CardPDF({ className, url }: CardPDFProps) {
           </div>
         }
       >
-        <iframe
-          src={pdfUrl!}
-          width="100%"
-          height="100%"
-          title={`PDF Document - ${url}`}
-        />
+        <iframe src={pdfUrl!} width="100%" height="100%" title={`PDF Document - ${url}`} />
       </StatusBarrier>
     </Card>
   );

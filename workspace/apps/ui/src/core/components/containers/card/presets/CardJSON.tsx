@@ -7,6 +7,6 @@ export interface CardJSONProps {
   content: Nil<object>;
 }
 
-export const CardJSON = memo(function CardJSON({ className, content }: CardJSONProps) {
-  return <CardCode className={className} content={JSON.stringify(content, null, 2)} language="JSON" />;
+export const CardJSON = memo(function CardJSON({ content, ...props }: CardJSONProps) {
+  return <CardCode {...props} content={JSON.stringify(content, null, 2)} language="JSON" />;
 });
