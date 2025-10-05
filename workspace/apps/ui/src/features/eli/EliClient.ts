@@ -1,7 +1,7 @@
 import { ClientUrl } from "@configs/ClientUrls.ts";
 import ky, { type KyInstance } from "ky";
 import { adaptQuery } from "../../core/queries/adaptQuery.ts";
-import type { ActResource } from "./resources/ActResource.ts";
+import type { ActResource, ActTextType } from "./resources/ActResource.ts";
 import type { PublisherResource } from "./resources/PublisherResource.ts";
 import type { YearResource } from "./resources/YearResource.ts";
 
@@ -79,8 +79,13 @@ export namespace EliClient {
   export const textUrl = ({ publisher, year, position }: ActParams): string =>
     client.urlOf(`${publisher}/${year}/${position}/text.html`);
 
-  export const text = async ({ publisher, year, position }: ActParams): Promise<TextFile> => {
-    const response = await client.api.get(`${publisher}/${year}/${position}/text`).text();
+  export interface TextParams extends ActParams {
+    type: ActTextType;
+    fileName: string;
+  }
+
+  export const text = async ({ publisher, year, position, type, fileName }: TextParams): Promise<TextFile> => {
+    const response = await client.api.get(`${publisher}/${year}/${position}/text/${type}/${fileName}`).text();
 
     return new File([response], `${publisher}-${year}-${position}.txt`, { type: "text/plain" });
   };
