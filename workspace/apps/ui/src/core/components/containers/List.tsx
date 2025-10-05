@@ -1,5 +1,6 @@
 import { useVirtualizer, type VirtualItem } from "@tanstack/react-virtual";
-import { type ReactNode, useCallback, useState } from "react";
+import clsx from "clsx";
+import { type ReactNode, useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { For } from "../utility/For.tsx";
 
 export interface ListItem<T> extends VirtualItem {
@@ -19,26 +20,31 @@ export interface ListProps<T> {
 export const List = <T,>(
   { children, className, maxHeight = 400, items, estimateSize, overscan = 4, count }: ListProps<T>,
 ) => {
-  const [listRef, setListRef] = useState<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const contentsRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
     count: count ?? items.length,
-    getScrollElement: () => listRef,
+    getScrollElement: () => listRef.current,
     estimateSize: () => estimateSize,
     overscan,
   });
 
-  const rows = virtualizer.getVirtualItems();
+  const indexes = virtualizer.getVirtualIndexes();
+  const rows = useMemo(() => virtualizer.getVirtualItems(), [indexes.join()]);
+
   const size = virtualizer.getTotalSize();
+  useLayoutEffect(() => {
+    contentsRef.current!.style.height = `${size}px`;
+  }, [size]);
+
+  useLayoutEffect(() => {
+    listRef.current!.style.height = `${maxHeight}px`;
+  }, [maxHeight]);
 
   return (
-    <div ref={setListRef} style={{ height: maxHeight, overflow: "auto" }} className={className}>
-      <For
-        each={rows}
-        as="div"
-        className="relative w-full"
-        style={{ height: `${size}px` }}
-      >
+    <div ref={listRef} className={clsx("overflow-auto", className)}>
+      <For ref={contentsRef} each={rows} as="div" className="relative">
         {useCallback(({ index, start, size, end, key, lane }: VirtualItem, i: number) => (
           children({ item: items[index], end, key, lane, size, start, index }, i)
         ), [items, children])}

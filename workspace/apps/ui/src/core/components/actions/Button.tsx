@@ -32,7 +32,7 @@ export const Button = memo<ButtonProps>(function Button(
       className={cx(
         compact ? "min-h-5" : "min-h-7",
         "flex items-center justify-center",
-        square ? "aspect-square" : "px-2 py-1",
+        square ? "aspect-square" : compact ? "px-1" : "px-2 py-1",
         uiElementClass({ variant, color, disabled: props.disabled, usesDisabled: true }),
         className,
       )}

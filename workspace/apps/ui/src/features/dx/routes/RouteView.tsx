@@ -43,7 +43,12 @@ const Tree = memo<RouteTreeItemProps>(({ route, path, depth = 1, onPathChange })
         </Button>
       </div>
       <For each={route.children}>
-        {(child) => <Tree key={child.id} route={child} path={path} depth={depth + 1} onPathChange={onPathChange} />}
+        {useCallback(
+          (child: RouteNode) => (
+            <Tree key={child.id} route={child} path={path} depth={depth + 1} onPathChange={onPathChange} />
+          ),
+          [],
+        )}
       </For>
     </Card>
   );
