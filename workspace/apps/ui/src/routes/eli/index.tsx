@@ -3,7 +3,7 @@ import { CardJSON } from "@components/containers/card/presets/CardJSON.tsx";
 import { CardPDF } from "@components/containers/card/presets/DisplayPDF.tsx";
 import { ActForm } from "@features/eli/components/ActForm.tsx";
 import { EliClient } from "@features/eli/EliClient.ts";
-import { useEliAct, useEliActHTMLText } from "@features/eli/hooks/eli.hooks.ts";
+import { useEliAct, useEliActHTMLString } from "@features/eli/hooks/eli.hooks.ts";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -17,7 +17,7 @@ function RouteComponent() {
   });
 
   const { data: actDetails } = useEliAct(actParams);
-  const { data: actHtml } = useEliActHTMLText(actParams);
+  const { data: actHtml } = useEliActHTMLString(actParams);
   const pdfUrl = EliClient.pdfUrl(actParams);
 
   return (

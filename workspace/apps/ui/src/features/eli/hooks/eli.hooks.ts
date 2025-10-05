@@ -9,10 +9,10 @@ export const useEliAct = (params: EliClient.ActParams) =>
 export const useEliActHTML = (params: EliClient.ActParams) =>
   EliQuery.useHtml(params, { enabled: !!params.publisher && !!params.year && !!params.position });
 
-export const useEliActHTMLText = (params: EliClient.ActParams) => {
+export const useEliActHTMLString = (params: EliClient.ActParams) => {
   const { data: html } = useEliActHTML(params);
 
-  return useQuery({ queryKey: ["txt", html], queryFn: () => html?.text(), enabled: !!html });
+  return useQuery({ queryKey: ["str", html], queryFn: () => html?.text(), enabled: !!html });
 };
 
 export const useEliPublishers = EliQuery.usePublishers;
