@@ -71,40 +71,6 @@ export const SelectField = memo(
     }, [contentRef]);
 
     const observer = useResizeObserver({ onChange: handleResize });
-    const RenderItem = useCallback(({ item: { label, value }, size, key, start }: ListItem<Option<T>>) => {
-      return (
-        <Tooltip.Root key={key}>
-          <Tooltip.Trigger asChild>
-            <SelectOption
-              value={value}
-              onSelect={handleSelect}
-              className={cx(
-                "absolute top-0 left-0 w-full",
-                selected === value ? `bg-${color}-5` : undefined,
-              )}
-              style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
-            >
-              <Show when={selected === value}>
-                <Icon name="Check" size="sm" className="flex-shrink-0" />
-              </Show>
-              <Text ellipsis>
-                {label}
-              </Text>
-            </SelectOption>
-          </Tooltip.Trigger>
-          <Tooltip.Content
-            side="right"
-            align="center"
-            className="max-w-72"
-            style={{ transform: `translate(0px, ${start + size / 2}px)` }}
-          >
-            <Card>
-              <Text>{label}</Text>
-            </Card>
-          </Tooltip.Content>
-        </Tooltip.Root>
-      );
-    }, [color, handleSelect, selected]);
 
     return (
       <Field color={color} id={id} label={label} className={className} disabled={disabled}>
@@ -143,7 +109,40 @@ export const SelectField = memo(
                 <SelectList>
                   <SelectEmpty>No options found.</SelectEmpty>
                   <List items={filteredOptions} estimateSize={28} maxHeight={400}>
-                    {RenderItem}
+                    {useCallback(({ item: { label, value }, size, key, start }: ListItem<Option<T>>) => {
+                      return (
+                        <Tooltip.Root key={key}>
+                          <Tooltip.Trigger asChild>
+                            <SelectOption
+                              value={value}
+                              onSelect={handleSelect}
+                              className={cx(
+                                "absolute top-0 left-0 w-full",
+                                selected === value ? `bg-${color}-5` : undefined,
+                              )}
+                              style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
+                            >
+                              <Show when={selected === value}>
+                                <Icon name="Check" size="sm" className="flex-shrink-0" />
+                              </Show>
+                              <Text ellipsis>
+                                {label}
+                              </Text>
+                            </SelectOption>
+                          </Tooltip.Trigger>
+                          <Tooltip.Content
+                            side="right"
+                            align="center"
+                            className="max-w-72"
+                            style={{ transform: `translate(0px, ${start + size / 2}px)` }}
+                          >
+                            <Card>
+                              <Text>{label}</Text>
+                            </Card>
+                          </Tooltip.Content>
+                        </Tooltip.Root>
+                      );
+                    }, [color, handleSelect, selected])}
                   </List>
                 </SelectList>
               </Tooltip.TooltipProvider>

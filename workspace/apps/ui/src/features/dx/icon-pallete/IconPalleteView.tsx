@@ -1,11 +1,11 @@
 import { Card } from "@components/containers/card/Card.tsx";
-import { List } from "@components/containers/List.tsx";
+import { List, ListItem } from "@components/containers/List.tsx";
 import { InputField } from "@components/forms/inputs/InputField.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
+import { useResponsiveValue } from "@hooks/useResponsiveValue.tsx";
 import { icons } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useResponsiveValue } from "../../../core/hooks/useResponsiveValue.tsx";
+import { type ComponentType, useCallback, useMemo, useState } from "react";
 
 const preparedIcons = Object.entries(icons);
 export const IconPalleteView = () => {
@@ -28,7 +28,7 @@ export const IconPalleteView = () => {
       <InputField placeholder="Search..." value={query} onValueChange={setQuery} />
       <Card className="h-[480px] overflow-auto">
         <List items={filteredIcons} estimateSize={82 + 2} maxHeight={440} count={rowCount}>
-          {({ key, start, index }, i) => (
+          {useCallback(({ key, start, index }: ListItem<[string, ComponentType]>, i: number) => (
             <For
               key={key}
               each={filteredIcons.slice(index * columns, (index + 1) * columns)}
@@ -36,7 +36,7 @@ export const IconPalleteView = () => {
               className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-2 absolute left-0 top-0 w-full"
               style={{ transform: `translateY(${start + (i * 2)}px)` }}
             >
-              {([name, Icon]) => (
+              {([name, Icon]: [string, ComponentType]) => (
                 <Card
                   key={name}
                   onClick={() => navigator.clipboard.writeText(name)}
@@ -47,7 +47,7 @@ export const IconPalleteView = () => {
                 </Card>
               )}
             </For>
-          )}
+          ), [])}
         </List>
       </Card>
     </div>

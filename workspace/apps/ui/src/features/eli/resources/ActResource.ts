@@ -23,7 +23,7 @@ export interface ActResource {
   volume: number;
   year: number;
   authorizedBody: unknown[];
-  directives: Directive[];
+  directives: ActDirective[];
   entryIntoForce: DateString;
   expirationDate: DateString;
   inForce: InForce;
@@ -32,7 +32,7 @@ export interface ActResource {
   obligated: unknown[];
   previousTitle: unknown[];
   prints: unknown[];
-  references: Record<string, Reference[]>;
+  references: Record<string, ActReference[]>;
   releasedBy: string[];
   texts: ActText[];
   validFrom: DateString;
@@ -59,7 +59,7 @@ export enum InForce {
   Unknown = "UNKNOWN",
 }
 
-interface Directive {
+export interface ActDirective {
   /* Adres */
   address: string;
   /* Data */
@@ -68,7 +68,7 @@ interface Directive {
   title: string;
 }
 
-interface Reference {
+export interface ActReference {
   /* Identifikator ELI */
   id: string;
   /** Data */

@@ -1,7 +1,7 @@
 import { Icon, type IconName } from "@components/badges/Icon.tsx";
 import { For } from "@components/utility/For.tsx";
 import { Tabs } from "radix-ui";
-import { type ComponentProps, memo, type ReactNode } from "react";
+import { type ComponentProps, memo, type ReactNode, useCallback } from "react";
 
 const Header = memo(
   function DevToolsTab({ children, icon, ...props }: ComponentProps<typeof Tabs.Trigger> & { icon: IconName }) {
@@ -61,11 +61,17 @@ export const DevToolsNavigation = memo(
       >
         <Tabs.List className="flex border-y bg-primary-1 divide-x-1 divide-primary-6 border-primary-6">
           <For each={items}>
-            {({ value, label, icon }) => <Header key={value} value={value} icon={icon}>{label}</Header>}
+            {useCallback(
+              ({ value, label, icon }: DevToolsItem) => <Header key={value} value={value} icon={icon}>{label}</Header>,
+              [],
+            )}
           </For>
         </Tabs.List>
         <For each={items} as="div" style={{ height: height - 40 }}>
-          {({ value, component }) => <Panel key={value} value={value}>{component}</Panel>}
+          {useCallback(
+            ({ value, component }: DevToolsItem) => <Panel key={value} value={value}>{component}</Panel>,
+            [],
+          )}
         </For>
       </Tabs.Root>
     );
