@@ -1,7 +1,5 @@
 import { Button } from "@components/actions/Button.tsx";
-import { Card } from "@components/containers/card/Card.tsx";
 import { SelectField } from "@components/forms/selects/SelectField.tsx";
-import { Text } from "@components/typography/Text.tsx";
 import type { EliClient } from "@features/eli/EliClient.ts";
 import type { PublisherResource } from "@features/eli/resources/PublisherResource.ts";
 import type { YearItemResource } from "@features/eli/resources/YearResource.ts";
@@ -114,29 +112,14 @@ export function ActForm({ onSubmit }: { onSubmit: (params: EliClient.ActParams) 
     onSubmit({ publisher: publisherId, year: +yearId, position: +positionId });
   }, [publisherId, yearId, positionId, onSubmit]);
 
-  const { data: publishers } = useEliPublishers();
-  const { data: publisher } = useEliPublisher(publisherId);
-
   return (
-    <Card label="Act form" className="grid grid-cols-3 gap-2 container">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <PublisherSelect value={publisherId} onValueChange={setPublisherId} />
-        <YearSelect publisherId={publisherId} value={yearId} onValueChange={setYearId} />
-        <ActSelect publisherId={publisherId} yearId={yearId} value={positionId} onValueChange={setPositionId} />
-        <Button type="submit" className="h-8">
-          Load act
-        </Button>
-      </form>
-      <div className="flex flex-col gap-1 col-span-2">
-        <Text>
-          Available publishers: {publishers?.map((publisher) => publisher.code).join(", ")}
-        </Text>
-        <Text>
-          Available years: {publisher?.years.map((year) => year).join(", ")}
-        </Text>
-        <Text>
-        </Text>
-      </div>
-    </Card>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <PublisherSelect value={publisherId} onValueChange={setPublisherId} />
+      <YearSelect publisherId={publisherId} value={yearId} onValueChange={setYearId} />
+      <ActSelect publisherId={publisherId} yearId={yearId} value={positionId} onValueChange={setPositionId} />
+      <Button type="submit">
+        Load act
+      </Button>
+    </form>
   );
 }

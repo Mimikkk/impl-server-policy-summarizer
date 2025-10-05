@@ -1,1 +1,5 @@
-@import './configs/tailwindcss/theme.css'
+@import "./configs/tailwindcss/theme.css";
+
+#root {
+  @apply h-screen;
+}

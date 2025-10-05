@@ -2,12 +2,12 @@ import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
-import cx from "clsx";
+import { saveToFile } from "@utilities/saveToFile.tsx";
+import clsx from "clsx";
 import prettier from "prettier";
 import html from "prettier/plugins/html";
 import { type MouseEvent, useCallback, useEffect, useMemo } from "react";
 import { codeToHtml } from "shiki";
-import { saveToFile } from "../../../../utilities/saveToFile.tsx";
 import { IconButton } from "../../../actions/IconButton.tsx";
 import { Text } from "../../../typography/Text.tsx";
 import { Card } from "../Card.tsx";
@@ -64,7 +64,7 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
   return (
     <Card
       compact
-      className={cx("relative", className)}
+      className={clsx(className, "h-full")}
       maxizable
       slots={useMemo(() => ({
         icons: [
@@ -85,15 +85,14 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
         ],
       }), [handleSave, handleCopy])}
     >
-      <StatusBarrier
-        status={status}
-        error={<Text color="error">Failed to display code</Text>}
-      >
-        <div className="max-h-full overflow-auto rounded-sm">
-          <div
-            className=" [&_.shiki]:overflow-auto [&_.shiki]:whitespace-pre-wrap [&_.shiki]:break-words"
-            dangerouslySetInnerHTML={{ __html: code ?? "" }}
-          />
+      <StatusBarrier status={status} error={<Text color="error">Failed to display code</Text>}>
+        <div className="absolute h-full w-full">
+          <div className="relative h-full w-full">
+            <div
+              className="contents [&>.shiki]:whitespace-pre-wrap [&>.shiki]:break-words [&>.shiki]:h-full [&>.shiki]:overflow-auto"
+              dangerouslySetInnerHTML={{ __html: code ?? "" }}
+            />
+          </div>
         </div>
       </StatusBarrier>
     </Card>

@@ -8,7 +8,10 @@ import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
 import { createRootRouteWithContext, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
 
-const Breadcrumbs = ({ parts }: { parts: string[] }) => {
+const Breadcrumbs = () => {
+  const state = useRouterState();
+  const parts = useMemo(() => state.location.pathname.split("/").filter(Boolean), [state.location.pathname]);
+
   return (
     <div className="flex items-center gap-1">
       <Text light>Location:</Text>
@@ -33,14 +36,9 @@ export const Route = createRootRouteWithContext()({
       document.body.setAttribute("data-theme", theme);
     }, [theme]);
 
-    const state = useRouterState();
-    const parts = useMemo(() => state.location.pathname.split("/").filter(Boolean), [state.location.pathname]);
-
     return (
-      <div className="min-h-screen relative">
-        <div className="container mx-auto py-1">
-          <Breadcrumbs parts={parts} />
-        </div>
+      <div className="relative flex flex-col container mx-auto py-4 gap-2 h-full">
+        <Breadcrumbs />
         <Outlet />
         <DevTools />
         <ThemeButton
