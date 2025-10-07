@@ -106,25 +106,47 @@ export function ActForm(
   const [yearId, setYearId] = useState<string | null>(values?.year.toString() ?? null);
   const [positionId, setPositionId] = useState<string | null>(values?.position.toString() ?? null);
 
+  const handlePublisherChange = useCallback((value: string | null) => {
+    setPublisherId(value);
+    setYearId(null);
+    setPositionId(null);
+  }, []);
+
+  const handleYearChange = useCallback((value: string | null) => {
+    setYearId(value);
+    setPositionId(null);
+  }, []);
+
+  const handlePositionChange = useCallback((value: string | null) => {
+    setPositionId(value);
+  }, []);
+
   useEffect(() => {
-    setPublisherId(values?.publisher ?? null);
-    setYearId(values?.year.toString() ?? null);
-    setPositionId(values?.position.toString() ?? null);
+    if (values?.publisher !== publisherId) {
+      setPublisherId(values?.publisher ?? null);
+    }
+    if (values?.year !== +yearId!) {
+      setYearId(values?.year.toString() ?? null);
+    }
+    if (values?.position !== +positionId!) {
+      setPositionId(values?.position.toString() ?? null);
+    }
   }, [values]);
 
   const handleSubmit = useCallback((event: FormEvent) => {
     event.preventDefault();
 
     if (!publisherId || !yearId || !positionId) return;
+    console.log({ publisherId, yearId, positionId });
 
     onSubmit({ publisher: publisherId, year: +yearId, position: +positionId });
   }, [publisherId, yearId, positionId, onSubmit]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <PublisherSelect value={publisherId} onValueChange={setPublisherId} />
-      <YearSelect publisherId={publisherId} value={yearId} onValueChange={setYearId} />
-      <ActSelect publisherId={publisherId} yearId={yearId} value={positionId} onValueChange={setPositionId} />
+      <PublisherSelect value={publisherId} onValueChange={handlePublisherChange} />
+      <YearSelect publisherId={publisherId} value={yearId} onValueChange={handleYearChange} />
+      <ActSelect publisherId={publisherId} yearId={yearId} value={positionId} onValueChange={handlePositionChange} />
       <Button type="submit" className="w-full">
         Load act
       </Button>
