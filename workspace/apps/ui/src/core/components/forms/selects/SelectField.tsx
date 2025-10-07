@@ -1,7 +1,7 @@
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import cx from "clsx";
 import { Popover, Tooltip } from "radix-ui";
-import { type ComponentProps, memo, type ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { type ComponentProps, memo, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Field } from "../Field.tsx";
 import type { Option } from "./Option.tsx";
 
@@ -34,6 +34,10 @@ export const SelectField = memo(
   ) {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState<T | null>(value ?? null);
+
+    useEffect(() => {
+      setSelected(value ?? null);
+    }, [value]);
 
     const [query, setQuery] = useState("");
     const filteredOptions = useMemo(() => {

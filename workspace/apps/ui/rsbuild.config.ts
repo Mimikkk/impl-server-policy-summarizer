@@ -11,9 +11,13 @@ export default defineConfig({
   },
   html: {
     template: "./src/index.html",
+    scriptLoading: "module",
   },
   output: {
     target: "web",
+    filename: {
+      js: "[name]-[contenthash].mjs",
+    },
   },
   resolve: {
     alias: {

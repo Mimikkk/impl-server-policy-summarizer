@@ -3,16 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
 import { useMemo } from "react";
 
-export const useEliAct = (params: EliClient.ActParams) =>
-  EliQuery.useAct(params, { enabled: !!params.publisher && !!params.year && !!params.position });
+export const useEliAct = (params: Nil<EliClient.ActParams>) => EliQuery.useAct(params!, { enabled: !!params });
 
-export const useEliActHTML = (params: EliClient.ActParams) =>
-  EliQuery.useHtml(params, { enabled: !!params.publisher && !!params.year && !!params.position });
+export const useEliActHTML = (params: Nil<EliClient.ActParams>) => EliQuery.useHtml(params!, { enabled: !!params });
 
-export const useEliActHTMLString = (params: EliClient.ActParams) => {
-  const { data: html } = useEliActHTML(params);
+export const useEliActHTMLString = (params: Nil<EliClient.ActParams>) => {
+  const { data: html } = useEliActHTML(params!);
 
-  return useQuery({ queryKey: ["str", html], queryFn: () => html?.text(), enabled: !!html });
+  return useQuery({ queryKey: ["str", html], queryFn: () => html?.text(), enabled: !!html && !!params });
 };
 
 export const useEliPublishers = EliQuery.usePublishers;

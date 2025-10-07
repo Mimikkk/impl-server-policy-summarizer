@@ -1,5 +1,6 @@
 import { Button } from "@components/actions/Button.tsx";
 import { IconButton } from "@components/actions/IconButton.tsx";
+import { Icon } from "@components/badges/Icon.tsx";
 import { Card } from "@components/containers/card/Card.tsx";
 import { CardHTML } from "@components/containers/card/presets/CardHTML.tsx";
 import { CardJSON } from "@components/containers/card/presets/CardJSON.tsx";
@@ -9,86 +10,154 @@ import { For } from "@components/utility/For.tsx";
 import { ActForm } from "@features/eli/components/ActForm.tsx";
 import { EliClient } from "@features/eli/EliClient.ts";
 import { useEliAct, useEliActHTMLString } from "@features/eli/hooks/eli.hooks.ts";
-import { ActReference } from "@features/eli/resources/ActResource.ts";
+import { useLocalStorage } from "@hooks/useLocalStorage.ts";
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, memo, useCallback, useMemo, useState } from "react";
+import { Fragment, memo, useEffect, useMemo } from "react";
+
+const isEqual = (a: EliClient.ActParams, b: EliClient.ActParams) =>
+  a.publisher === b.publisher && a.year === b.year && a.position === b.position;
+
+const useLocalStorageLatest = () => {
+  return useLocalStorage<EliClient.ActParams | null>({
+    key: "eli-latest",
+    deserialize: (value) => value ? JSON.parse(value) : null,
+    serialize: (value) => JSON.stringify(value),
+  });
+};
+
+const useLocalStorageHistory = () => {
+  return useLocalStorage<EliClient.ActParams[]>({
+    key: "eli-history",
+    deserialize: (value) => value ? JSON.parse(value) : [],
+    serialize: (value) => JSON.stringify(value),
+  });
+};
 
 const RouteComponent = memo(() => {
-  const [actParams, setActParams] = useState<EliClient.ActParams>({
-    publisher: "DU",
-    year: 2021,
-    position: 1,
-  });
+  const [history, setHistory] = useLocalStorageHistory();
+  const [actParams, setActParams] = useLocalStorageLatest();
+
+  useEffect(() => {
+    if (!actParams) return;
+    const next = history.filter((params) => !isEqual(params, actParams));
+    next.unshift(actParams);
+
+    setHistory(next);
+  }, [actParams]);
 
   const { data: actDetails } = useEliAct(actParams);
   const { data: actHtml } = useEliActHTMLString(actParams);
-  const pdfUrl = EliClient.pdfUrl(actParams);
+  const pdfUrl = useMemo(() => actParams ? EliClient.pdfUrl(actParams) : null, [actParams]);
 
   const references = useMemo(() => Object.entries(actDetails?.references ?? {}), [actDetails?.references]);
 
   return (
     <div className="flex flex-col gap-2 items-center h-full">
-      <Card label="Act form" className="grid grid-cols-3 gap-2 container">
-        <ActForm onSubmit={setActParams} />
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-2">
-            <Button className="gap-1 w-full flex !justify-between">
-              123
-              {
-                /* <Text ellipsis>
-                <Text className="font-semibold not-md:hidden">Aktywnie wybrane:{" "}</Text>
-                <Text>{actParams.publisher} {actParams.year} {actParams.position}</Text>
-              </Text>
-              <IconButton color="primary" compact name="Pin" as="span" /> */
-              }
-            </Button>
-            <div>
-              <span>References:</span>
-              <For
-                each={references}
-                as="dd"
-                className="grid grid-cols-[auto_1fr] items-center gap-1"
+      <div className="flex flex-col gap-0.5 w-full">
+        <Card className="w-full flex items-center gap-1">
+          <IconButton name="History" className="w-fit" disabled={history.length === 0}>
+            <span className="not-md:hidden">
+              {history.length > 0 ? "View history" : "No history"}
+            </span>
+          </IconButton>
+          <For each={history} className="flex flex-wrap items-center gap-1">
+            {(v) => (
+              <Button
+                color="primary"
+                title={`${v.publisher}/${v.year}/${v.position}`}
+                key={`${v.publisher}/${v.year}/${v.position}`}
+                onClick={() => setActParams(v)}
               >
-                {useCallback(([name, reference]: [string, ActReference[]]) => (
-                  <Fragment key={name}>
-                    <dt className="flex items-center gap-1">
-                      <Text light>{name}</Text>
-                      <Text>:</Text>
-                    </dt>
-                    <dd>
-                      {reference.map((v) => (
-                        <Button variant="text" color="secondary" compact key={v.id}>
-                          {v.id}
-                        </Button>
-                      ))}
-                    </dd>
-                  </Fragment>
-                ), [])}
-              </For>
-            </div>
-            <div>
-              <span>Keywords:</span>
-              <For each={actDetails?.keywords} className="flex flex-wrap items-center gap-1">
-                {useCallback((keyword: string) => (
-                  <Text
-                    title={keyword}
-                    ellipsis
-                    className="border border-primary-6 rounded-sm px-1 py-0.5 bg-primary-3"
-                    key={keyword}
+                <Text ellipsis>{`${v.publisher}/${v.year}/${v.position}`}</Text>
+              </Button>
+            )}
+          </For>
+          {actParams && (
+            <Button className="ml-auto">
+              <Text ellipsis className="gap-1">
+                <Text className="font-semibold not-md:hidden">Selected:</Text>
+                <Text>{actParams?.publisher}/{actParams?.year}/{actParams?.position}</Text>
+              </Text>
+              <IconButton color="primary" compact name="Pin" as="span" />
+            </Button>
+          )}
+        </Card>
+        <Card className="grid grid-cols-3 gap-2 container">
+          <ActForm values={actParams} onSubmit={setActParams} />
+          {actParams
+            ? (
+              <>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span>Keywords (first 10):</span>
+                    <For each={actDetails?.keywords.slice(0, 10)}>
+                      {(keyword) => (
+                        <Text
+                          title={keyword}
+                          ellipsis
+                          className="border border-primary-6 rounded-sm px-1 py-0.5 bg-primary-3"
+                          key={keyword}
+                        >
+                          {keyword}
+                        </Text>
+                      )}
+                    </For>
+                    {(actDetails?.keywords.length ?? 0) > 10 && (
+                      <Button color="primary" compact>
+                        +{actDetails?.keywords.length}
+                        <Icon name="Expand" size="xs" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span>References (first 3):</span>
+                  <For
+                    each={references}
+                    as="dl"
+                    className="grid grid-cols-[auto_1fr] gap-1"
                   >
-                    {keyword}
-                  </Text>
-                ), [])}
-              </For>
-            </div>
-          </div>
-          <div>Pinned:</div>
-        </div>
-        <div className="flex flex-col gap-2 justify-between">
-          <div>Ostatnio wybrane</div>
-          <IconButton name="History" className="gap-1 h-8">Historia przeglądanych</IconButton>
-        </div>
-      </Card>
+                    {([name, reference]) => (
+                      <Fragment key={name}>
+                        <dt className="flex items-center gap-1 overflow-hidden">
+                          <Text ellipsis light className="grow">{name}</Text>
+                          <Text>:</Text>
+                        </dt>
+                        <dd className="flex flex-wrap items-center gap-1">
+                          {reference.slice(0, 3).map((v) => (
+                            <Button
+                              onClick={() => {
+                                const [publisher, year, position] = v.id.split("/");
+                                const actParams = { publisher, year: +year, position: +position };
+                                setActParams(actParams);
+                              }}
+                              color="primary"
+                              compact
+                              key={v.id}
+                            >
+                              {v.id}
+                            </Button>
+                          ))}
+                          {reference.length > 3 && (
+                            <Button color="primary" compact>
+                              +{reference.length - 3}
+                              <Icon name="Expand" size="xs" />
+                            </Button>
+                          )}
+                        </dd>
+                      </Fragment>
+                    )}
+                  </For>
+                </div>
+              </>
+            )
+            : (
+              <Text color="info" className="flex self-center gap-2">
+                <Icon name="Info" /> No act selected
+              </Text>
+            )}
+        </Card>
+      </div>
       <div className="h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 container items-center w-full">
         <CardPDF url={pdfUrl} className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2" />
         <CardJSON content={actDetails} />
