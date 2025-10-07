@@ -57,10 +57,10 @@ const RouteComponent = memo(() => {
         <Card className="w-full flex items-center gap-1">
           <IconButton name="History" className="w-fit" disabled={history.length === 0}>
             <span className="not-md:hidden">
-              {history.length > 0 ? "View history" : "No history"}
+              {history.length > 0 ? "history" : "No history"}
             </span>
           </IconButton>
-          <For each={history} className="flex flex-wrap items-center gap-1">
+          <For each={history.slice(0, 10)} className="flex flex-wrap items-center gap-1 overflow-hidden">
             {(v) => (
               <Button
                 color="primary"
@@ -69,9 +69,28 @@ const RouteComponent = memo(() => {
                 onClick={() => setActParams(v)}
               >
                 <Text ellipsis>{`${v.publisher}/${v.year}/${v.position}`}</Text>
+                <IconButton color="secondary" compact name="Pin" as="span" />
+                <IconButton
+                  color="secondary"
+                  compact
+                  name="X"
+                  as="span"
+                  onClick={() =>
+                    setHistory(
+                      history.filter((h) =>
+                        v.publisher !== h.publisher || v.year !== h.year || v.position !== h.position
+                      ),
+                    )}
+                />
               </Button>
             )}
           </For>
+          {history.length > 10 && (
+            <Button color="primary">
+              +{history.length - 10}
+              <Icon name="Expand" size="xs" />
+            </Button>
+          )}
           {actParams && (
             <Button className="ml-auto">
               <Text ellipsis className="gap-1">
@@ -89,8 +108,8 @@ const RouteComponent = memo(() => {
               <>
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-wrap items-center gap-1">
-                    <span>Keywords (first 10):</span>
-                    <For each={actDetails?.keywords.slice(0, 10)}>
+                    <span>Keywords:</span>
+                    <For each={actDetails?.keywords.slice(0, 3)}>
                       {(keyword) => (
                         <Text
                           title={keyword}
@@ -102,16 +121,16 @@ const RouteComponent = memo(() => {
                         </Text>
                       )}
                     </For>
-                    {(actDetails?.keywords.length ?? 0) > 10 && (
+                    {(actDetails?.keywords.length ?? 0) > 3 && (
                       <Button color="primary" compact>
-                        +{actDetails?.keywords.length}
+                        +{actDetails!.keywords.length - 3}
                         <Icon name="Expand" size="xs" />
                       </Button>
                     )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <span>References (first 3):</span>
+                  <span>References:</span>
                   <For
                     each={references}
                     as="dl"
@@ -119,7 +138,7 @@ const RouteComponent = memo(() => {
                   >
                     {([name, reference]) => (
                       <Fragment key={name}>
-                        <dt className="flex items-center gap-1 overflow-hidden">
+                        <dt className="flex gap-1 overflow-hidden">
                           <Text ellipsis light className="grow">{name}</Text>
                           <Text>:</Text>
                         </dt>
