@@ -81,7 +81,8 @@ export const Card = memo<CardProps>(function Card(
             transition-colors
         `,
         label && "mt-2",
-        !compact && "p-4 pb-2",
+        isMaximized ? "w-full" : undefined,
+        compact ? undefined : (label ? "p-4 pb-2" : "px-4 py-2"),
         className,
       )}
     >

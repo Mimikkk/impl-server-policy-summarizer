@@ -7,7 +7,7 @@ export interface IconButtonProps extends ButtonProps {
 }
 
 export const IconButton = memo<IconButtonProps>(function IconButton(
-  { variant = "text", name, compact, square = true, children, ...props },
+  { variant = "text", name, compact, children, square = !children, ...props },
 ) {
   return (
     <Button variant={variant} compact={compact} square={square} {...props}>

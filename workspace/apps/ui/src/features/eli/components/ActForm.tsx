@@ -4,7 +4,7 @@ import type { EliClient } from "@features/eli/EliClient.ts";
 import type { PublisherResource } from "@features/eli/resources/PublisherResource.ts";
 import type { YearItemResource } from "@features/eli/resources/YearResource.ts";
 import type { Nil } from "@utilities/common.ts";
-import { type FormEvent, useCallback, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { defineUseOptions, useEliPublisher, useEliPublishers, useEliYear } from "../hooks/eli.hooks.ts";
 
 const usePublisherOptions = defineUseOptions<PublisherResource>({
@@ -99,10 +99,18 @@ const ActSelect = ({
   );
 };
 
-export function ActForm({ onSubmit }: { onSubmit: (params: EliClient.ActParams) => void }) {
-  const [publisherId, setPublisherId] = useState<string | null>(null);
-  const [yearId, setYearId] = useState<string | null>(null);
-  const [positionId, setPositionId] = useState<string | null>(null);
+export function ActForm(
+  { values, onSubmit }: { values: Nil<EliClient.ActParams>; onSubmit: (params: EliClient.ActParams) => void },
+) {
+  const [publisherId, setPublisherId] = useState<string | null>(values?.publisher ?? null);
+  const [yearId, setYearId] = useState<string | null>(values?.year.toString() ?? null);
+  const [positionId, setPositionId] = useState<string | null>(values?.position.toString() ?? null);
+
+  useEffect(() => {
+    setPublisherId(values?.publisher ?? null);
+    setYearId(values?.year.toString() ?? null);
+    setPositionId(values?.position.toString() ?? null);
+  }, [values]);
 
   const handleSubmit = useCallback((event: FormEvent) => {
     event.preventDefault();
@@ -117,7 +125,7 @@ export function ActForm({ onSubmit }: { onSubmit: (params: EliClient.ActParams) 
       <PublisherSelect value={publisherId} onValueChange={setPublisherId} />
       <YearSelect publisherId={publisherId} value={yearId} onValueChange={setYearId} />
       <ActSelect publisherId={publisherId} yearId={yearId} value={positionId} onValueChange={setPositionId} />
-      <Button type="submit">
+      <Button type="submit" className="w-full">
         Load act
       </Button>
     </form>
