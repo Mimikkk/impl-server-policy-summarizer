@@ -31,10 +31,13 @@
     "@std/crypto": "jsr:@std/crypto@1.0.0",
     "@std/http": "jsr:@std/http@1.0.0",
     "@std/collections": "jsr:@std/collections@1.0.0",
+    "ollama": "npm:ollama@0.6.0",
     "hono": "npm:hono@4.6.3",
     "@hono/zod-validator": "npm:@hono/zod-validator@0.2.1",
     "zod": "npm:zod@3.23.8",
-    "openai": "npm:openai@4.76.0"
+    "openai": "npm:openai@4.76.0",
+    "pino": "npm:pino@*",
+    "pino-pretty": "npm:pino-pretty@*"
   },
   "compilerOptions": {
     "lib": ["deno.window", "deno.ns", "ESNext"],
