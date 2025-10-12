@@ -89,7 +89,7 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
         <div className="absolute h-full w-full">
           <div className="relative h-full w-full">
             <div
-              className="contents [&>.shiki]:whitespace-pre-wrap [&>.shiki]:break-words [&>.shiki]:h-full [&>.shiki]:overflow-auto"
+              className="contents [&>.shiki]:whitespace-pre-wrap [&>.shiki]:px-2 [&>.shiki]:py-1 [&>.shiki]:rounded-sm [&>.shiki]:break-words [&>.shiki]:h-full [&>.shiki]:overflow-auto"
               dangerouslySetInnerHTML={{ __html: code ?? "" }}
             />
           </div>

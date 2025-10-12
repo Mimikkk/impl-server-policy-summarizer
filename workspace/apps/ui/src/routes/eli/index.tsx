@@ -5,12 +5,15 @@ import { Card } from "@components/containers/card/Card.tsx";
 import { CardHTML } from "@components/containers/card/presets/CardHTML.tsx";
 import { CardJSON } from "@components/containers/card/presets/CardJSON.tsx";
 import { CardPDF } from "@components/containers/card/presets/CardPDF.tsx";
+import { CardText } from "@components/containers/card/presets/CardText.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
+import { readPdfText } from "@configs/pdf-js/pdfjs.ts";
 import { ActForm } from "@features/eli/components/ActForm.tsx";
 import { EliClient } from "@features/eli/EliClient.ts";
 import { useEliAct, useEliActHTMLString } from "@features/eli/hooks/eli.hooks.ts";
 import { useLocalStorage } from "@hooks/useLocalStorage.ts";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Fragment, memo, useEffect, useMemo } from "react";
 
@@ -50,6 +53,14 @@ const RouteComponent = memo(() => {
   const pdfUrl = useMemo(() => actParams ? EliClient.pdfUrl(actParams) : null, [actParams]);
 
   const references = useMemo(() => Object.entries(actDetails?.references ?? {}), [actDetails?.references]);
+
+  const { data: pdf, status: pdfStatus } = useQuery({
+    queryKey: ["pdf", actParams],
+    queryFn: async () => await readPdfText(await EliClient.pdf(actParams!)),
+    enabled: !!actParams,
+  });
+
+  console.log({ pdf, pdfStatus });
 
   return (
     <div className="flex flex-col gap-2 items-center h-full">
@@ -177,10 +188,11 @@ const RouteComponent = memo(() => {
             )}
         </Card>
       </div>
-      <div className="h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 container items-center w-full">
-        <CardPDF url={pdfUrl} className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2" />
+      <div className="h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 container items-center w-full">
+        <CardPDF url={pdfUrl} className="col-span-1 md:col-span-2 lg:col-span-3 row-span-2" />
         <CardJSON content={actDetails} />
         <CardHTML content={actHtml} />
+        <CardText content={pdf} />
       </div>
     </div>
   );

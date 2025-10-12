@@ -53,7 +53,6 @@
     "@std/dotenv": "jsr:@std/dotenv@0.225.5",
     "@cliffy/ansi": "jsr:@cliffy/ansi@1.0.0-rc.8",
     "@std/testing": "jsr:@std/testing@1.0.15",
-    "@std/expect": "jsr:@std/expect@1.0.17",
-    "@tanstack/router-plugin": "npm:@tanstack/router-plugin@^1.132.33"
+    "@std/expect": "jsr:@std/expect@1.0.17"
   }
 }
