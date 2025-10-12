@@ -27,7 +27,7 @@
   },
   "vendor": true,
   "workspace": {
-    "members": ["workspace/apps/ui"]
+    "members": ["workspace/apps/ui", "workspace/apps/server"]
   },
   "tasks": {
     "build:ui": {
@@ -45,6 +45,18 @@
     "test:server": {
       "description": "Test the server application",
       "command": "deno task -f app-server test"
+    },
+    "dev:server": {
+      "description": "Run development server",
+      "command": "deno task -f app-server dev"
+    },
+    "start:server": {
+      "description": "Start production server",
+      "command": "deno task -f app-server start"
+    },
+    "dev:all": {
+      "description": "Run both UI and server in development mode",
+      "command": "deno task dev:ui & deno task dev:server"
     }
   },
   "imports": {

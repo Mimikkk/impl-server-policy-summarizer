@@ -1,0 +1,44 @@
+{
+  "name": "@nimir/app-server",
+  "version": "0.0.0",
+  "exports": "./src/main.ts",
+  "tasks": {
+    "dev": {
+      "description": "Run the server in development mode",
+      "command": "deno run -A --watch src/main.ts"
+    },
+    "start": {
+      "description": "Start the production server",
+      "command": "deno run -A src/main.ts"
+    },
+    "preview": {
+      "description": "Preview the built server application",
+      "command": "deno run -A src/main.ts"
+    },
+    "test": {
+      "description": "Test the server application",
+      "command": "deno test -A"
+    }
+  },
+  "imports": {
+    "@utilities/": "./src/core/utilities/",
+    "@services/": "./src/core/services/",
+    "@features/": "./src/features/",
+    "@configs/": "./src/configs/",
+    "@std/fs": "jsr:@std/fs@1.0.19",
+    "@std/path": "jsr:@std/path@1.1.2",
+    "@std/dotenv": "jsr:@std/dotenv@0.225.5",
+    "@std/crypto": "jsr:@std/crypto@1.0.0",
+    "@std/http": "jsr:@std/http@1.0.0",
+    "@std/collections": "jsr:@std/collections@1.0.0",
+    "hono": "npm:hono@4.6.3",
+    "@hono/zod-validator": "npm:@hono/zod-validator@0.2.1",
+    "zod": "npm:zod@3.23.8",
+    "openai": "npm:openai@4.76.0"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window", "deno.ns", "ESNext"],
+    "noErrorTruncation": true,
+    "strict": true
+  }
+}
