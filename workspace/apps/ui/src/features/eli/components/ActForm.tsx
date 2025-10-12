@@ -137,7 +137,6 @@ export function ActForm(
     event.preventDefault();
 
     if (!publisherId || !yearId || !positionId) return;
-    console.log({ publisherId, yearId, positionId });
 
     onSubmit({ publisher: publisherId, year: +yearId, position: +positionId });
   }, [publisherId, yearId, positionId, onSubmit]);

@@ -38,18 +38,18 @@ interface TextItem {
   hasEOL: boolean;
 }
 
-export const readPdf = async (file: File): Promise<PdfJs.PDFDocumentProxy | undefined> => {
+export const readPdfDocument = async (file: File): Promise<PdfJs.PDFDocumentProxy | undefined> => {
   const buffer = await file.arrayBuffer();
   const pdf = await instance?.getDocument(buffer).promise;
   return pdf;
 };
 
-export const readPdfText = async (file: File): Promise<string | undefined> => {
-  const pdf = await readPdf(file);
-  if (!pdf) return undefined;
+export const stringifyPdfFile = async (file: File): Promise<string | undefined> => {
+  const document = await readPdfDocument(file);
+  if (!document) return undefined;
 
-  const contents = await Promise.all(Array.from({ length: pdf.numPages }, async (_, i) => {
-    const page = await pdf.getPage(i + 1);
+  const contents = await Promise.all(Array.from({ length: document.numPages }, async (_, i) => {
+    const page = await document.getPage(i + 1);
 
     return await page.getTextContent();
   }));

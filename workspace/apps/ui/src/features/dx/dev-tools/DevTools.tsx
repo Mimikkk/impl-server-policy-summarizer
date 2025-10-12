@@ -6,7 +6,7 @@ import { ColorPaletteView } from "../color-pallete/ColorPaletteView.tsx";
 import { ComponentsView } from "../components/ComponentsView.tsx";
 import { useHeightResize } from "../dev-tools/useHeightResize.tsx";
 import { IconPalleteView } from "../icon-pallete/IconPalleteView.tsx";
-import { RouteView } from "../routes/RouteView.tsx";
+import { RoutesView } from "../routes/RoutesView.tsx";
 import { DevToolsToggleButton } from "./DevToolsButton.tsx";
 import { type DevToolsItem, DevToolsNavigation } from "./DevToolsNavigation.tsx";
 import { DevToolsResizer } from "./DevToolsResizer.tsx";
@@ -55,7 +55,7 @@ const useItems = () => {
     value: "routes",
     label: "Routes",
     icon: "Route",
-    component: <RouteView />,
+    component: <RoutesView />,
   }, {
     value: "colors",
     label: "Colors",

@@ -1,33 +1,12 @@
-import { Button } from "@components/actions/Button.tsx";
 import { ThemeButton } from "@components/actions/ThemeButton.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { Card } from "@components/containers/card/Card.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { PdfJsProvider } from "@configs/pdf-js/pdfjs.ts";
 import { DevTools } from "@features/dx/dev-tools/DevTools.tsx";
+import { Breadcrumbs } from "@features/ux/layout/Breadcrumbs.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
-import { createRootRouteWithContext, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { useMemo } from "react";
-
-const Breadcrumbs = () => {
-  const state = useRouterState();
-  const parts = useMemo(() => state.location.pathname.split("/").filter(Boolean), [state.location.pathname]);
-
-  return (
-    <div className="flex items-center gap-1">
-      <Text light>Location:</Text>
-      <span className="flex items-center gap-1">
-        <Button variant="text" className="flex px-1 gap-1">
-          <Icon name="HdmiPort" /> Home
-        </Button>
-        {parts.length ? <span>/</span> : null}
-        {parts.map((part, index, parts) => (
-          <Button variant="text" className="px-1" key={part}>{part}{index < parts.length - 1 && <span>/</span>}</Button>
-        ))}
-      </span>
-    </div>
-  );
-};
+import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
 
 export const Route = createRootRouteWithContext()({
   component: () => {

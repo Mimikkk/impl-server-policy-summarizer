@@ -102,7 +102,7 @@ const useCurrentRouterPath = () => {
   return current;
 };
 
-export const RouteView = memo(function RouteView() {
+export const RoutesView = memo(function RouteView() {
   const router = useRouter();
 
   const handleNavigate = useCallback((path: string) => router.navigate({ to: path }), [router]);
