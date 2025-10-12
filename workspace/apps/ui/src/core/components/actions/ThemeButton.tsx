@@ -36,6 +36,7 @@ export const ThemeButton = memo(
           aria-label={title}
           {...props}
           name={theme === "dark" ? "Moon" : "Sun"}
+          square
         >
           {mode === "system" && <Icon name="Settings" size="xs" className="absolute top-0 right-0 stroke-3" />}
         </IconButton>

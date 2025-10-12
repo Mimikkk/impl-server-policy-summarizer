@@ -7,7 +7,7 @@ import { PdfJsProvider } from "@configs/pdf-js/pdfjs.ts";
 import { DevTools } from "@features/dx/dev-tools/DevTools.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
 import { createRootRouteWithContext, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 const Breadcrumbs = () => {
   const state = useRouterState();
@@ -32,10 +32,6 @@ const Breadcrumbs = () => {
 export const Route = createRootRouteWithContext()({
   component: () => {
     const { mode, theme, setMode: setMode } = useTheme();
-
-    useEffect(() => {
-      document.body.setAttribute("data-theme", theme);
-    }, [theme]);
 
     return (
       <PdfJsProvider>

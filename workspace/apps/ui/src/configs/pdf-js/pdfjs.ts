@@ -44,13 +44,6 @@ export const readPdf = async (file: File): Promise<PdfJs.PDFDocumentProxy | unde
   return pdf;
 };
 
-const fixupUppercaseLine = (str: string): string => {
-  const result = str.replace(/\s+/g, "");
-
-  if (result.toUpperCase() === result) return result;
-  return str;
-};
-
 export const readPdfText = async (file: File): Promise<string | undefined> => {
   const pdf = await readPdf(file);
   if (!pdf) return undefined;
