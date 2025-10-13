@@ -2,7 +2,7 @@ import { Environment } from "@configs/environment.ts";
 import { createRoute, z } from "@hono/zod-openapi";
 import { compactMessage } from "@utilities/messages.ts";
 import { HonoClient } from "../clients/HonoClient.ts";
-import { responses } from "../core/messages/errors.ts";
+import { BadRequest, responses } from "../core/messages/errors.ts";
 
 HonoClient.openapi(
   createRoute({
@@ -45,5 +45,10 @@ HonoClient.openapi(
     });
 
     return context.json({ summary: response.response }, 200);
+  },
+  (result, context) => {
+    if (!result.success) {
+      return context.json(BadRequest, BadRequest.status);
+    }
   },
 );

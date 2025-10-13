@@ -28,9 +28,5 @@ HonoClient
 
     await next();
   })
-  .use(async (context, next) => {
-    console.log("context", context.res);
-    await next();
-  })
   .notFound(notFoundErrors)
   .onError(internalServerErrors);
