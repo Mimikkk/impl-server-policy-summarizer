@@ -10,15 +10,26 @@ export const HonoClient = new OpenAPIHono<{ Variables: Container }>();
 
 HonoClient
   .use(
+    cors({
+      origin: "*",
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowHeaders: ["Content-Type", "Authorization"],
+      exposeHeaders: ["ETag"],
+      credentials: false,
+      maxAge: 600,
+    }),
     logger(),
     etag(),
-    cors(),
     prettyJSON(),
   )
   .use(async (context, next) => {
     context.set("logger", container.logger);
     context.set("ollama", container.ollama);
 
+    await next();
+  })
+  .use(async (context, next) => {
+    console.log("context", context.res);
     await next();
   })
   .notFound(notFoundErrors)

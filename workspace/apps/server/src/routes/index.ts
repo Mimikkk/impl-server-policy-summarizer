@@ -1,2 +1,2 @@
-import "./documentation.ts";
+import "./docs.ts";
 import "./summarize.ts";
