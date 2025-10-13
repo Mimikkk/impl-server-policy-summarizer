@@ -1,16 +1,19 @@
-import { createContainerVariables } from "@configs/container.ts";
+import { container } from "@configs/container.ts";
 import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
 import { HonoClient } from "./clients/HonoClient.ts";
+import { OllamaClient } from "./clients/OllamaClient.ts";
+import "./routes/index.ts";
 
 const controller = new AbortController();
 const { signal } = controller;
 
-HonoClient.dependencies = await createContainerVariables();
+container.logger = Logger;
+container.ollama = await OllamaClient.fromEnvironment();
 
 Deno.serve({
   onListen() {
-    Logger.info(`Server is running on "http://${Environment.Server.Host}:${Environment.Server.Port}".`);
+    Logger.info(`Server is running at "http://${Environment.Server.Host}:${Environment.Server.Port}".`);
 
     type WindowsSignal = "SIGINT" | "SIGBREAK";
     type UnixSignal = "SIGTERM" | "SIGQUIT" | "SIGKILL";

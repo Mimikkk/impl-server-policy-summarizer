@@ -1,15 +1,12 @@
-import type { Ollama } from "ollama";
-import { OllamaClient } from "../clients/OllamaClient.ts";
-import { Logger } from "./logger.ts";
+import type { OllamaClient } from "../clients/OllamaClient.ts";
+import type { Logger } from "./logger.ts";
 
-export interface ContainerVariables {
+export interface Container {
   logger: typeof Logger;
-  ollama: Ollama;
+  ollama: OllamaClient;
 }
 
-export const createContainerVariables = async (
-  options?: Partial<ContainerVariables>,
-): Promise<ContainerVariables> => ({
-  logger: options?.logger ?? Logger,
-  ollama: options?.ollama ?? (await OllamaClient.fromEnvironment()).client,
-});
+export const container: Container = {
+  logger: null!,
+  ollama: null!,
+};
