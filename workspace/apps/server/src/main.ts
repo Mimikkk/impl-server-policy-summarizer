@@ -3,7 +3,7 @@ import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
 import { HonoClient } from "./clients/HonoClient.ts";
 import { OllamaClient } from "./clients/OllamaClient.ts";
-import "./routes/index.ts";
+import "./api.routes.ts";
 
 const controller = new AbortController();
 const { signal } = controller;

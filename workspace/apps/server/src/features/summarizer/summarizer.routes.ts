@@ -1,11 +1,11 @@
 import { Environment } from "@configs/environment.ts";
-import { createRoute, z } from "@hono/zod-openapi";
+import { z } from "@hono/zod-openapi";
 import { compactMessage } from "@utilities/messages.ts";
-import { HonoClient } from "../clients/HonoClient.ts";
-import { BadRequest, responses } from "../core/messages/errors.ts";
+import { HonoClient } from "../../clients/HonoClient.ts";
+import { defineResponses } from "../docs/defineResponses.ts";
 
 HonoClient.openapi(
-  createRoute({
+  {
     method: "post",
     path: "/api/v1/summarize",
     tags: ["Summarize"],
@@ -21,14 +21,14 @@ HonoClient.openapi(
         required: true,
       },
     },
-    responses: responses({
+    responses: defineResponses({
       200: {
         schema: z.object({ summary: z.string().describe("The content of the summary") }),
         example: { summary: "The content of the summary" },
         description: "The summary of the text",
       },
     }),
-  }),
+  },
   async (context) => {
     const { content } = context.req.valid("json");
 
@@ -45,10 +45,5 @@ HonoClient.openapi(
     });
 
     return context.json({ summary: response.response }, 200);
-  },
-  (result, context) => {
-    if (!result.success) {
-      return context.json(BadRequest, BadRequest.status);
-    }
   },
 );

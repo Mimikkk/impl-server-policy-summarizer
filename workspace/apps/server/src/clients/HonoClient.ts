@@ -1,12 +1,16 @@
 import { type Container, container } from "@configs/container.ts";
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { TimeMs } from "@utilities/TimeMs.ts";
+import type { Context as HonoContext } from "hono";
+import { cache } from "hono/cache";
 import { cors } from "hono/cors";
 import { etag } from "hono/etag";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
-import { internalServerErrors, notFoundErrors } from "../core/messages/errors.ts";
+import { timeout } from "hono/timeout";
+import { withInternalServerErrors, withRouteNotFoundErrors, withValidationErrors } from "../core/middlewares.ts";
 
-export const HonoClient = new OpenAPIHono<{ Variables: Container }>();
+export const HonoClient = new OpenAPIHono<{ Variables: Container }>({ defaultHook: withValidationErrors });
 
 HonoClient
   .use(
@@ -20,7 +24,15 @@ HonoClient
     }),
     logger(),
     etag(),
+    timeout(TimeMs.s5),
     prettyJSON(),
+    cache({
+      cacheName: "cache",
+      wait: true,
+      cacheControl: "max-age=3600",
+      vary: ["Accept-Encoding"],
+      cacheableStatusCodes: [200, 201, 202, 204, 206],
+    }),
   )
   .use(async (context, next) => {
     context.set("logger", container.logger);
@@ -28,5 +40,7 @@ HonoClient
 
     await next();
   })
-  .notFound(notFoundErrors)
-  .onError(internalServerErrors);
+  .notFound(withRouteNotFoundErrors)
+  .onError(withInternalServerErrors);
+
+export type Context = HonoContext<{ Variables: Container }, string, {}>;

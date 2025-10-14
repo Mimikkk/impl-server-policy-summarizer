@@ -1,6 +1,6 @@
 import { Environment } from "@configs/environment.ts";
 import { Scalar } from "@scalar/hono-api-reference";
-import { HonoClient } from "../clients/HonoClient.ts";
+import { HonoClient } from "../../clients/HonoClient.ts";
 
 HonoClient.doc31("/docs/openapi.json", {
   openapi: "3.1.0",
