@@ -16,11 +16,11 @@ const ResponseSchema = <const TStatus extends number, const TName extends string
 
 export const badRequestResponse = {
   status: 400,
-  message: "BadRequestErrorResponse",
+  message: "bad request",
 } as const;
 export const BadRequestResponseSchema = ResponseSchema({
   status: 400,
-  name: "bad request",
+  name: "BadRequestErrorResponse",
   example: badRequestResponse,
 });
 export type BadRequestResponse = z.infer<typeof BadRequestResponseSchema>;

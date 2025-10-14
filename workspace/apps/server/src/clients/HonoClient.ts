@@ -3,12 +3,19 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { TimeMs } from "@utilities/TimeMs.ts";
 import type { Context as HonoContext } from "hono";
 import { cache } from "hono/cache";
+import { except } from "hono/combine";
 import { cors } from "hono/cors";
 import { etag } from "hono/etag";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { timeout } from "hono/timeout";
-import { withInternalServerErrors, withRouteNotFoundErrors, withValidationErrors } from "../core/middlewares.ts";
+import {
+  cacheMonitor,
+  monitor,
+  withInternalServerErrors,
+  withRouteNotFoundErrors,
+  withValidationErrors,
+} from "../core/middlewares.ts";
 
 export const HonoClient = new OpenAPIHono<{ Variables: Container }>({ defaultHook: withValidationErrors });
 
@@ -26,16 +33,20 @@ HonoClient
     etag(),
     timeout(TimeMs.s5),
     prettyJSON(),
-    cache({
-      cacheName: "cache",
-      wait: true,
-      cacheControl: "max-age=3600",
-      vary: ["Accept-Encoding"],
-      cacheableStatusCodes: [200, 201, 202, 204, 206],
-    }),
   )
   .use(async (context, next) => {
     context.set("logger", container.logger);
+    context.set("monitoring", container.monitoring);
+
+    await next();
+  })
+  .use(monitor())
+  .get(
+    "*",
+    except(["api/v1/metrics/*", "/docs/*"], cache({ cacheName: "cache", wait: true, cacheControl: "max-age=3600" })),
+  )
+  .use(cacheMonitor())
+  .use(async (context, next) => {
     context.set("ollama", container.ollama);
 
     await next();

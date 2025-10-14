@@ -7,7 +7,9 @@ import {
   TimeoutResponseSchema,
 } from "../../core/messages/responses.ts";
 
-type ResponseOpenApiSchema<T extends z.ZodObject<any, any> = z.ZodObject<any, any>> = {
+type ResponseOpenApiSchema<
+  T extends z.ZodObject<any, any> | z.ZodRecord<any, any> = z.ZodObject<any, any> | z.ZodRecord<any, any>,
+> = {
   content: { "application/json": { schema: T } };
   description: string;
 };
@@ -31,7 +33,9 @@ const GlobalResponses = {
   },
 } satisfies Record<number, ResponseOpenApiSchema>;
 
-interface ResponseOptions<T extends z.ZodObject<any, any> = z.ZodObject<any, any>> {
+interface ResponseOptions<
+  T extends z.ZodObject<any, any> | z.ZodRecord<any, any> = z.ZodObject<any, any> | z.ZodRecord<any, any>,
+> {
   schema: T;
   description: string;
   example?: z.infer<T>;
