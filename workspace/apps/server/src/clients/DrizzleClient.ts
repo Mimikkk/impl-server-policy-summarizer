@@ -16,5 +16,6 @@ const { version } = await DrizzleClient.get<{ version: string }>(
 );
 Logger.info({
   "LibSQL Version": version,
+  "Drizzle Version": DrizzleClient,
   "Database URL": Environment.Database.Url,
 }, "[DrizzleClient] initialized.");
