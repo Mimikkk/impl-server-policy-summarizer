@@ -5,11 +5,11 @@ import type { Logger } from "./logger.ts";
 export interface Container {
   logger: typeof Logger;
   ollama: OllamaClient;
-  monitoring: MetricMonitor;
+  metrics: MetricMonitor;
 }
 
 export const container: Container = {
   logger: null!,
   ollama: null!,
-  monitoring: null!,
+  metrics: null!,
 };

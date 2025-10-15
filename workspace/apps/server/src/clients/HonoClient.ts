@@ -36,7 +36,7 @@ HonoClient
   )
   .use(async (context, next) => {
     context.set("logger", container.logger);
-    context.set("monitoring", container.monitoring);
+    context.set("metrics", container.metrics);
 
     await next();
   })

@@ -20,7 +20,7 @@ HonoClient.openapi(
       },
     }),
   },
-  (context) => context.json(context.var.monitoring.calculateMetrics(), 200),
+  (context) => context.json(context.var.metrics.calculateMetrics(), 200),
 );
 
 HonoClient.openapi(
@@ -38,7 +38,7 @@ HonoClient.openapi(
       },
     }),
   },
-  (context) => context.json(context.var.monitoring.calculateGlobalMetrics(), 200),
+  (context) => context.json(context.var.metrics.calculateGlobalMetrics(), 200),
 );
 
 HonoClient.openapi(
@@ -69,7 +69,7 @@ HonoClient.openapi(
   (context) => {
     const { endpoint } = context.req.valid("param");
 
-    const metrics = context.var.monitoring.calculateEndpointMetrics(endpoint);
+    const metrics = context.var.metrics.calculateEndpointMetrics(endpoint);
 
     if (metrics) {
       return context.json({ error: "Endpoint not found" }, 404);
@@ -94,7 +94,7 @@ HonoClient.openapi(
       },
     }),
   },
-  (context) => context.json(context.var.monitoring.calculateEndpointsMetrics(), 200),
+  (context) => context.json(context.var.metrics.calculateEndpointsMetrics(), 200),
 );
 
 HonoClient.openapi(
@@ -119,7 +119,7 @@ HonoClient.openapi(
     }),
   },
   (context) => {
-    context.var.monitoring.reset();
+    context.var.metrics.reset();
     return context.json({ message: "All metrics have been reset successfully", timestamp: Date.now() }, 200);
   },
 );
@@ -144,7 +144,7 @@ HonoClient.openapi(
     }),
   },
   (context) => {
-    const { startTs, uptimeMs } = context.var.monitoring.calculateMetrics();
+    const { startTs, uptimeMs } = context.var.metrics.calculateMetrics();
 
     return context.json({ status: "healthy", uptimeMs, startTs }, 200);
   },

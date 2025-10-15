@@ -11,7 +11,7 @@ const { signal } = controller;
 
 container.logger = Logger;
 container.ollama = await OllamaClient.fromEnvironment();
-container.monitoring = MetricMonitor.empty();
+container.metrics = MetricMonitor.empty();
 
 Deno.serve({
   onListen() {

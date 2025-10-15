@@ -11,7 +11,7 @@ import {
 } from "./messages/responses.ts";
 
 export const withRequestMonitor = (): MiddlewareHandler<{ Variables: Container }> => async (context, next) => {
-  const { monitoring } = context.var;
+  const { metrics: monitoring } = context.var;
   const key = `${context.req.method}:${context.req.url.split("?")[0]}`;
 
   const startTimeMs = Date.now();
@@ -38,7 +38,7 @@ export const withCacheMonitor = (): MiddlewareHandler<{ Variables: Container }> 
   const age = context.res.headers.get("age");
 
   const isSuccess = cacheControl || etag || age;
-  context.var.monitoring.recordCache(key, !!isSuccess);
+  context.var.metrics.recordCache(key, !!isSuccess);
 };
 
 export const withRouteNotFoundErrors: NotFoundHandler = (context) => {
