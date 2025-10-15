@@ -99,33 +99,6 @@ HonoClient.openapi(
 
 HonoClient.openapi(
   {
-    method: "post",
-    path: "/api/v1/metrics/reset",
-    tags: ["Monitoring"],
-    summary: "Reset all monitoring metrics",
-    description: "Resets all counters and statistics to zero",
-    responses: defineResponses({
-      200: {
-        schema: z.object({
-          message: z.string().describe("Success message"),
-          timestamp: z.number().describe("Reset timestamp"),
-        }),
-        description: "Metrics reset confirmation",
-        example: {
-          message: "All metrics have been reset successfully",
-          timestamp: 1703123456789,
-        },
-      },
-    }),
-  },
-  (context) => {
-    context.var.metrics.reset();
-    return context.json({ message: "All metrics have been reset successfully", timestamp: Date.now() }, 200);
-  },
-);
-
-HonoClient.openapi(
-  {
     method: "get",
     path: "/api/v1/health",
     tags: ["Monitoring"],

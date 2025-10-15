@@ -1,6 +1,7 @@
+import { loadSync } from "@std/dotenv";
 import z from "zod";
 
-const raw = Deno.env.toObject();
+const raw = loadSync();
 
 export const Environment = z.object({
   Server: z.object({
@@ -14,17 +15,22 @@ export const Environment = z.object({
     Url: z.string().min(1).default("http://localhost:11434"),
     Model: z.string().min(1).default("deepseek-r1:8b"),
   }),
+  Database: z.object({
+    Url: z.string().min(1),
+  }),
 }).parse({
   Server: {
     Host: raw.HOST,
-    Port: raw.PORT,
+    Port: +raw.PORT,
   },
-  Port: raw.PORT,
   Logging: {
     Level: raw.LOG_LEVEL,
   },
   Ollama: {
     Url: raw.OLLAMA_URL,
     Model: raw.OLLAMA_MODEL,
+  },
+  Database: {
+    Url: raw.DATABASE_URL,
   },
 });

@@ -1,4 +1,4 @@
-import type { Container } from "@configs/container.ts";
+import { type Container, container } from "@configs/container.ts";
 import type { ErrorHandler, MiddlewareHandler, NotFoundHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type z from "zod";
@@ -10,7 +10,15 @@ import {
   timeoutResponse,
 } from "./messages/responses.ts";
 
-export const withRequestMonitor = (): MiddlewareHandler<{ Variables: Container }> => async (context, next) => {
+export const withContainer: MiddlewareHandler<{ Variables: Container }> = async (context, next) => {
+  context.set("database", container.database);
+  context.set("ollama", container.ollama);
+  context.set("metrics", container.metrics);
+  context.set("logger", container.logger);
+  await next();
+};
+
+export const withRequestMonitor: MiddlewareHandler<{ Variables: Container }> = async (context, next) => {
   const { metrics: monitoring } = context.var;
   const key = `${context.req.method}:${context.req.url.split("?")[0]}`;
 
@@ -28,7 +36,7 @@ export const withRequestMonitor = (): MiddlewareHandler<{ Variables: Container }
   }
 };
 
-export const withCacheMonitor = (): MiddlewareHandler<{ Variables: Container }> => async (context, next) => {
+export const withCacheMonitor: MiddlewareHandler<{ Variables: Container }> = async (context, next) => {
   const key = `${context.req.method}:${context.req.url.split("?")[0]}`;
 
   await next();

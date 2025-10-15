@@ -4,3 +4,4 @@ dist
 vendor
 node_modules
 .env
+apps/server/storage/database.db

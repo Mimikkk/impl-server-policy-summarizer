@@ -1,4 +1,4 @@
-import { type Container, container } from "@configs/container.ts";
+import type { Container } from "@configs/container.ts";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { TimeMs } from "@utilities/TimeMs.ts";
 import type { Context as HonoContext } from "hono";
@@ -11,6 +11,7 @@ import { prettyJSON } from "hono/pretty-json";
 import { timeout } from "hono/timeout";
 import {
   withCacheMonitor,
+  withContainer,
   withInternalServerErrors,
   withRequestMonitor,
   withRouteNotFoundErrors,
@@ -34,26 +35,16 @@ HonoClient
     timeout(TimeMs.s5),
     prettyJSON(),
   )
-  .use(async (context, next) => {
-    context.set("logger", container.logger);
-    context.set("metrics", container.metrics);
-
-    await next();
-  })
-  .use(withRequestMonitor())
+  .use(withContainer)
+  .use(withRequestMonitor)
   .get(
     "*",
     except(
       ["api/v1/metrics/*", "/docs/*"],
       cache({ cacheName: "cache", wait: true, cacheControl: "max-age=3600" }),
-      withCacheMonitor(),
+      withCacheMonitor,
     ),
   )
-  .use(async (context, next) => {
-    context.set("ollama", container.ollama);
-
-    await next();
-  })
   .notFound(withRouteNotFoundErrors)
   .onError(withInternalServerErrors);
 
