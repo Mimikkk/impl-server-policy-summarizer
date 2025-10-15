@@ -1,8 +1,7 @@
-import { Environment } from "@configs/environment.ts";
 import { z } from "@hono/zod-openapi";
-import { compactMessage } from "@utilities/messages.ts";
 import { HonoClient } from "../../clients/HonoClient.ts";
 import { defineResponses } from "../docs/defineResponses.ts";
+import { summaries, summarySchema } from "./summaries.entity.ts";
 
 HonoClient.openapi(
   {
@@ -23,8 +22,7 @@ HonoClient.openapi(
     },
     responses: defineResponses({
       200: {
-        schema: z.object({ summary: z.string().describe("The content of the summary") }),
-        example: { summary: "The content of the summary" },
+        schema: summarySchema,
         description: "The summary of the text",
       },
     }),
@@ -32,18 +30,17 @@ HonoClient.openapi(
   async (context) => {
     const { content } = context.req.valid("json");
 
-    const { ollama } = context.var;
-
-    const response = await ollama.api.generate({
-      model: Environment.Ollama.Model,
-      prompt: compactMessage(`
+    const { response: summary } = await context.var.llm.infer({
+      prompt: `
         Summarize the following text in maximum of 100 words.
         \`\`\`txt
         ${content}
         \`\`\`
-    `),
+      `,
     });
 
-    return context.json({ summary: response.response }, 200);
+    const [entity] = await context.var.database.insert(summaries).values({ content, summary }).returning();
+
+    return context.json(entity, 200);
   },
 );

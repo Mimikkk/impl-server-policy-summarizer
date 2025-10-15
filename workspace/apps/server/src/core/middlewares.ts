@@ -11,10 +11,11 @@ import {
 } from "./messages/responses.ts";
 
 export const withContainer: MiddlewareHandler<{ Variables: Container }> = async (context, next) => {
-  context.set("database", container.database);
-  context.set("ollama", container.ollama);
-  context.set("metrics", container.metrics);
-  context.set("logger", container.logger);
+  for (const name in container) {
+    const key = name as keyof Container;
+    context.set(key, container[key]);
+  }
+
   await next();
 };
 
@@ -58,7 +59,7 @@ export const withInternalServerErrors: ErrorHandler = (error, context) => {
     return context.json(timeoutResponse, timeoutResponse.status);
   }
 
-  context.var.logger.error(`[InternalServerError] [error] ${error}`);
+  context.var.logger.error({ error }, `[InternalServerError] [error] ${error.message}`);
   return context.json(internalServerErrorResponse, internalServerErrorResponse.status);
 };
 

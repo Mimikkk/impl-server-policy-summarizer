@@ -6,13 +6,13 @@ import type { Logger } from "./logger.ts";
 export interface Container {
   database: typeof DrizzleClient;
   logger: typeof Logger;
-  ollama: OllamaClient;
+  llm: OllamaClient;
   metrics: MetricMonitor;
 }
 
 export const container: Container = {
   database: null!,
   logger: null!,
-  ollama: null!,
+  llm: null!,
   metrics: null!,
 };

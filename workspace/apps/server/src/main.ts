@@ -3,15 +3,15 @@ import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
 import { MetricMonitor } from "@features/monitoring/monitors/MetricMonitor.ts";
 import "./api.routes.ts";
+import { DrizzleClient } from "./clients/DrizzleClient.ts";
 import { HonoClient } from "./clients/HonoClient.ts";
 import { OllamaClient } from "./clients/OllamaClient.ts";
-import { DrizzleClient } from "./clients/DrizzleClient.ts";
 
 const controller = new AbortController();
 const { signal } = controller;
 
 container.logger = Logger;
-container.ollama = await OllamaClient.fromEnvironment();
+container.llm = await OllamaClient.fromEnvironment();
 container.metrics = MetricMonitor.empty();
 container.database = DrizzleClient;
 

@@ -4,7 +4,7 @@ import { HonoClient } from "../../clients/HonoClient.ts";
 
 HonoClient.doc31("/docs/openapi.json", {
   openapi: "3.1.0",
-  info: { version: "1.0.0", title: "My API" },
+  info: { version: "1.0.0", title: "Documentation" },
   security: [],
   servers: [{
     url: `http://localhost:${Environment.Server.Port}`,

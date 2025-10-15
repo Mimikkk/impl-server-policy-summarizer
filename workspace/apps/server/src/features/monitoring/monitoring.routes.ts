@@ -102,8 +102,8 @@ HonoClient.openapi(
     method: "get",
     path: "/api/v1/health",
     tags: ["Monitoring"],
-    summary: "Health check endpoint",
-    description: "Returns basic health status and uptime",
+    summary: "Check health",
+    description: "Check the health of the server",
     responses: defineResponses({
       200: {
         schema: z.object({

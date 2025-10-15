@@ -1,14 +1,16 @@
 import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
+import { compactMessage } from "@utilities/messages.ts";
 import { Ollama } from "ollama";
 
 export class OllamaClient {
   private constructor(
     public readonly api: Ollama,
+    public readonly model: string,
   ) {}
 
   static async create({ url, model }: { url: string; model: string }): Promise<OllamaClient> {
-    return await new OllamaClient(new Ollama({ host: url })).#prepare(model);
+    return await new OllamaClient(new Ollama({ host: url }), model).#prepare(model);
   }
 
   static async fromEnvironment(): Promise<OllamaClient> {
@@ -35,5 +37,9 @@ export class OllamaClient {
     }
 
     return this;
+  }
+
+  async infer({ prompt }: { prompt: string }): Promise<{ response: string }> {
+    return await this.api.generate({ model: this.model, prompt: compactMessage(prompt) });
   }
 }
