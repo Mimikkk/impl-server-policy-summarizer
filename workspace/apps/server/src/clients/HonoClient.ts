@@ -10,9 +10,9 @@ import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
 import { timeout } from "hono/timeout";
 import {
-  cacheMonitor,
-  monitor,
+  withCacheMonitor,
   withInternalServerErrors,
+  withRequestMonitor,
   withRouteNotFoundErrors,
   withValidationErrors,
 } from "../core/middlewares.ts";
@@ -40,12 +40,15 @@ HonoClient
 
     await next();
   })
-  .use(monitor())
+  .use(withRequestMonitor())
   .get(
     "*",
-    except(["api/v1/metrics/*", "/docs/*"], cache({ cacheName: "cache", wait: true, cacheControl: "max-age=3600" })),
+    except(
+      ["api/v1/metrics/*", "/docs/*"],
+      cache({ cacheName: "cache", wait: true, cacheControl: "max-age=3600" }),
+      withCacheMonitor(),
+    ),
   )
-  .use(cacheMonitor())
   .use(async (context, next) => {
     context.set("ollama", container.ollama);
 

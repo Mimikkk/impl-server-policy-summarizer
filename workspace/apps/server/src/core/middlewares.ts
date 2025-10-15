@@ -10,26 +10,25 @@ import {
   timeoutResponse,
 } from "./messages/responses.ts";
 
-export const monitor = (): MiddlewareHandler<{ Variables: Container }> => async (context, next) => {
+export const withRequestMonitor = (): MiddlewareHandler<{ Variables: Container }> => async (context, next) => {
   const { monitoring } = context.var;
   const key = `${context.req.method}:${context.req.url.split("?")[0]}`;
 
   const startTimeMs = Date.now();
   try {
     await next();
-
     const responseTimeMs = Date.now() - startTimeMs;
 
     const isSuccess = context.res.status >= 200 && context.res.status < 400;
-    monitoring.recordRequest(isSuccess, responseTimeMs, key);
+    monitoring.recordRequest(key, isSuccess, responseTimeMs);
   } catch (error) {
     const responseTimeMs = Date.now() - startTimeMs;
-    monitoring.recordRequest(false, responseTimeMs, key);
+    monitoring.recordRequest(key, false, responseTimeMs);
     throw error;
   }
 };
 
-export const cacheMonitor = (): MiddlewareHandler<{ Variables: Container }> => async (context, next) => {
+export const withCacheMonitor = (): MiddlewareHandler<{ Variables: Container }> => async (context, next) => {
   const key = `${context.req.method}:${context.req.url.split("?")[0]}`;
 
   await next();
@@ -38,12 +37,8 @@ export const cacheMonitor = (): MiddlewareHandler<{ Variables: Container }> => a
   const etag = context.res.headers.get("etag");
   const age = context.res.headers.get("age");
 
-  const { monitoring } = context.var;
-  if (cacheControl || etag || age) {
-    monitoring.recordCacheHit(key);
-  } else {
-    monitoring.recordCacheMiss(key);
-  }
+  const isSuccess = cacheControl || etag || age;
+  context.var.monitoring.recordCache(key, !!isSuccess);
 };
 
 export const withRouteNotFoundErrors: NotFoundHandler = (context) => {

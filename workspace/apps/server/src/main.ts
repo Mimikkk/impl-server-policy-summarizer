@@ -1,7 +1,7 @@
 import { container } from "@configs/container.ts";
 import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
-import { MonitorService } from "@services/MonitorService.ts";
+import { MetricMonitor } from "@features/monitoring/monitors/MetricMonitor.ts";
 import "./api.routes.ts";
 import { HonoClient } from "./clients/HonoClient.ts";
 import { OllamaClient } from "./clients/OllamaClient.ts";
@@ -11,7 +11,7 @@ const { signal } = controller;
 
 container.logger = Logger;
 container.ollama = await OllamaClient.fromEnvironment();
-container.monitoring = MonitorService.new();
+container.monitoring = MetricMonitor.empty();
 
 Deno.serve({
   onListen() {
