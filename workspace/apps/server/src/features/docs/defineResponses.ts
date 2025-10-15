@@ -3,7 +3,6 @@ import type { Merge } from "@utilities/types.ts";
 import {
   BadRequestResponseSchema,
   InternalServerErrorResponseSchema,
-  RouteNotFoundResponseSchema,
   TimeoutResponseSchema,
 } from "../../core/messages/responses.ts";
 
@@ -18,10 +17,6 @@ const GlobalResponses = {
   400: {
     content: { "application/json": { schema: BadRequestResponseSchema } },
     description: "Bad request",
-  },
-  404: {
-    content: { "application/json": { schema: RouteNotFoundResponseSchema } },
-    description: "Route Not found",
   },
   408: {
     content: { "application/json": { schema: TimeoutResponseSchema } },

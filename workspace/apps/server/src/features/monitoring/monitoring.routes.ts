@@ -20,7 +20,7 @@ HonoClient.openapi(
       },
     }),
   },
-  (context) => context.json(context.var.monitoring.calculate(), 200),
+  (context) => context.json(context.var.monitoring.calculateMetrics(), 200),
 );
 
 HonoClient.openapi(
@@ -144,7 +144,7 @@ HonoClient.openapi(
     }),
   },
   (context) => {
-    const { startTs, uptimeMs } = context.var.monitoring.calculate();
+    const { startTs, uptimeMs } = context.var.monitoring.calculateMetrics();
 
     return context.json({ status: "healthy", uptimeMs, startTs }, 200);
   },

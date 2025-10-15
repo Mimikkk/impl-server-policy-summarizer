@@ -45,7 +45,7 @@ export class MetricMonitor {
     return Object.fromEntries(this.endpointsMetrics.entries().map(([key, metrics]) => [key, metrics.metrics()]));
   }
 
-  calculate(): Metrics {
+  calculateMetrics(): Metrics {
     return {
       startTs: this.startTs,
       uptimeMs: Date.now() - this.startTs,
