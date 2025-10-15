@@ -57,13 +57,14 @@ export class EndpointMetricMonitor {
 
   metrics(): EndpointMetrics {
     const { cacheSuccessCount, cacheFailureCount, successCount, failureCount, timesMs, lastUsedTs } = this;
+    const cacheRequestTotal = cacheSuccessCount + cacheFailureCount;
 
     return {
       cacheSuccessCount,
       cacheFailureCount,
-      cacheSuccessRatio: cacheSuccessCount / (cacheSuccessCount + cacheFailureCount),
-      cacheFailureRatio: cacheFailureCount / (cacheSuccessCount + cacheFailureCount),
-      cacheRequestTotal: cacheSuccessCount + cacheFailureCount,
+      cacheSuccessRatio: cacheRequestTotal > 0 ? cacheSuccessCount / cacheRequestTotal : 0,
+      cacheFailureRatio: cacheRequestTotal > 0 ? cacheFailureCount / cacheRequestTotal : 0,
+      cacheRequestTotal,
       successCount,
       failureCount,
       requestCount: successCount + failureCount,
