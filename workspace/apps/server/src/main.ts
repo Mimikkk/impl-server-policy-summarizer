@@ -18,6 +18,9 @@ container.database = DrizzleClient;
 Deno.serve({
   onListen() {
     Logger.info(`Server is running at "http://${Environment.Server.Host}:${Environment.Server.Port}".`);
+    Logger.info(`Deno version: ${Deno.version.deno}`);
+    Logger.info(`V8 version: ${Deno.version.v8}`);
+    Logger.info(`Typescript version: ${Deno.version.typescript}`);
 
     type WindowsSignal = "SIGINT" | "SIGBREAK";
     type UnixSignal = "SIGTERM" | "SIGQUIT" | "SIGKILL";

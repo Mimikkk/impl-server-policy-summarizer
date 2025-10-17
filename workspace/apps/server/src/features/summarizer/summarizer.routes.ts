@@ -1,7 +1,7 @@
 import { z } from "@hono/zod-openapi";
 import { HonoClient } from "../../clients/HonoClient.ts";
 import { defineResponses } from "../docs/defineResponses.ts";
-import { summaries, summarySchema } from "./summaries.entity.ts";
+import { SummaryResource } from "./summaries.resource.ts";
 
 HonoClient.openapi(
   {
@@ -22,7 +22,7 @@ HonoClient.openapi(
     },
     responses: defineResponses({
       200: {
-        schema: summarySchema,
+        schema: SummaryResource.schema,
         description: "The summary of the text",
       },
     }),
@@ -39,7 +39,7 @@ HonoClient.openapi(
       `,
     });
 
-    const [entity] = await context.var.database.insert(summaries).values({ content, summary }).returning();
+    const [entity] = await context.var.database.insert(SummaryResource.table).values({ content, summary }).returning();
 
     return context.json(entity, 200);
   },

@@ -1,5 +1,5 @@
-import { summaries } from "@features/summarizer/summaries.entity.ts";
+import { SummaryResource } from "@features/summarizer/summaries.resource.ts";
 
 export const schema = {
-  summaries,
+  summaries: SummaryResource.table,
 };

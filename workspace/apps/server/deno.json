@@ -43,10 +43,5 @@
     "drizzle-zod": "npm:drizzle-zod@0.8.3",
     "@libsql/client": "npm:@libsql/client@0.6.2",
     "@libsql/client": "../../../node_modules/@libsql/client/lib-esm/node.js"
-  },
-  "compilerOptions": {
-    "lib": ["dom", "deno.ns", "ESNext"],
-    "noErrorTruncation": true,
-    "strict": true
   }
 }

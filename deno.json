@@ -66,5 +66,11 @@
     "@cliffy/ansi": "jsr:@cliffy/ansi@1.0.0-rc.8",
     "@std/testing": "jsr:@std/testing@1.0.15",
     "@std/expect": "jsr:@std/expect@1.0.17"
+  },
+  "compilerOptions": {
+    "lib": ["dom", "deno.ns", "ESNext"],
+    "noErrorTruncation": true,
+    "noErrorTruncationMaximumLength": 100000,
+    "strict": true
   }
 }
