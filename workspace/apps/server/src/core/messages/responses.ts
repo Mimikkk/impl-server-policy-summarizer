@@ -20,7 +20,7 @@ export const badRequestResponse = {
 } as const;
 export const BadRequestResponseSchema = ResponseSchema({
   status: 400,
-  name: "BadRequestErrorResponse",
+  name: "Core / Errors / BadRequestErrorResponse",
   example: badRequestResponse,
 });
 export type BadRequestResponse = z.infer<typeof BadRequestResponseSchema>;
@@ -31,7 +31,7 @@ export const routeNotFoundResponse = {
 } as const;
 export const RouteNotFoundResponseSchema = ResponseSchema({
   status: 404,
-  name: "RouteNotFoundErrorResponse",
+  name: "Core / Errors / RouteNotFoundErrorResponse",
   example: routeNotFoundResponse,
 });
 export type RouteNotFoundResponse = z.infer<typeof RouteNotFoundResponseSchema>;
@@ -42,7 +42,7 @@ export const internalServerErrorResponse = {
 } as const;
 export const InternalServerErrorResponseSchema = ResponseSchema({
   status: 500,
-  name: "InternalServerErrorResponse",
+  name: "Core / Errors / InternalServerErrorResponse",
   example: internalServerErrorResponse,
 });
 export type InternalServerErrorResponse = z.infer<typeof InternalServerErrorResponseSchema>;
@@ -54,7 +54,7 @@ export const timeoutResponse = {
 } as const;
 export const TimeoutResponseSchema = ResponseSchema({
   status: 408,
-  name: "TimeoutErrorResponse",
+  name: "Core / Errors / TimeoutErrorResponse",
   example: timeoutResponse,
 });
 export type TimeoutResponse = z.infer<typeof TimeoutResponseSchema>;

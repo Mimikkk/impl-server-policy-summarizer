@@ -57,12 +57,12 @@ HonoClient.openapi(
       200: {
         schema: EndpointMetricsSchema,
         description: "Endpoint-specific metrics",
-        example: EndpointMetricsExample,
       },
       404: {
-        schema: z.object({ error: z.string().describe("Error message") }),
+        schema: z.object({
+          error: z.string().openapi({ description: "Endpoint not found" }),
+        }).openapi("Monitoring / Errors / EndpointNotFoundErrorResponse"),
         description: "Endpoint not found",
-        example: { error: "Endpoint not found" },
       },
     }),
   },

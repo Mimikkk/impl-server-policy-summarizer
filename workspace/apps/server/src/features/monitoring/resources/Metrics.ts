@@ -7,7 +7,7 @@ export const MetricsSchema = z.object({
   uptimeMs: z.number().describe("Uptime in milliseconds"),
   global: GlobalMetricsSchema,
   endpoints: z.record(z.string(), EndpointMetricsSchema).describe("Metrics per endpoint"),
-}).describe("metrics");
+}).openapi("Monitoring / Results / Metrics", { description: "Comprehensive monitoring metrics" });
 
 export type Metrics = z.infer<typeof MetricsSchema>;
 

@@ -70,7 +70,6 @@
   "compilerOptions": {
     "lib": ["dom", "deno.ns", "ESNext"],
     "noErrorTruncation": true,
-    "noErrorTruncationMaximumLength": 100000,
     "strict": true
   }
 }
