@@ -10,8 +10,8 @@ HonoClient.openapi(
     method: "get",
     path: "/api/v1/metrics",
     tags: ["Monitoring"],
-    summary: "Get comprehensive monitoring metrics",
-    description: "Returns global metrics and per-endpoint statistics",
+    summary: "Read comprehensive monitoring metrics",
+    description: "Returns all available metrics",
     responses: defineResponses({
       200: {
         schema: MetricsSchema,
@@ -28,12 +28,12 @@ HonoClient.openapi(
     method: "get",
     path: "/api/v1/metrics/global",
     tags: ["Monitoring"],
-    summary: "Get global monitoring metrics",
+    summary: "Read global monitoring metrics",
     description: "Returns server-wide statistics and performance metrics",
     responses: defineResponses({
       200: {
         schema: GlobalMetricsSchema,
-        description: "Global monitoring metrics",
+        description: "Server-wide statistics and performance metrics",
         example: GlobalMetricsExample,
       },
     }),
@@ -46,22 +46,26 @@ HonoClient.openapi(
     method: "get",
     path: "/api/v1/metrics/endpoint/{endpoint}",
     tags: ["Monitoring"],
-    summary: "Get metrics for a specific endpoint",
-    description: "Returns performance metrics for a specific endpoint (format: METHOD:path)",
+    summary: "Read metrics for a specific endpoint",
+    description: "Returns performance metrics for a specific endpoint",
     request: {
       params: z.object({
-        endpoint: z.string().describe("Endpoint in format METHOD:path (e.g., GET:/api/v1/summarize)"),
+        endpoint: z.string().openapi({
+          description: "Endpoint in format method:path (e.g., GET:/api/v1/summarize)",
+          example: "GET:/api/v1/summarize",
+          title: "method:path",
+        }),
       }),
     },
     responses: defineResponses({
       200: {
         schema: EndpointMetricsSchema,
-        description: "Endpoint-specific metrics",
+        description: "Performance metrics for a specific endpoint",
       },
       404: {
         schema: z.object({
           error: z.string().openapi({ description: "Endpoint not found" }),
-        }).openapi("Monitoring / Errors / EndpointNotFoundErrorResponse"),
+        }).openapi("Monitoring - Errors - EndpointNotFoundErrorResponse"),
         description: "Endpoint not found",
       },
     }),
@@ -110,7 +114,7 @@ HonoClient.openapi(
           status: z.string().describe("Health status"),
           uptimeMs: z.number().describe("Server uptime in milliseconds"),
           startTs: z.number().describe("Server start timestamp"),
-        }),
+        }).openapi("Monitoring - Results - Health"),
         description: "Health status information",
         example: { status: "healthy", uptimeMs: 3600000, startTimeTs: 1703123456789 },
       },

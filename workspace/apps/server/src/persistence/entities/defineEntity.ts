@@ -93,7 +93,7 @@ export const defineEntity = <
   } as never;
 
   const schema = createSelectSchema(table, refine).openapi(
-    `Persistence / Resources / ${upperFirst(resourceName)}Resource`,
+    `Persistence - Resources - ${upperFirst(resourceName)}Resource`,
     { description },
   ) as never;
 

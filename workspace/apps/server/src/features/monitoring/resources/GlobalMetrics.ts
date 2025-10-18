@@ -11,7 +11,7 @@ export const GlobalMetricsSchema = z.object({
   requestCount: z.number().describe("Number of requests"),
   timesMs: z.array(z.number()).describe("Recent response times in milliseconds"),
   avgTimeMs: z.number().describe("Average response time in milliseconds"),
-}).openapi("Monitoring / Results / GlobalMetrics", { description: "Global metrics" });
+}).openapi("Monitoring - Results - GlobalMetrics", { description: "Global metrics" });
 
 export type GlobalMetrics = z.infer<typeof GlobalMetricsSchema>;
 

@@ -12,7 +12,7 @@ export const EndpointMetricsSchema = z.object({
   timesMs: z.array(z.number()).describe("Recent response times in milliseconds"),
   avgTimeMs: z.number().describe("Average response time in milliseconds"),
   lastUsedTs: z.number().describe("Last access timestamp"),
-}).openapi("Monitoring / Results / EndpointMetrics", { description: "Endpoint-specific metrics" });
+}).openapi("Monitoring - Results - EndpointMetrics", { description: "Endpoint-specific metrics" });
 
 export type EndpointMetrics = z.infer<typeof EndpointMetricsSchema>;
 
