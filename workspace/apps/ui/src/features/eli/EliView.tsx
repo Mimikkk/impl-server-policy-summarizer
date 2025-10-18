@@ -1,3 +1,5 @@
+import { EliClient } from "@clients/eli/EliClient.ts";
+import { ServerClient } from "@clients/server/ServerClient.ts";
 import { Button } from "@components/actions/Button.tsx";
 import { IconButton } from "@components/actions/IconButton.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
@@ -8,13 +10,11 @@ import { CardPDF } from "@components/containers/card/presets/CardPDF.tsx";
 import { CardText } from "@components/containers/card/presets/CardText.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
-import { stringifyPdfFile } from "@configs/pdf-js/pdfjs.ts";
 import { ActForm } from "@features/eli/components/ActForm.tsx";
 import { useEliAct, useEliActHTMLString } from "@features/eli/hooks/eli.hooks.ts";
 import { useLocalStorage } from "@hooks/useLocalStorage.ts";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, memo, useEffect, useMemo } from "react";
-import { EliClient } from "@clients/eli/EliClient.ts";
 
 const isEqual = (a: EliClient.ActParams, b: EliClient.ActParams) =>
   a.publisher === b.publisher && a.year === b.year && a.position === b.position;
@@ -51,11 +51,13 @@ export const EliView = memo(() => {
 
   const references = useMemo(() => Object.entries(actDetails?.references ?? {}), [actDetails?.references]);
 
-  const { data: pdf, status: pdfStatus } = useQuery({
+  const { data: summary, status: summaryStatus, error } = useQuery({
     queryKey: ["pdf", actParams],
-    queryFn: async () => await stringifyPdfFile(await EliClient.pdf(actParams!)),
-    enabled: !!actParams,
+    queryFn: async () => await ServerClient.summarize({ url: pdfUrl! }),
+    enabled: !!pdfUrl,
   });
+
+  console.log({ summary, pdfUrl, summaryStatus, error });
 
   return (
     <div className="flex flex-col gap-2 items-center h-full">
@@ -187,7 +189,8 @@ export const EliView = memo(() => {
         <CardPDF url={pdfUrl} className="col-span-1 md:col-span-2 lg:col-span-3 row-span-2" />
         <CardJSON content={actDetails} />
         <CardHTML content={actHtml} />
-        <CardText content={pdf} />
+        <CardText content={summary?.content} />
+        <CardText content={summary?.summary} />
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import { defineConfig, loadEnv } from "@rsbuild/core";
-import { pluginNodePolyfill } from "@rsbuild/plugin-node-polyfill";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/rspack";
 
@@ -13,7 +12,7 @@ const define = Object.fromEntries(
 );
 
 export default defineConfig({
-  plugins: [pluginReact(), pluginNodePolyfill()],
+  plugins: [pluginReact()],
   source: {
     entry: {
       index: "./src/index.tsx",

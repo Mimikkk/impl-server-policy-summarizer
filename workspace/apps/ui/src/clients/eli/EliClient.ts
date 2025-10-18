@@ -31,6 +31,7 @@ export namespace EliClient {
   export type PdfFile = File;
   export const pdfUrl = ({ publisher, year, position }: ActParams): string =>
     client.urlOf(`${publisher}/${year}/${position}/text.pdf`);
+
   export const pdf = async ({ publisher, year, position }: ActParams): Promise<PdfFile> => {
     const response = await client.api.get(`${publisher}/${year}/${position}/text.pdf`).blob();
 

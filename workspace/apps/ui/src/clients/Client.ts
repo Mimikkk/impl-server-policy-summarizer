@@ -6,7 +6,7 @@ interface ClientOptions {
 
 export class Client {
   static new(options: ClientOptions) {
-    return new Client(options.url, ky.create({ prefixUrl: options.url }));
+    return new Client(options.url, ky.create({ prefixUrl: options.url, throwHttpErrors: true }));
   }
 
   private constructor(
