@@ -1,6 +1,25 @@
-import type * as PdfJs from "pdfjs-dist";
+import { readFileSync, writeFileSync } from "node:fs";
+import { getDocument, type PDFDocumentProxy } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { Logger } from "../logger.ts";
 
-const instance: typeof PdfJs = await import("pdfjs-dist/webpack.mjs");
+let code = readFileSync("../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs", "utf-8");
+if (!code.includes("(? - Unknown Array.random method)")) {
+  Logger.debug("[PDFJS] Applying patch to pdf.worker.mjs.");
+
+  code = code.replace(
+    `throw new Error(buildMsg("Array", prop));`,
+    `// throw new Error(buildMsg("Array", prop)); (? - Unknown Array.random method)`,
+  );
+
+  writeFileSync("../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs", code);
+  Logger.info("[PDFJS:success] Applied patch to pdf.worker.mjs.");
+} else {
+  Logger.debug("[PDFJS:skip] Already applied patch to pdf.worker.mjs, skipping...");
+}
+
+const CMAP_URL = "../../../node_modules/pdfjs-dist/cmaps/";
+const CMAP_PACKED = true;
+const STANDARD_FONT_DATA_URL = "../../../node_modules/pdfjs-dist/standard_fonts/";
 
 interface TextItem {
   /** Text content */
@@ -19,14 +38,17 @@ interface TextItem {
   hasEOL: boolean;
 }
 
-export const readPdfDocument = async (file: File): Promise<PdfJs.PDFDocumentProxy | undefined> => {
-  const buffer = await file.arrayBuffer();
-  const pdf = await instance.getDocument(buffer).promise;
-  return pdf;
-};
+export const readPdfDocument = async (buffer: ArrayBuffer): Promise<PDFDocumentProxy | undefined> =>
+  await getDocument({
+    data: buffer,
+    cMapUrl: CMAP_URL,
+    cMapPacked: CMAP_PACKED,
+    standardFontDataUrl: STANDARD_FONT_DATA_URL,
+    verbosity: 0,
+  }).promise;
 
-export const stringifyPdfFile = async (file: File): Promise<string | undefined> => {
-  const document = await readPdfDocument(file);
+export const stringifyPdfBuffer = async (buffer: ArrayBuffer): Promise<string | undefined> => {
+  const document = await readPdfDocument(buffer);
   if (!document) return undefined;
 
   const contents = await Promise.all(Array.from({ length: document.numPages }, async (_, i) => {

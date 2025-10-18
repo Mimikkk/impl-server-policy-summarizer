@@ -16,11 +16,11 @@ type ResponseOpenApiSchema<
 const GlobalResponses = {
   400: {
     content: { "application/json": { schema: BadRequestResponseSchema } },
-    description: "Bad request",
+    description: "Bad request error",
   },
   408: {
     content: { "application/json": { schema: TimeoutResponseSchema } },
-    description: "Timeout",
+    description: "Timeout error",
   },
   500: {
     content: { "application/json": { schema: InternalServerErrorResponseSchema } },

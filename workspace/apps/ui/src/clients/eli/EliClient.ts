@@ -6,7 +6,7 @@ import type { PublisherResource } from "./resources/PublisherResource.ts";
 import type { YearResource } from "./resources/YearResource.ts";
 
 export namespace EliClient {
-  export const client = Client.new({ url: Environment.Clients.EliUrl + "act/" });
+  export const client = Client.new({ url: Environment.Clients.EliUrl + "acts/" });
   export const publishers = () => client.api.get<PublisherResource[]>("").json();
 
   export interface PublisherParams {

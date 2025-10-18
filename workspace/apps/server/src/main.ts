@@ -1,8 +1,10 @@
+import "@configs/pdf-js/pdfjs.ts";
+import "./api.routes.ts";
+//
 import { container } from "@configs/container.ts";
 import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
 import { MetricMonitor } from "@features/monitoring/monitors/MetricMonitor.ts";
-import "./api.routes.ts";
 import { DrizzleClient } from "./clients/DrizzleClient.ts";
 import { HonoClient } from "./clients/HonoClient.ts";
 import { OllamaClient } from "./clients/OllamaClient.ts";

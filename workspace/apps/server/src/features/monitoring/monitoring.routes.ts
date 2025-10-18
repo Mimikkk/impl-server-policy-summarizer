@@ -1,7 +1,7 @@
 import { z } from "@hono/zod-openapi";
 import { HonoClient } from "../../clients/HonoClient.ts";
 import { defineResponses } from "../docs/defineResponses.ts";
-import { EndpointMetricsExample, EndpointMetricsSchema } from "./resources/EndpointMetrics.ts";
+import { EndpointMetricsSchema } from "./resources/EndpointMetrics.ts";
 import { GlobalMetricsExample, GlobalMetricsSchema } from "./resources/GlobalMetrics.ts";
 import { MetricsExample, MetricsSchema } from "./resources/Metrics.ts";
 
@@ -94,7 +94,6 @@ HonoClient.openapi(
       200: {
         schema: z.record(z.string(), EndpointMetricsSchema),
         description: "All endpoint metrics",
-        example: { "GET:/api/v1/summarize": EndpointMetricsExample },
       },
     }),
   },

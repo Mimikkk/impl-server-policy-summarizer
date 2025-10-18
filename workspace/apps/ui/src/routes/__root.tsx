@@ -2,7 +2,6 @@ import { ThemeButton } from "@components/actions/ThemeButton.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { Card } from "@components/containers/card/Card.tsx";
 import { Text } from "@components/typography/Text.tsx";
-import { PdfJsProvider } from "@configs/pdf-js/pdfjs.ts";
 import { DevTools } from "@features/dx/dev-tools/DevTools.tsx";
 import { Breadcrumbs } from "@features/ux/layout/Breadcrumbs.tsx";
 import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
@@ -13,19 +12,17 @@ export const Route = createRootRouteWithContext()({
     const { mode, theme, setMode: setMode } = useTheme();
 
     return (
-      <PdfJsProvider>
-        <div className="relative flex flex-col container mx-auto py-4 gap-2 h-full">
-          <Breadcrumbs />
-          <Outlet />
-          <DevTools />
-          <ThemeButton
-            className="fixed bottom-0 right-0"
-            mode={mode}
-            theme={theme}
-            onChangeMode={setMode}
-          />
-        </div>
-      </PdfJsProvider>
+      <div className="relative flex flex-col container mx-auto py-4 gap-2 h-full">
+        <Breadcrumbs />
+        <Outlet />
+        <DevTools />
+        <ThemeButton
+          className="fixed bottom-0 right-0"
+          mode={mode}
+          theme={theme}
+          onChangeMode={setMode}
+        />
+      </div>
     );
   },
   notFoundComponent: () => (
