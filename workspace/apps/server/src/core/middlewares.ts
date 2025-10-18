@@ -20,7 +20,7 @@ export const withContainer: MiddlewareHandler<{ Variables: Container }> = async 
 };
 
 export const withRequestMonitor: MiddlewareHandler<{ Variables: Container }> = async (context, next) => {
-  const { metrics: monitoring } = context.var;
+  const { metrics: metrics } = context.var;
   const key = `${context.req.method}:${context.req.url.split("?")[0]}`;
 
   const startTimeMs = Date.now();
@@ -29,10 +29,10 @@ export const withRequestMonitor: MiddlewareHandler<{ Variables: Container }> = a
     const responseTimeMs = Date.now() - startTimeMs;
 
     const isSuccess = context.res.status >= 200 && context.res.status < 400;
-    monitoring.recordRequest(key, isSuccess, responseTimeMs);
+    metrics.recordRequest(key, isSuccess, responseTimeMs);
   } catch (error) {
     const responseTimeMs = Date.now() - startTimeMs;
-    monitoring.recordRequest(key, false, responseTimeMs);
+    metrics.recordRequest(key, false, responseTimeMs);
     throw error;
   }
 };

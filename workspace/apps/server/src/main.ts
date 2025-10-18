@@ -4,7 +4,8 @@ import "./api.routes.ts";
 import { container } from "@configs/container.ts";
 import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
-import { MetricMonitor } from "@features/monitoring/monitors/MetricMonitor.ts";
+import { MetricMonitor } from "@features/metrics/monitors/MetricMonitor.ts";
+import { PdfService } from "@features/pdfs/pdfs.service.ts";
 import { DrizzleClient } from "./clients/DrizzleClient.ts";
 import { HonoClient } from "./clients/HonoClient.ts";
 import { OllamaClient } from "./clients/OllamaClient.ts";
@@ -16,6 +17,7 @@ container.logger = Logger;
 container.llm = await OllamaClient.fromEnvironment();
 container.metrics = MetricMonitor.empty();
 container.database = DrizzleClient;
+container.services.pdf = PdfService.new(container);
 
 Deno.serve({
   onListen() {

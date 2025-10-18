@@ -1,4 +1,5 @@
-import type { MetricMonitor } from "@features/monitoring/monitors/MetricMonitor.ts";
+import type { MetricMonitor } from "@features/metrics/monitors/MetricMonitor.ts";
+import type { PdfService } from "@features/pdfs/pdfs.service.ts";
 import type { DrizzleClient } from "../clients/DrizzleClient.ts";
 import type { OllamaClient } from "../clients/OllamaClient.ts";
 import type { Logger } from "./logger.ts";
@@ -8,6 +9,9 @@ export interface Container {
   logger: typeof Logger;
   llm: OllamaClient;
   metrics: MetricMonitor;
+  services: {
+    pdf: PdfService;
+  };
 }
 
 export const container: Container = {
@@ -15,4 +19,7 @@ export const container: Container = {
   logger: null!,
   llm: null!,
   metrics: null!,
+  services: {
+    pdf: null!,
+  },
 };

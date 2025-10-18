@@ -17,7 +17,8 @@ export const DrizzleClient = drizzle({
 });
 
 Logger.info("[DrizzleClient] pushing schema to database...");
-const { hasDataLoss, warnings } = await pushSQLiteSchema(schema, DrizzleClient);
+const { hasDataLoss, warnings, apply } = await pushSQLiteSchema(schema, DrizzleClient);
+await apply();
 
 if (hasDataLoss) {
   Logger.error(warnings, "[DrizzleClient] data loss detected.");
@@ -28,8 +29,12 @@ if (hasDataLoss) {
 const { version } = await DrizzleClient.get<{ version: string }>(
   sql`select sqlite_version() as version`,
 );
+const { tablesCount } = await DrizzleClient.get<{ tablesCount: number }>(
+  sql`select count(*) as tablesCount from sqlite_master where type = 'table'`,
+);
 
 Logger.info({
   "LibSQL Version": version,
+  "Tables Count": tablesCount,
   "Database URL": Environment.Database.Url,
 }, "[DrizzleClient] initialized.");

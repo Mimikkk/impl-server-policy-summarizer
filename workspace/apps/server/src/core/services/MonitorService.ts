@@ -7,7 +7,7 @@ export class DefaultMap<K, V> extends Map<K, V> {
     super();
   }
 
-  override ensure(key: K): V {
+  ensure(key: K): V {
     const value = super.get(key);
 
     if (!value) {
