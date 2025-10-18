@@ -1,10 +1,10 @@
 import { Button } from "@components/actions/Button.tsx";
 import { SelectField } from "@components/forms/selects/SelectField.tsx";
-import type { EliClient } from "@features/eli/EliClient.ts";
-import type { PublisherResource } from "@features/eli/resources/PublisherResource.ts";
-import type { YearItemResource } from "@features/eli/resources/YearResource.ts";
 import type { Nil } from "@utilities/common.ts";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
+import type { EliClient } from "@clients/eli/EliClient.ts";
+import type { PublisherResource } from "@clients/eli/resources/PublisherResource.ts";
+import type { YearItemResource } from "@clients/eli/resources/YearResource.ts";
 import { defineUseOptions, useEliPublisher, useEliPublishers, useEliYear } from "../hooks/eli.hooks.ts";
 
 const usePublisherOptions = defineUseOptions<PublisherResource>({

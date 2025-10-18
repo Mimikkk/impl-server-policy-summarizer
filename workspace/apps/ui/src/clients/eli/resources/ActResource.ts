@@ -1,3 +1,5 @@
+import type { DateString, DateTimeString } from "@core/types/common.ts";
+
 export interface ActResource {
   /* Identifikator ELI */
   ELI: string;
@@ -37,9 +39,6 @@ export interface ActResource {
   texts: ActText[];
   validFrom: DateString;
 }
-export type DateString = "YYYY-MM-DD";
-export type DateTimeString = "YYYY-MM-DDTHH:MM:SS";
-
 /**
  * Typ tekstu
  */

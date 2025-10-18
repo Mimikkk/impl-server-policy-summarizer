@@ -1,31 +1,12 @@
-import { ClientUrl } from "@configs/ClientUrls.ts";
-import ky, { type KyInstance } from "ky";
+import { Environment } from "@configs/Environment.ts";
 import { adaptQuery } from "../../core/queries/adaptQuery.ts";
+import { Client } from "../Client.ts";
 import type { ActResource, ActTextType } from "./resources/ActResource.ts";
 import type { PublisherResource } from "./resources/PublisherResource.ts";
 import type { YearResource } from "./resources/YearResource.ts";
 
-interface ClientOptions {
-  url: string;
-}
-
-export class Client {
-  static new(options: ClientOptions) {
-    return new Client(options.url, ky.create({ prefixUrl: options.url }));
-  }
-
-  private constructor(
-    private readonly url: string,
-    public readonly api: KyInstance,
-  ) {}
-
-  urlOf(path: string): string {
-    return `${this.url}/${path}`;
-  }
-}
-
 export namespace EliClient {
-  export const client = Client.new({ url: ClientUrl.Eli });
+  export const client = Client.new({ url: Environment.Clients.EliUrl + "act/" });
   export const publishers = () => client.api.get<PublisherResource[]>("").json();
 
   export interface PublisherParams {
@@ -43,9 +24,8 @@ export namespace EliClient {
     year: number;
     position: number;
   }
-  export const act = async ({ publisher, year, position }: ActParams): Promise<ActResource> => {
-    return await client.api.get<ActResource>(`${publisher}/${year}/${position}`).json();
-  };
+  export const act = async ({ publisher, year, position }: ActParams): Promise<ActResource> =>
+    await client.api.get<ActResource>(`${publisher}/${year}/${position}`).json();
 
   /** content-type: application/pdf */
   export type PdfFile = File;

@@ -1,7 +1,7 @@
-import { type EliClient, EliQuery } from "@features/eli/EliClient.ts";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
 import { useMemo } from "react";
+import { type EliClient, EliQuery } from "@clients/eli/EliClient.ts";
 
 export const useEliAct = (params: Nil<EliClient.ActParams>) => EliQuery.useAct(params!, { enabled: !!params });
 

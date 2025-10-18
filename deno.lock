@@ -23,6 +23,7 @@
     "npm:@hono/zod-openapi@1.1.3": "1.1.3_hono@4.9.12_zod@4.1.12",
     "npm:@hono/zod-validator@0.7.4": "0.7.4_hono@4.9.12_zod@4.1.12",
     "npm:@rsbuild/core@1.4.1": "1.4.1_@swc+helpers@0.5.17",
+    "npm:@rsbuild/core@^1.4.1": "1.4.1_@swc+helpers@0.5.17",
     "npm:@rsbuild/plugin-node-polyfill@^1.4.2": "1.4.2_@rsbuild+core@1.4.1__@swc+helpers@0.5.17",
     "npm:@rsbuild/plugin-react@^1.3.2": "1.4.1_@rsbuild+core@1.4.1__@swc+helpers@0.5.17_react-refresh@0.17.0",
     "npm:@scalar/hono-api-reference@0.9.21": "0.9.21_hono@4.9.12",
@@ -42,6 +43,7 @@
     "npm:drizzle-orm@0.44.6": "0.44.6",
     "npm:drizzle-zod@0.8.3": "0.8.3_drizzle-orm@0.44.6_zod@4.1.12",
     "npm:hono@4.9.12": "4.9.12",
+    "npm:js-yaml@^4.1.0": "4.1.0",
     "npm:ky@^1.8.1": "1.8.1",
     "npm:lucide-react@0.525": "0.525.0_react@19.2.0",
     "npm:ollama@0.6.0": "0.6.0",
@@ -57,7 +59,8 @@
     "npm:tsc@*": "2.0.4",
     "npm:tslib@^2.8.1": "2.8.1",
     "npm:usehooks-ts@^3.1.1": "3.1.1_react@19.2.0",
-    "npm:zod@4.1.12": "4.1.12"
+    "npm:zod@4.1.12": "4.1.12",
+    "npm:zod@^4.1.12": "4.1.12"
   },
   "jsr": {
     "@cliffy/ansi@1.0.0-rc.8": {
@@ -2621,6 +2624,9 @@
         "picomatch@2.3.1"
       ]
     },
+    "argparse@2.0.1": {
+      "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="
+    },
     "aria-hidden@1.2.6": {
       "integrity": "sha512-ik3ZgC9dY/lYVVM++OISsaYDeg1tb0VtP5uL3ouh1koGOaUMDPpbFIei4JkFimWUFPn90sbMNMXQAIVOlnYKJA==",
       "dependencies": [
@@ -3419,6 +3425,13 @@
     },
     "js-tokens@4.0.0": {
       "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ=="
+    },
+    "js-yaml@4.1.0": {
+      "integrity": "sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==",
+      "dependencies": [
+        "argparse"
+      ],
+      "bin": true
     },
     "jsesc@3.1.0": {
       "integrity": "sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==",
@@ -4572,6 +4585,7 @@
           "npm:drizzle-orm@0.44.6",
           "npm:drizzle-zod@0.8.3",
           "npm:hono@4.9.12",
+          "npm:js-yaml@^4.1.0",
           "npm:ollama@0.6.0",
           "npm:pino-pretty@13.1.2",
           "npm:pino@10.0.0",
@@ -4603,7 +4617,8 @@
           "npm:shiki@^3.7.0",
           "npm:tailwindcss@^4.1.10",
           "npm:tslib@^2.8.1",
-          "npm:usehooks-ts@^3.1.1"
+          "npm:usehooks-ts@^3.1.1",
+          "npm:zod@^4.1.12"
         ]
       }
     }

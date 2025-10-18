@@ -2,7 +2,7 @@ import { createLocalStorageOptions, useLocalStorage } from "@hooks/useLocalStora
 import { identity } from "@utilities/common.ts";
 import { createContext } from "@utilities/createContext.tsx";
 import { useEffect, useMemo } from "react";
-import { type ThemeMode } from "./ThemeService.tsx";
+import type { ThemeMode } from "./ThemeService.tsx";
 
 const createThemeLocalStorageOptions = (key: string) =>
   createLocalStorageOptions({

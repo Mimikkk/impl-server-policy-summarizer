@@ -1,9 +1,7 @@
 import { loadSync } from "@std/dotenv";
 import z from "zod";
 
-const raw = loadSync();
-
-export const Environment = z.object({
+const environmentSchema = z.object({
   Server: z.object({
     Host: z.string().min(1).default("0.0.0.0"),
     Port: z.number().default(8080),
@@ -18,19 +16,26 @@ export const Environment = z.object({
   Database: z.object({
     Url: z.string().min(1),
   }),
-}).parse({
+  EliDocsUrl: z.string().min(1).default("https://api.sejm.gov.pl/eli/openapi/"),
+});
+
+export interface Environment extends z.infer<typeof environmentSchema> {}
+
+const env = loadSync();
+export const Environment = environmentSchema.parse({
   Server: {
-    Host: raw.HOST,
-    Port: +raw.PORT,
+    Host: env.HOST,
+    Port: +env.PORT,
   },
   Logging: {
-    Level: raw.LOG_LEVEL,
+    Level: env.LOG_LEVEL,
   },
   Ollama: {
-    Url: raw.OLLAMA_URL,
-    Model: raw.OLLAMA_MODEL,
+    Url: env.OLLAMA_URL,
+    Model: env.OLLAMA_MODEL,
   },
   Database: {
-    Url: raw.DATABASE_URL,
+    Url: env.DATABASE_URL,
   },
+  EliDocsUrl: env.ELI_DOCS_URL,
 });

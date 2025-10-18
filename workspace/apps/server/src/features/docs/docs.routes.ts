@@ -13,13 +13,14 @@ HonoClient.get("/docs/openapi.json", (context) => {
     }],
   });
 
-  // if (document.components?.schemas) {
-  //   document.components.schemas = Object.fromEntries(
-  //     Object.entries(document.components.schemas).sort((a, b) => a[0].localeCompare(b[0])),
-  //   );
-  // }
+  if (document.components?.schemas) {
+    document.components.schemas = Object.fromEntries(
+      Object.entries(document.components.schemas).sort((a, b) => a[0].localeCompare(b[0])),
+    );
+  }
 
   return context.json(document, 200);
 });
 
 HonoClient.get("/docs/ui", Scalar({ url: "/docs/openapi.json" }));
+HonoClient.get("/docs/eli-ui", Scalar({ url: Environment.EliDocsUrl }));

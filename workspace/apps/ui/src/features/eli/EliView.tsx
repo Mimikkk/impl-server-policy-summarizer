@@ -10,11 +10,11 @@ import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
 import { stringifyPdfFile } from "@configs/pdf-js/pdfjs.ts";
 import { ActForm } from "@features/eli/components/ActForm.tsx";
-import { EliClient } from "@features/eli/EliClient.ts";
 import { useEliAct, useEliActHTMLString } from "@features/eli/hooks/eli.hooks.ts";
 import { useLocalStorage } from "@hooks/useLocalStorage.ts";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, memo, useEffect, useMemo } from "react";
+import { EliClient } from "@clients/eli/EliClient.ts";
 
 const isEqual = (a: EliClient.ActParams, b: EliClient.ActParams) =>
   a.publisher === b.publisher && a.year === b.year && a.position === b.position;
