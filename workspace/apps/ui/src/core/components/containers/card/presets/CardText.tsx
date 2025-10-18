@@ -3,15 +3,18 @@ import { saveToFile } from "@utilities/saveToFile.tsx";
 import clsx from "clsx";
 import { type MouseEvent, useCallback, useMemo } from "react";
 import { IconButton } from "../../../actions/IconButton.tsx";
+import { Icon } from "../../../badges/Icon.tsx";
 import { Text } from "../../../typography/Text.tsx";
+import { type Status, StatusBarrier } from "../../../utility/StatusBarrier.tsx";
 import { Card } from "../Card.tsx";
 
 export interface CardTextProps {
   className?: string;
   content: Nil<string>;
+  status?: Nil<Status>;
 }
 
-export const CardText = ({ className, content }: CardTextProps) => {
+export const CardText = ({ className, content, status }: CardTextProps) => {
   const asString = useMemo(() => content ?? "", [content]);
   const lines = useMemo(() => asString.split("\n"), [asString]);
 
@@ -53,15 +56,25 @@ export const CardText = ({ className, content }: CardTextProps) => {
         ],
       }), [handleSave, handleCopy])}
     >
-      <div className="absolute h-full w-full">
-        <div className="relative h-full w-full overflow-auto px-2 py-1 bg-primary-3">
-          {lines.map((line, index) => (
-            <Text key={index} className="block whitespace-pre-wrap break-words">
-              {line}
-            </Text>
-          ))}
+      <StatusBarrier
+        status={status}
+        error={
+          <div className="flex items-center gap-2 !text-danger-5">
+            <Icon name="TriangleAlert" className="!text-danger-5" />
+            Failed to load the text.
+          </div>
+        }
+      >
+        <div className="absolute h-full w-full">
+          <div className="relative h-full w-full overflow-auto px-2 py-1 bg-primary-3">
+            {lines.map((line, index) => (
+              <Text key={index} className="block whitespace-pre-wrap break-words">
+                {line}
+              </Text>
+            ))}
+          </div>
         </div>
-      </div>
+      </StatusBarrier>
     </Card>
   );
 };

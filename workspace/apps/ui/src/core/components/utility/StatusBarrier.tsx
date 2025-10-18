@@ -1,11 +1,12 @@
 import { Loader } from "@components/badges/Loader.tsx";
 import type { FetchStatus, QueryStatus } from "@tanstack/react-query";
+import type { Nil } from "@utilities/common.ts";
 import { memo, type PropsWithChildren, type ReactNode } from "react";
 
 export type Status = QueryStatus | FetchStatus;
 
 export interface StatusBarrierProps extends PropsWithChildren {
-  status: Status;
+  status: Nil<Status>;
   error?: ReactNode;
   loading?: ReactNode;
 }
@@ -25,6 +26,6 @@ export const StatusBarrier = memo(function StatusBarrier({ children, status, err
     case "error":
       return error;
     default:
-      return null;
+      return children;
   }
 });

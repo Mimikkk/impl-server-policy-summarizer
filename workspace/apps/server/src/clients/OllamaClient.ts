@@ -39,7 +39,13 @@ export class OllamaClient {
     return this;
   }
 
-  async infer({ prompt }: { prompt: string }): Promise<{ response: string }> {
-    return await this.api.generate({ model: this.model, prompt: compactMessage(prompt) });
+  async infer(
+    { prompt, system }: { prompt: string; system?: string },
+  ): Promise<{ response: string }> {
+    return await this.api.generate({
+      model: this.model,
+      prompt: compactMessage(prompt),
+      system: system ? compactMessage(system) : undefined,
+    });
   }
 }

@@ -12,7 +12,6 @@ const environmentSchema = z.object({
 
 export interface Environment extends z.infer<typeof environmentSchema> {}
 
-console.log(import.meta.env.CLIENT_SERVER_URL, import.meta.env.CLIENT_ELI_URL);
 export const Environment = environmentSchema.parse({
   Clients: {
     ServerUrl: import.meta.env.CLIENT_SERVER_URL,

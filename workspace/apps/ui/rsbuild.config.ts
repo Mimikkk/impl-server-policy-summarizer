@@ -29,6 +29,16 @@ export default defineConfig({
       js: "[name]-[contenthash].mjs",
     },
   },
+  server: {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      exposedHeaders: ["ETag"],
+      credentials: false,
+      maxAge: 600,
+    },
+  },
   resolve: {
     alias: {
       "@components": "./src/core/components",

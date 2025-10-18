@@ -32,7 +32,7 @@ HonoClient
     }),
     logger(),
     etag(),
-    timeout(TimeMs.s5),
+    timeout(TimeMs.s30),
     prettyJSON(),
   )
   .use(withContainer)

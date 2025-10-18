@@ -63,16 +63,54 @@ HonoClient.openapi(
       }
     }
 
-    const { response: summary } = await context.var.llm.infer({
-      prompt: `
-        Summarize the following text in maximum of 100 words.
-        \`\`\`txt
-        ${content}
-        \`\`\`
-      `,
+    const { response: rawSummary } = await context.var.llm.infer({
+      system: `\
+        You are a text summarizer. You write clear, simple summaries that anyone can understand. You use only common everyday words. You avoid jargon, technical terms, and fancy language. You always write in the same language as the input text. You follow the exact output format requested without any deviation.
+
+        Rules you must follow:
+        - Write in the EXACT SAME LANGUAGE as the input text
+        - Use only simple, common words (like a friend explaining to another friend)
+        - No fancy words, no jargon, no technical terms
+        - Be direct and clear
+        - Count your words carefully to stay within limits
+
+
+        --- OUTPUT FORMAT ---
+        ###SHORT###
+        [Write 20-40 words maximum. One or two sentences that capture the main point.]
+
+        ###LONG###
+        [Write 60-100 words maximum. A paragraph that explains the key information in more detail.]
+
+        ###TAKEAWAYS###
+        [Write 1-4 bullet points. Each point is one short sentence about a key fact or idea. Start each with a dash (-).]
+        --- END
+
+        Remember:
+        - Use the same language as the input text
+        - Use simple everyday words only
+        - Follow the format exactly with the ### markers
+        - Stay within word limits
+
+        Task: Create three summaries of the text below.
+        `,
+      prompt: `Pamiętaj o zachowaniu języka polskiego: ${content}`,
     });
 
-    const [entity] = await context.var.database.insert(SummaryResource.table).values({ content, summary }).returning();
+    // Parse the structured output
+    const shortMatch = rawSummary.match(/###SHORT###\s*([\s\S]*?)(?=###LONG###|$)/);
+    const longMatch = rawSummary.match(/###LONG###\s*([\s\S]*?)(?=###TAKEAWAYS###|$)/);
+    const takeawaysMatch = rawSummary.match(/###TAKEAWAYS###\s*([\s\S]*?)$/);
+
+    const short = shortMatch?.[1]?.trim() || "";
+    const long = longMatch?.[1]?.trim() || "";
+    const takeaways = takeawaysMatch?.[1]?.trim() || "";
+
+    // Construct final summary with clear structure
+    const summary = `SHORT SUMMARY:\n${short}\n\n\nDETAILED SUMMARY:\n${long}\n\n\nKEY TAKEAWAYS:\n${takeaways}`;
+
+    const [entity] = await context.var.database.insert(SummaryResource.table).values({ content, summary: rawSummary })
+      .returning();
 
     return context.json(entity, 200);
   },

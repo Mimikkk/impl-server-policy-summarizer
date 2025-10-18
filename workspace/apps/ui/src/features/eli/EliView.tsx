@@ -4,14 +4,13 @@ import { Button } from "@components/actions/Button.tsx";
 import { IconButton } from "@components/actions/IconButton.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { Card } from "@components/containers/card/Card.tsx";
-import { CardHTML } from "@components/containers/card/presets/CardHTML.tsx";
 import { CardJSON } from "@components/containers/card/presets/CardJSON.tsx";
 import { CardPDF } from "@components/containers/card/presets/CardPDF.tsx";
 import { CardText } from "@components/containers/card/presets/CardText.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { For } from "@components/utility/For.tsx";
 import { ActForm } from "@features/eli/components/ActForm.tsx";
-import { useEliAct, useEliActHTMLString } from "@features/eli/hooks/eli.hooks.ts";
+import { useEliAct } from "@features/eli/hooks/eli.hooks.ts";
 import { useLocalStorage } from "@hooks/useLocalStorage.ts";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, memo, useEffect, useMemo } from "react";
@@ -46,18 +45,15 @@ export const EliView = memo(() => {
   }, [actParams]);
 
   const { data: actDetails } = useEliAct(actParams);
-  const { data: actHtml } = useEliActHTMLString(actParams);
   const pdfUrl = useMemo(() => actParams ? EliClient.pdfUrl(actParams) : null, [actParams]);
 
   const references = useMemo(() => Object.entries(actDetails?.references ?? {}), [actDetails?.references]);
 
-  const { data: summary, status: summaryStatus, error } = useQuery({
+  const { data: summary, status: summaryStatus } = useQuery({
     queryKey: ["pdf", actParams],
     queryFn: async () => await ServerClient.summarize({ url: pdfUrl! }),
     enabled: !!pdfUrl,
   });
-
-  console.log({ summary, pdfUrl, summaryStatus, error });
 
   return (
     <div className="flex flex-col gap-2 items-center h-full">
@@ -188,9 +184,8 @@ export const EliView = memo(() => {
       <div className="h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 container items-center w-full">
         <CardPDF url={pdfUrl} className="col-span-1 md:col-span-2 lg:col-span-3 row-span-2" />
         <CardJSON content={actDetails} />
-        <CardHTML content={actHtml} />
-        <CardText content={summary?.content} />
-        <CardText content={summary?.summary} />
+        <CardText content={summary?.content} status={summaryStatus} />
+        <CardText content={summary?.summary} status={summaryStatus} />
       </div>
     </div>
   );
