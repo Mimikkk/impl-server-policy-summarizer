@@ -1,6 +1,7 @@
 import type { Container } from "@configs/container.ts";
 import { stringifyPdfBuffer } from "@configs/pdf-js/pdfjs.ts";
-import { type Summary, SummaryResource } from "./pdfs.resource.ts";
+import { and, eq } from "drizzle-orm";
+import { type TextExtraction, TextExtractionResource, type TextSummary, TextSummaryResource } from "./pdfs.resource.ts";
 
 export class PdfService {
   static new({ database, llm }: Pick<Container, "database" | "llm">): PdfService {
@@ -12,19 +13,47 @@ export class PdfService {
     private readonly llm: Container["llm"],
   ) {}
 
+  async extract({ type, ref }: TextSource): Promise<TextExtraction | undefined> {
+    let entity = await this.database.select()
+      .from(TextExtractionResource.table)
+      .where(and(eq(TextExtractionResource.table.sourceType, type), eq(TextExtractionResource.table.sourceRef, ref)))
+      .get();
+    if (entity) return entity;
+
+    const buffer = await fetch(ref).then((response) => response.arrayBuffer()).catch(() => undefined);
+    if (!buffer) return undefined;
+
+    const content = await stringifyPdfBuffer(buffer);
+    if (!content) return undefined;
+
+    entity = await this.database.insert(TextExtractionResource.table).values({
+      sourceType: type,
+      sourceRef: ref,
+      content,
+    }).returning().get();
+
+    return entity;
+  }
   static #summaryFormat = {
     type: "object",
     properties: {
       summary: { type: "string" },
       details: { type: "string" },
-      takeaways: { type: "string" },
+      takeaways: { type: "array", items: { type: "string" } },
     },
     required: ["summary", "details", "takeaways"],
   };
-  static #summarySchema = SummaryResource.schema.pick({ summary: true, details: true, takeaways: true });
-  async summarize(content: string): Promise<Summary | undefined> {
-    let retries = 5;
+  static #summarySchema = TextSummaryResource.schema.pick({ summary: true, details: true, takeaways: true });
+  async summarize(extraction: TextExtraction): Promise<TextSummary | undefined> {
+    if (!extraction) return undefined;
 
+    const entity = await this.database.select()
+      .from(TextSummaryResource.table)
+      .where(eq(TextSummaryResource.table.textExtractionId, extraction.id))
+      .get();
+    if (entity) return entity;
+
+    let retries = 5;
     while (retries-- > 0) {
       const { response } = await this.llm.infer({
         format: PdfService.#summaryFormat,
@@ -53,14 +82,14 @@ export class PdfService {
 
         Od teraz pisz w języku polskim.
         `,
-        prompt: content,
+        prompt: extraction.content,
       });
 
       const { success, data } = PdfService.#summarySchema.safeParse(JSON.parse(response));
       if (!success) continue;
 
-      return await this.database.insert(SummaryResource.table).values({
-        content,
+      return await this.database.insert(TextSummaryResource.table).values({
+        textExtractionId: extraction.id,
         details: data.details,
         summary: data.summary,
         takeaways: data.takeaways,
@@ -70,10 +99,19 @@ export class PdfService {
     return undefined;
   }
 
-  async stringify(url: string): Promise<string | undefined> {
-    const buffer = await fetch(url).then((response) => response.arrayBuffer()).catch(() => undefined);
-    if (!buffer) return undefined;
+  async extraction(id: string): Promise<TextExtraction | undefined> {
+    return await this.database.select()
+      .from(TextExtractionResource.table)
+      .where(eq(TextExtractionResource.table.id, id))
+      .get();
+  }
 
-    return await stringifyPdfBuffer(buffer);
+  async summary(id: string): Promise<TextSummary | undefined> {
+    return await this.database.select()
+      .from(TextSummaryResource.table)
+      .where(eq(TextSummaryResource.table.textExtractionId, id))
+      .get();
   }
 }
+
+export type TextSource = { type: "url"; ref: string };

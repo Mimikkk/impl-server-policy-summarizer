@@ -67,9 +67,14 @@ const entityRefine = {
     }),
 } satisfies ResultRefine<string, {}>;
 
-type Entity<TName extends string, TFields extends ColumnRecord, TRefine extends ResultRefine<TName, TFields>> = {
+export type Entity<
+  TName extends string = any,
+  TFields extends ColumnRecord = any,
+  TRefine extends ResultRefine<TName, TFields> = any,
+> = {
   table: ResultTable<TName, TFields>;
   schema: BuildSchema<"select", ResultTable<TName, TFields>["_"]["columns"], TRefine, Coerce>;
+  options: { tableName: TName; resourceName: string };
 };
 
 export const { createInsertSchema, createSelectSchema, createUpdateSchema } = createSchemaFactory({ zodInstance: z });
@@ -93,9 +98,9 @@ export const defineEntity = <
   } as never;
 
   const schema = createSelectSchema(table, refine).openapi(
-    `Persistence - Resources - ${upperFirst(resourceName)}Resource`,
+    `Resources - ${upperFirst(resourceName)}Resource`,
     { description },
   ) as never;
 
-  return { table, schema };
+  return { table, schema, options: { tableName, resourceName } };
 };

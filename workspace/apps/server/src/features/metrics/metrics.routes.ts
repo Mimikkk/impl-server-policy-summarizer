@@ -57,18 +57,13 @@ HonoClient.openapi(
         }),
       }),
     },
-    responses: defineResponses({
+    responses: defineResponses((c) => ({
       200: {
         schema: EndpointMetricsSchema,
         description: "Performance metrics for a specific endpoint",
       },
-      404: {
-        schema: z.object({
-          error: z.string().openapi({ description: "Endpoint not found" }),
-        }).openapi("Metrics - Errors - EndpointNotFoundErrorResponse"),
-        description: "Endpoint not found",
-      },
-    }),
+      404: c.common.notfound,
+    })),
   },
   (context) => {
     const { endpoint } = context.req.valid("param");
@@ -76,7 +71,7 @@ HonoClient.openapi(
     const metrics = context.var.metrics.calculateEndpointMetrics(endpoint);
 
     if (metrics) {
-      return context.json({ error: "Endpoint not found" }, 404);
+      return context.json({ status: 404, message: "Endpoint not found" }, 404);
     }
 
     return context.json(metrics, 200);

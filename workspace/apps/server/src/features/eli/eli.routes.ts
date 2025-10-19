@@ -1,4 +1,5 @@
 import { z } from "@hono/zod-openapi";
+import { eq } from "drizzle-orm";
 import { HonoClient } from "../../clients/HonoClient.ts";
 import { defineResponses } from "../docs/defineResponses.ts";
 import { EliResource } from "./eli.resources.ts";
@@ -26,31 +27,30 @@ HonoClient.openapi(
         required: true,
       },
     },
-    responses: defineResponses({
-      200: {
-        schema: EliResource.schema,
-        description: "The ELI data",
-      },
-      404: {
-        schema: z.object({
-          status: z.number().describe("The error code."),
-          message: z.string().describe("The error message."),
-        }).openapi("ELI - Errors - NotFoundErrorResponse"),
-        description: "ELI not found",
-      },
-    }),
+    responses: defineResponses((c) => ({
+      200: c.common.resource(EliResource),
+      404: c.common.notfound,
+    })),
   },
   async (context) => {
     const { eli } = context.req.valid("json");
     const url = eli;
-    const content = await context.var.services.pdf.stringify(url);
+
+    let entity = await context.var.database
+      .select().from(EliResource.table).where(eq(EliResource.table.eli, eli)).get();
+
+    if (!entity) {
+      entity = await context.var.database.insert(EliResource.table).values({ eli }).returning().get();
+    }
+
+    const content = await context.var.services.pdf.extract({ type: "url", ref: url });
     if (!content) return context.json({ status: 404, message: "ELI not found" }, 404);
 
     const summary = await context.var.services.pdf.summarize(content);
     if (!summary) return context.json({ status: 404, message: "ELI not found" }, 404);
 
-    const entity = await context.var.database.insert(EliResource.table).values({ eli, summaryId: summary.id })
-      .returning().get();
+    // const entity = await context.var.database.insert(EliResource.table).values({ eli, summaryId: summary.id })
+    //   .returning().get();
 
     return context.json(entity, 200);
   },

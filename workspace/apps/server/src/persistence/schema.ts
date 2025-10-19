@@ -1,7 +1,8 @@
 import { EliResource } from "@features/eli/eli.resources.ts";
-import { SummaryResource } from "@features/pdfs/pdfs.resource.ts";
+import { TextExtractionResource, TextSummaryResource } from "@features/pdfs/pdfs.resource.ts";
 
 export const schema = {
-  summaries: SummaryResource.table,
+  extractions: TextExtractionResource.table,
+  summaries: TextSummaryResource.table,
   eli: EliResource.table,
 };

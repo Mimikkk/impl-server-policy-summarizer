@@ -1,7 +1,17 @@
 import { z } from "@hono/zod-openapi";
 import { HonoClient } from "../../clients/HonoClient.ts";
-import { defineResponses } from "../docs/defineResponses.ts";
-import { SummaryResource } from "./pdfs.resource.ts";
+import { defineParams, defineResponses } from "../docs/defineResponses.ts";
+import { samples } from "../docs/samples.ts";
+import { TextExtractionResource, TextSummaryResource } from "./pdfs.resource.ts";
+import type { TextSource } from "./pdfs.service.ts";
+
+const sourceContentSchema = z.object({
+  url: z.url().describe("The url containing an pdf file."),
+}).transform((values) => ({ type: "url", ref: values.url }) satisfies TextSource).openapi({
+  title: "URL content",
+  description: "The url containing an pdf file to extract text from.",
+});
+export const sourceContentExample = { url: samples.urls.pdf };
 
 HonoClient.openapi(
   {
@@ -12,56 +22,57 @@ HonoClient.openapi(
       body: {
         content: {
           "application/json": {
-            schema: z.union([
-              z.object({
-                url: z.url().describe("The url containing an pdf file."),
-              }).openapi({
-                title: "URL content",
-                description: "The url containing an pdf file to extract text from.",
-              }),
-              z.object({
-                content: z.string().min(1).describe("The content of the text"),
-              }).openapi({
-                title: "Text content",
-                description: "The text content to summarize",
-              }),
-            ]),
-            example: { url: "https://pdfobject.com/pdf/sample.pdf" },
+            schema: sourceContentSchema,
+            example: sourceContentExample,
           },
         },
-        description: "The request body",
         required: true,
       },
     },
-    responses: defineResponses({
-      200: {
-        schema: SummaryResource.schema,
-        description: "The summary of the text",
-      },
-      400: {
-        schema: z.object({
-          status: z.number().describe("The error code."),
-          message: z.string().describe("The error message."),
-        }).openapi("PDF Operations - Errors - UnprocessablePdfErrorResponse"),
-        description: "Failed to parse the file",
-      },
-    }),
+    responses: defineResponses((c) => ({
+      200: c.common.resource(TextSummaryResource),
+      422: c.common.unprocessable,
+    })),
   },
   async (context) => {
-    const values = context.req.valid("json");
+    const source = context.req.valid("json");
 
-    let content = "";
-    if ("content" in values) {
-      content = values.content;
-    } else {
-      try {
-        content = await context.var.services.pdf.stringify(values.url) ?? "";
-      } catch {
-        return context.json({ status: 400, message: "Failed to parse the file." }, 400);
-      }
-    }
+    const extraction = await context.var.services.pdf.extract(source);
+    if (!extraction) return context.json({ status: 422, message: "Failed to extract the text from the file." }, 422);
 
-    const entity = await context.var.services.pdf.summarize(content);
+    const summary = await context.var.services.pdf.summarize(extraction);
+    if (!summary) return context.json({ status: 422, message: "Failed to summarize the text." }, 422);
+
+    return context.json(summary, 200);
+  },
+);
+
+HonoClient.openapi(
+  {
+    method: "post",
+    path: "/api/v1/pdf-operations/extract",
+    tags: ["PDF Operations"],
+    request: {
+      body: {
+        content: {
+          "application/json": {
+            schema: sourceContentSchema,
+            example: sourceContentExample,
+          },
+        },
+        required: true,
+      },
+    },
+    responses: defineResponses((c) => ({
+      200: c.common.resource(TextExtractionResource),
+      422: c.common.unprocessable,
+    })),
+  },
+  async (context) => {
+    const source = context.req.valid("json");
+
+    const entity = await context.var.services.pdf.extract(source);
+    if (!entity) return context.json({ status: 422, message: "Failed to extract the text from the file." }, 422);
 
     return context.json(entity, 200);
   },
@@ -69,44 +80,75 @@ HonoClient.openapi(
 
 HonoClient.openapi(
   {
-    method: "post",
-    path: "/api/v1/pdf-operations/extract-text",
+    method: "get",
+    path: "/api/v1/pdf-operations/summaries/{id}",
     tags: ["PDF Operations"],
     request: {
-      body: {
-        content: {
-          "application/json": {
-            schema: z.object({ url: z.url().describe("The url containing an pdf file.") }),
-            example: { url: "https://pdfobject.com/pdf/sample.pdf" },
-          },
-        },
-      },
+      params: defineParams((c) => ({
+        id: c.common.id,
+      })),
     },
-    responses: defineResponses({
-      200: {
-        schema: z.object({
-          content: z.string().describe("The content of the file"),
-        }).openapi("PDF Operations - Results - PdfContentResponse"),
-        description: "The content of the file as text",
-      },
-      400: {
-        schema: z.object({
-          status: z.number().describe("The error code."),
-          message: z.string().describe("The error message."),
-        }).openapi("PDF Operations - Errors - UnprocessablePdfErrorResponse"),
-        description: "Failed to parse the file",
-      },
-    }),
+    responses: defineResponses((c) => ({
+      200: c.common.resource(TextExtractionResource),
+      404: c.common.notfound,
+    })),
   },
   async (context) => {
-    const { url } = context.req.valid("json") as { url: string };
+    const { id } = context.req.valid("param");
 
-    try {
-      const content = await context.var.services.pdf.stringify(url) ?? "";
+    const entity = await context.var.services.pdf.extraction(id);
+    if (!entity) return context.json({ status: 404, message: "Resource not found." }, 404);
 
-      return context.json({ content }, 200);
-    } catch {
-      return context.json({ status: 400, message: "Failed to parse the file." }, 400);
-    }
+    return context.json(entity, 200);
   },
 );
+
+HonoClient.openapi(
+  {
+    method: "get",
+    path: "/api/v1/pdf-operations/extractions/{id}",
+    tags: ["PDF Operations"],
+    request: {
+      params: defineParams((c) => ({
+        id: c.common.id,
+      })),
+    },
+    responses: defineResponses((c) => ({
+      200: c.common.resource(TextSummaryResource),
+      404: c.common.notfound,
+    })),
+  },
+  async (context) => {
+    const { id } = context.req.valid("param");
+
+    const entity = await context.var.services.pdf.summary(id);
+    if (!entity) return context.json({ status: 404, message: "Resource not found." }, 404);
+
+    return context.json(entity, 200);
+  },
+);
+
+// HonoClient.openapi(
+//   {
+//     method: "get",
+//     path: "/api/v1/pdf-operations/extractions",
+//     tags: ["PDF Operations"],
+//     request: {
+//       query: defineQuery((c) => ({
+//         limit: c.common.limit,
+//         offset: c.common.offset,
+//       })),
+//     },
+//     responses: defineResponses((c) => ({
+//       200: c.common.resources(TextExtractionResource),
+//       404: c.common.notfound,
+//     })),
+//   },
+//   async (context) => {
+//     const params = context.req.valid("param");
+
+//     const entities = await context.var.services.pdf.extractions(params);
+
+//     return context.json(entities, 200);
+//   },
+// );
