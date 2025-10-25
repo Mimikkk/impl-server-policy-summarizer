@@ -2,7 +2,7 @@ import { ServerClient } from "@clients/server/ServerClient.ts";
 import { Param } from "@hooks/useLocalStorage.ts";
 import { createContext } from "@utilities/createContext.tsx";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 type Updater<T> = (value: T) => Partial<T> | undefined;
 interface Storage {
@@ -19,6 +19,7 @@ const StorageParam = Param.new<Storage>({
 });
 
 export const [useTranslationsView, TranslationsViewProvider] = createContext(() => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
   const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
 
@@ -50,7 +51,14 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
   }, []);
 
   const handleAddKey = useCallback(() => {
-    updateStorage((s) => ({ contents: [...s?.contents ?? [], { key: "", value: "" }] }));
+    updateStorage((s) => {
+      setFocusedCell({ rowId: (s?.contents?.length ?? 0).toString(), columnId: "key" });
+      return ({ contents: [...s?.contents ?? [], { key: "", value: "" }] });
+    });
+
+    requestAnimationFrame(() => {
+      scrollContainerRef.current?.scrollTo({ top: scrollContainerRef.current?.scrollHeight ?? 0 });
+    });
   }, []);
 
   const handleRemoveKey = useCallback((rowId: string) => {
@@ -73,7 +81,6 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
   }, []);
 
   const handleRemoveLanguage = useCallback((columnId: string) => {
-    console.log(columnId);
     updateStorage((s) => {
       if (s?.contents?.some((item) => !!item[columnId])) {
         const result = confirm(
@@ -112,5 +119,6 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     handleRemoveLanguage,
     focusedCell,
     setFocusedCell,
+    scrollContainerRef,
   };
 });

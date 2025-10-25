@@ -24,9 +24,8 @@ const Content = () => {
     handleRemoveLanguage,
     showMissingTranslations,
     toggleShowMissingTranslations,
+    scrollContainerRef,
   } = useTranslationsView();
-
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const table = useMemo(() =>
     createTable({
@@ -97,7 +96,7 @@ const Content = () => {
           >
             <table className="border-separate w-full" cellSpacing="0" cellPadding="0">
               <thead className="z-10 sticky top-0 left-0 bg-primary-6 text-left uppercase">
-                <tr className="flex w-full items-center divide-x divide-primary-6 border-b border-primary-5 shadow shadow-primary-5">
+                <tr className="flex w-full divide-x divide-primary-6 border-b border-primary-5 shadow shadow-primary-5">
                   {table.columns.map((column) => {
                     const isSelectable = column.id !== "key";
                     const isSourceLanguage = sourceLanguage === column.id;
@@ -162,8 +161,10 @@ const Content = () => {
                     }
 
                     return (
-                      <th className="flex-1" key={column.id}>
-                        <div className="px-2 py-1 flex items-center justify-center">{column.label}</div>
+                      <th className="flex-1 h-auto" key={column.id}>
+                        <div className="px-2 py-1 flex items-center h-full justify-center bg-primary-4">
+                          {column.label}
+                        </div>
                       </th>
                     );
                   })}
@@ -175,14 +176,16 @@ const Content = () => {
                   return (
                     <tr
                       key={row.id}
-                      className="
+                      className={clsx(
+                        `
                       flex w-full items-stretch absolute top-0 left-0
                       divide-x divide-primary-6
                       min-h-10 h-full   
                       hover:bg-primary-4 bg-primary-5 even:bg-primary-6
                       hover:[&_[data-source]]:bg-success-4  [&_[data-source]]:bg-success-5 even:[&_[data-source]]:bg-success-6
                       hover:[&_[data-target]]:bg-info-4 [&_[data-target]]:bg-info-5 even:[&_[data-target]]:bg-info-6
-                      "
+                      `,
+                      )}
                       style={{
                         height: `${virtualRow.size}px`,
                         transform: `translateY(${virtualRow.start}px)`,
@@ -271,6 +274,18 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
     focusedCell,
     setFocusedCell,
   } = useTranslationsView();
+  const isKey = column.id === "key";
+
+  const ref = useRef<HTMLTableCellElement>(null);
+  useEffect(() => {
+    if (focusedCell?.columnId === column.id && focusedCell?.rowId === row.id) {
+      const input = ref.current?.querySelector("input");
+
+      if (input) {
+        input.focus();
+      }
+    }
+  }, [focusedCell?.columnId, focusedCell?.rowId, ref]);
 
   const isSourceLanguage = sourceLanguage === column.id;
   const isTargetLanguage = targetLanguage === column.id;
@@ -282,6 +297,7 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
 
   return (
     <td
+      ref={ref}
       data-source={isSourceLanguage ? "" : undefined}
       data-target={isTargetLanguage ? "" : undefined}
       className={clsx(
@@ -290,7 +306,7 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
       )}
     >
       <div className="flex justify-between h-full">
-        {isEditing && column.id === "key" && (
+        {isEditing && isKey && (
           <IconButton
             name="Trash"
             variant="solid"
