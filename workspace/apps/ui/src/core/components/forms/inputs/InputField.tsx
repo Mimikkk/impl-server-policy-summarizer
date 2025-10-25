@@ -12,14 +12,15 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   onValueChange?: (value: string) => void;
   disabled?: boolean;
   compact?: boolean;
+  as?: "input" | "textarea";
 }
 export const InputField = memo(
   function InputField(
-    { id, label, onValueChange, className, color, disabled, compact, ...props }: InputFieldProps,
+    { id, label, onValueChange, className, color, disabled, compact, as: As = "input", ...props }: InputFieldProps,
   ) {
     const [value, setValue] = useDebounceState(props.value ?? "", onValueChange ?? noop);
 
-    const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       event.preventDefault();
 
       setValue(event.target.value);
@@ -27,12 +28,16 @@ export const InputField = memo(
 
     return (
       <Field id={id} label={label} className={className} color={color} disabled={disabled}>
-        <input
+        <As
           id={id}
           {...props}
           value={value}
           onChange={handleChange}
-          className={clsx("outline-none w-full px-3", compact ? "h-7" : "py-2")}
+          className={clsx(
+            "outline-none w-full px-3 text-ellipsis",
+            compact ? "h-7" : "py-2",
+            As === "textarea" ? "focus:min-h-24 resize-none" : "",
+          )}
           disabled={disabled}
         />
       </Field>
