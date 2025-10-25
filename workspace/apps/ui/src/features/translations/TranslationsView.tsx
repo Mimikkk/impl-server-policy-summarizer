@@ -95,7 +95,7 @@ const Content = () => {
             className="overflow-auto block h-[500px] relative border border-primary-6 rounded-sm"
           >
             <table className="border-separate w-full" cellSpacing="0" cellPadding="0">
-              <thead className="z-10 sticky top-0 left-0 bg-primary-6 text-left uppercase">
+              <thead className="z-10 sticky top-0 left-0 bg-primary-6 text-left">
                 <tr className="flex w-full divide-x divide-primary-6 border-b border-primary-5 shadow shadow-primary-5">
                   {table.columns.map((column) => {
                     const isSelectable = column.id !== "key";
@@ -116,14 +116,20 @@ const Content = () => {
                           data-target={isTargetLanguage}
                         >
                           <div className="flex flex-col items-center">
-                            <div className="flex justify-between w-full items-center px-2">
-                              <span>{column.label}</span>
-                              <IconButton
-                                color="error"
-                                name="Trash"
-                                variant="text"
-                                onClick={() => handleRemoveLanguage(column.id)}
-                              />
+                            <div className="flex justify-between w-full items-center h-7">
+                              {isEditing
+                                ? (
+                                  <>
+                                    <HeaderCell column={column} />
+                                    <IconButton
+                                      color="error"
+                                      name="Trash"
+                                      variant="solid"
+                                      onClick={() => handleRemoveLanguage(column.id)}
+                                    />
+                                  </>
+                                )
+                                : <span className="px-3">{column.label}</span>}
                             </div>
                             <div className="flex w-full bg-primary-4">
                               <IconButton
@@ -336,6 +342,30 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
       </div>
     </td>
   );
+});
+
+const HeaderCell = memo<{ column: TableColumn<any, any> }>(function HeaderCell({ column }) {
+  const { isEditing, sourceLanguage, targetLanguage } = useTranslationsView();
+  const [label, setLabel] = useState(column.label);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const isSourceLanguage = sourceLanguage === column.id;
+  const isTargetLanguage = targetLanguage === column.id;
+  console.log({ isSourceLanguage, isTargetLanguage });
+
+  return isEditing
+    ? (
+      <InputField
+        className="w-full h-full"
+        value={label}
+        onValueChange={setLabel}
+        compact
+        color={isFocused ? "secondary" : isSourceLanguage ? "success" : isTargetLanguage ? "info" : undefined}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+      />
+    )
+    : <span>{column.label}</span>;
 });
 
 export const TranslationsView = () => (

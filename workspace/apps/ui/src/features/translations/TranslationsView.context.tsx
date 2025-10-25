@@ -78,6 +78,15 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     updateStorage((s) => ({
       contents: s.contents?.map((item) => ({ ...item, ["..."]: "" })) ?? [],
     }));
+    requestAnimationFrame(() => {
+      const theadCellLastElement = scrollContainerRef.current?.querySelector<HTMLElement>(
+        "thead th:last-child input",
+      );
+
+      if (theadCellLastElement) {
+        theadCellLastElement.focus();
+      }
+    });
   }, []);
 
   const handleRemoveLanguage = useCallback((columnId: string) => {
