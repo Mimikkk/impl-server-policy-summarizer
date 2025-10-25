@@ -42,6 +42,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@components": "./src/core/components",
+      "@core": "./src/core",
       "@utilities": "./src/core/utilities",
       "@services": "./src/core/services",
       "@hooks": "./src/core/hooks",

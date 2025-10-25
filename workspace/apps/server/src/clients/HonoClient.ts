@@ -32,15 +32,14 @@ HonoClient
     }),
     logger(),
     etag(),
-    timeout(TimeMs.s30),
+    except(["api/v1/translations/*"], timeout(TimeMs.s30)),
     prettyJSON(),
   )
   .use(withContainer)
   .use(withRequestMonitor)
-  .get(
-    "*",
+  .use(
     except(
-      ["api/v1/metrics/*", "/docs/*"],
+      ["api/v1/metrics/*", "/docs/*", "/api/v1/csv-operations/*"],
       cache({ cacheName: "cache", wait: true, cacheControl: "max-age=3600" }),
       withCacheMonitor,
     ),

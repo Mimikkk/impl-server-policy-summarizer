@@ -43,10 +43,10 @@ HonoClient.openapi(
       entity = await context.var.database.insert(EliResource.table).values({ eli }).returning().get();
     }
 
-    const content = await context.var.services.pdf.extract({ type: "url", ref: url });
+    const content = await context.var.services.pdfs.extract({ type: "url", ref: url });
     if (!content) return context.json({ status: 404, message: "ELI not found" }, 404);
 
-    const summary = await context.var.services.pdf.summarize(content);
+    const summary = await context.var.services.pdfs.summarize(content);
     if (!summary) return context.json({ status: 404, message: "ELI not found" }, 404);
 
     // const entity = await context.var.database.insert(EliResource.table).values({ eli, summaryId: summary.id })

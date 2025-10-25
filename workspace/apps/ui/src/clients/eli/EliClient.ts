@@ -1,5 +1,5 @@
 import { Environment } from "@configs/Environment.ts";
-import { adaptQuery } from "../../core/queries/adaptQuery.ts";
+import { adaptQuery } from "@core/queries/adaptQuery.ts";
 import { Client } from "../Client.ts";
 import type { ActResource, ActTextType } from "./resources/ActResource.ts";
 import type { PublisherResource } from "./resources/PublisherResource.ts";

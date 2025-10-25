@@ -1,0 +1,4 @@
+key,en,pl
+UI_LEARN_BUTTON,Learn {skill_name} for {lp} learning points and {gold} gold,Nacz się {skill_name} za {lp} punktów nauki i {gold} złota
+DIALOGUE_BUTTON_ARENA,"I have fighter for you. His name is {item_name}, good luck adventure!","Mam dla Ciebie wojownika. Ma na imię {item_name}, powodzenia podróżniku!"
+DIALOGUE_BUTTON_FETCH,Brings me item of name {item_name}. I belive you can find it in dungeon,"Przynieś mi przedmiot o nazwie {item_name}. Wierzę, że jesteś w stanie znaleźć to w lochu"

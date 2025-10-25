@@ -37,10 +37,10 @@ HonoClient.openapi(
   async (context) => {
     const source = context.req.valid("json");
 
-    const extraction = await context.var.services.pdf.extract(source);
+    const extraction = await context.var.services.pdfs.extract(source);
     if (!extraction) return context.json({ status: 422, message: "Failed to extract the text from the file." }, 422);
 
-    const summary = await context.var.services.pdf.summarize(extraction);
+    const summary = await context.var.services.pdfs.summarize(extraction);
     if (!summary) return context.json({ status: 422, message: "Failed to summarize the text." }, 422);
 
     return context.json(summary, 200);
@@ -71,7 +71,7 @@ HonoClient.openapi(
   async (context) => {
     const source = context.req.valid("json");
 
-    const entity = await context.var.services.pdf.extract(source);
+    const entity = await context.var.services.pdfs.extract(source);
     if (!entity) return context.json({ status: 422, message: "Failed to extract the text from the file." }, 422);
 
     return context.json(entity, 200);
@@ -96,7 +96,7 @@ HonoClient.openapi(
   async (context) => {
     const { id } = context.req.valid("param");
 
-    const entity = await context.var.services.pdf.extraction(id);
+    const entity = await context.var.services.pdfs.extraction(id);
     if (!entity) return context.json({ status: 404, message: "Resource not found." }, 404);
 
     return context.json(entity, 200);
@@ -121,7 +121,7 @@ HonoClient.openapi(
   async (context) => {
     const { id } = context.req.valid("param");
 
-    const entity = await context.var.services.pdf.summary(id);
+    const entity = await context.var.services.pdfs.summary(id);
     if (!entity) return context.json({ status: 404, message: "Resource not found." }, 404);
 
     return context.json(entity, 200);

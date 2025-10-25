@@ -44,6 +44,7 @@
     "@libsql/client": "npm:@libsql/client@0.6.2",
     "@libsql/client": "../../../node_modules/@libsql/client/lib-esm/node.js",
     "pdfjs-dist": "npm:pdfjs-dist@^5.4.296",
+    "fast-csv": "npm:fast-csv@5.0.5",
     "pdf-parse": "npm:pdf-parse@2.4.3",
     "unpdf": "npm:unpdf@1.0.1",
     "js-yaml": "npm:js-yaml@^4.1.0"

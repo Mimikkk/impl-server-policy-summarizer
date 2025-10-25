@@ -9,7 +9,7 @@ import {
 } from "../../core/messages/responses.ts";
 import { samples } from "./samples.ts";
 
-type ResponseShape = z.ZodObject<any, any> | z.ZodRecord<any, any> | z.ZodArray<any>;
+type ResponseShape = z.ZodObject<any, any> | z.ZodRecord<any, any> | z.ZodArray<any> | z.ZodUnion<any>;
 
 type ResponseOpenApiSchema<T extends ResponseShape = ResponseShape> = {
   content: { "application/json": { schema: T } };
