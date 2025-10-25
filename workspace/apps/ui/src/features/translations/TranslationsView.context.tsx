@@ -23,6 +23,8 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
   const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
   const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
 
+  console.log({ showMissingTranslations });
+
   const [focusedCell, setFocusedCell] = useState<{ rowId: string; columnId: string } | null>(null);
   const [sourceLanguage, setSourceLanguage] = useState<string | null>(null);
   const [targetLanguage, setTargetLanguage] = useState<string | null>(null);
@@ -52,6 +54,11 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
 
   const handleAddKey = useCallback(() => {
     updateStorage((s) => {
+      if (s?.contents?.some((item) => item.key === "")) {
+        setFocusedCell({ rowId: ((s?.contents?.length ?? 0) - 1).toString(), columnId: "key" });
+        return;
+      }
+
       setFocusedCell({ rowId: (s?.contents?.length ?? 0).toString(), columnId: "key" });
       return ({ contents: [...s?.contents ?? [], { key: "", value: "" }] });
     });

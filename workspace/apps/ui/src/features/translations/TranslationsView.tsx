@@ -1,6 +1,7 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
+import { Text } from "@core/components/typography/Text.tsx";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
@@ -47,6 +48,8 @@ const Content = () => {
     [visibleRows, query],
   );
 
+  console.log({ visibleRows, showMissingTranslations, filteredRows });
+
   const virtualizer = useVirtualizer({
     count: filteredRows.length,
     getScrollElement: () => scrollContainerRef.current,
@@ -67,7 +70,9 @@ const Content = () => {
         </div>
         <div className="flex flex-col">
           <div className="flex w-full gap-2">
-            <IconButton name="Upload" className="min-w-20 shrink-0" onClick={handleLoadCsv}>Load CSV</IconButton>
+            <IconButton variant="solid" name="Upload" className="min-w-20 shrink-0" onClick={handleLoadCsv}>
+              Load CSV
+            </IconButton>
             <InputField
               compact
               label="Search..."
@@ -211,6 +216,14 @@ const Content = () => {
             ? <IconButton name="Plus" variant="solid" className="w-full max-h-7" onClick={handleAddKey} />
             : <div />}
           <IconButton name={isEditing ? "Check" : "FilePen"} variant="solid" onClick={toggleEdit} />
+          <div className="flex items-center gap-1 text-xs">
+            <Text light>
+              Visible rows:
+            </Text>
+            <span>{filteredRows.length}</span>
+            <span>/</span>
+            <span>{table.rows.length}</span>
+          </div>
         </div>
       )}
       <div className="flex flex-col gap-2">
@@ -259,11 +272,11 @@ const Content = () => {
         </div>
         <div className="flex gap-2">
           <IconButton
-            name={showMissingTranslations ? "Eye" : "EyeOff"}
+            name={showMissingTranslations ? "EyeOff" : "Eye"}
             variant="solid"
             onClick={toggleShowMissingTranslations}
           >
-            {showMissingTranslations ? "Show missing translations" : "Clear show missing translations"}
+            {showMissingTranslations ? "Clear show missing translations" : "Show missing translations"}
           </IconButton>
         </div>
       </div>
@@ -351,7 +364,6 @@ const HeaderCell = memo<{ column: TableColumn<any, any> }>(function HeaderCell({
 
   const isSourceLanguage = sourceLanguage === column.id;
   const isTargetLanguage = targetLanguage === column.id;
-  console.log({ isSourceLanguage, isTargetLanguage });
 
   return isEditing
     ? (
