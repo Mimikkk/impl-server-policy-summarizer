@@ -63,8 +63,6 @@ export const TranslationsView = () => {
     setStored({ version: Date.now(), filename: csv.name, contents });
   }, [csv?.name, contents]);
 
-  console.log({ contents, contentsStatus });
-
   const handleLoadCsv = useCallback(() => {
     const input = document.createElement("input");
     input.type = "file";
@@ -83,14 +81,12 @@ export const TranslationsView = () => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useDebounceState(query, setQuery, 200);
 
-  const [data, setData] = useState<Record<string, string>[]>(contents ?? []);
-
   const rows = useMemo(
     () =>
-      data?.filter((content) =>
+      contents?.filter((content) =>
         Object.values(content).some((value) => value.toLowerCase().includes(debouncedQuery.toLowerCase()))
       ) ?? [],
-    [data, debouncedQuery],
+    [contents, debouncedQuery],
   );
 
   const table = createTable({
@@ -100,12 +96,24 @@ export const TranslationsView = () => {
       label: key,
     })),
   });
-  const [selectedCells, setSelectedCells] = useState<Cell<InferData<typeof table>>[]>([]);
 
-  const handleNewRow = useCallback(() => {
+  const handleAddRow = useCallback(() => {
+    setStored({
+      ...stored,
+      version: Date.now(),
+      contents: [
+        ...stored?.contents ?? [],
+        Object.fromEntries(Object.keys(stored?.contents?.[0] ?? {}).map((key) => [key, ""])),
+      ],
+    });
   }, []);
 
-  const handleNewLanguage = useCallback(() => {
+  const handleAddLanguage = useCallback(() => {
+    setStored({
+      ...stored,
+      version: Date.now(),
+      contents: stored?.contents?.map((item) => ({ ...item, ["Język"]: "" })) ?? [],
+    });
   }, []);
 
   return (
@@ -156,15 +164,15 @@ export const TranslationsView = () => {
       </div>
       {contentsStatus === "success" && (
         <div className="grid grid-cols-[1fr_auto] gap-2 grid-rows-[1fr_auto]">
-          <div className="border border-primary-6 bg-primary-5 w-full overflow-scroll block h-[500px] relative rounded-sm">
+          <div className="border border-primary-6 bg-primary-5 w-full overflow-scroll block h-[500px] relative ">
             <table>
               <thead
                 className={clsx(
                   "sticky top-0 left-0",
-                  "bg-primary-4",
+                  "bg-primary-6",
                 )}
               >
-                <tr>
+                <tr className="shadow-[inset_0px_-1px] shadow-primary-7">
                   {table.columns.map((column) => {
                     const isSelectable = column.id !== "key";
                     const isSourceLanguage = sourceLanguage === column.id;
@@ -175,8 +183,8 @@ export const TranslationsView = () => {
                         <th
                           className={clsx(
                             "p-1",
-                            isSourceLanguage && "bg-success-7",
-                            isTargetLanguage && "bg-info-7",
+                            isSourceLanguage && "bg-success-6",
+                            isTargetLanguage && "bg-info-6",
                           )}
                           key={column.id}
                           data-source={isSourceLanguage}
@@ -211,32 +219,27 @@ export const TranslationsView = () => {
                   })}
                 </tr>
               </thead>
-              <tbody className="bg-primary-3">
+              <tbody>
                 {table.rows.map((row) => (
-                  <tr key={row.id} className="hover:bg-primary-4">
+                  <tr
+                    key={row.id}
+                    className="
+                    hover:bg-primary-4 bg-primary-5 even:bg-primary-6 border [&_td]:border-primary-4
+                    [&_[data-source]]:hover:bg-success-4  [&_[data-source]]:bg-success-5 even:[&_[data-source]]:bg-success-6 [&_[data-source]]:border-success-4
+                   [&_[data-target]]:hover:bg-info-4 [&_[data-target]]:bg-info-5 even:[&_[data-target]]:bg-info-6 [&_[data-target]]:border-info-4
+                   "
+                  >
                     {table.columns.map((column) => {
-                      const isSelected = selectedCells.some((cell) =>
-                        cell.rowId === row.id && cell.columnId === column.id
-                      );
                       const isSourceLanguage = sourceLanguage === column.id;
                       const isTargetLanguage = targetLanguage === column.id;
 
                       return (
                         <td
+                          data-source={isSourceLanguage ? "" : undefined}
+                          data-target={isTargetLanguage ? "" : undefined}
                           className={clsx(
-                            "p-1 cursor-pointer active:bg-primary-5 border",
-                            isSourceLanguage && "bg-success-4 border-success-5",
-                            isTargetLanguage && "bg-info-4 border-info-5",
-                            !isSourceLanguage && !isTargetLanguage && "border-primary-5",
+                            "p-1 border",
                           )}
-                          onClick={() =>
-                            setSelectedCells((prev) => {
-                              if (isSelected) {
-                                return prev.filter((cell) => cell.rowId !== row.id || cell.columnId !== column.id);
-                              }
-
-                              return [...prev, { rowId: row.id, columnId: column.id }];
-                            })}
                           key={column.id}
                         >
                           {row.original[column.id]}
@@ -248,11 +251,16 @@ export const TranslationsView = () => {
               </tbody>
             </table>
           </div>
-          <IconButton name="Plus" variant="solid" className="h-full flex-col max-w-7 justify-start">
+          <IconButton
+            name="Plus"
+            variant="solid"
+            className="h-full flex-col max-w-7 justify-start"
+            onClick={handleAddLanguage}
+          >
             <span style={{ textOrientation: "upright", writingMode: "vertical-rl" }}>Language</span>
           </IconButton>
-          <IconButton name="Plus" variant="solid" className="h-7 w-full justify-start">
-            Add new row
+          <IconButton name="Plus" variant="solid" className="h-7 w-full justify-start" onClick={handleAddRow}>
+            Add new key
           </IconButton>
         </div>
       )}
