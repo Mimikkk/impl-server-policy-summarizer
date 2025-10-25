@@ -34,7 +34,7 @@ export const InputField = memo(
           value={value}
           onChange={handleChange}
           className={clsx(
-            "outline-none w-full px-3 text-ellipsis",
+            "outline-none w-full h-full px-3 text-ellipsis",
             compact ? "h-7" : "py-2",
             As === "textarea" ? "focus:min-h-24 resize-none" : "",
           )}

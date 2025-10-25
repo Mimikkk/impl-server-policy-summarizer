@@ -11,6 +11,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   compact?: boolean;
   square?: boolean;
   as?: "button" | "span";
+  active?: boolean;
 }
 
 export const Button = memo<ButtonProps>(function Button(
@@ -22,6 +23,7 @@ export const Button = memo<ButtonProps>(function Button(
     compact,
     as: As = "button",
     square = false,
+    active,
     ...props
   },
 ) {
@@ -33,7 +35,7 @@ export const Button = memo<ButtonProps>(function Button(
         compact ? "min-h-5" : "min-h-7",
         "flex items-center justify-center gap-1 w-fit min-w-0",
         square ? "aspect-square" : compact ? "px-1" : "px-2 py-1",
-        uiElementClass({ variant, color, disabled: props.disabled, usesDisabled: true }),
+        uiElementClass({ variant, color, disabled: props.disabled, usesDisabled: true, active }),
         className,
       )}
     >

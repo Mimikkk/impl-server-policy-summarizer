@@ -1,5 +1,5 @@
 import { ServerClient } from "@clients/server/ServerClient.ts";
-import { useLocalStorage } from "@hooks/useLocalStorage.ts";
+import { Param } from "@hooks/useLocalStorage.ts";
 import { createContext } from "@utilities/createContext.tsx";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
 import { useCallback, useState } from "react";
@@ -11,17 +11,24 @@ interface Storage {
   contents: Record<string, string>[];
 }
 
+const ShowMissingTranslationsParam = Param.boolean({ key: "show-missing-translations" });
+const StorageParam = Param.new<Storage>({
+  key: "translations-storage",
+  serialize: (value) => JSON.stringify(value),
+  deserialize: (value) => value ? JSON.parse(value) : undefined,
+});
+
 export const [useTranslationsView, TranslationsViewProvider] = createContext(() => {
+  const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
+  const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
+
+  const [focusedCell, setFocusedCell] = useState<{ rowId: string; columnId: string } | null>(null);
   const [sourceLanguage, setSourceLanguage] = useState<string | null>(null);
   const [targetLanguage, setTargetLanguage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdit = useCallback(() => setIsEditing((x) => !x), []);
 
-  const [storage, setStorage] = useLocalStorage<Storage>({
-    key: "translations-storage",
-    serialize: (value) => JSON.stringify(value),
-    deserialize: (value) => value ? JSON.parse(value) : undefined,
-  });
+  const [storage, setStorage] = StorageParam.use();
 
   const handleLoadCsv = useCallback(async () => {
     const file = await requestFilePicker({ types: ["text/csv"] });
@@ -61,7 +68,7 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
 
   const handleAddLanguage = useCallback(() => {
     updateStorage((s) => ({
-      contents: s.contents?.map((item) => ({ [Object.keys(item).length + 1]: "", ...item })) ?? [],
+      contents: s.contents?.map((item) => ({ ...item, ["..."]: "" })) ?? [],
     }));
   }, []);
 
@@ -97,9 +104,13 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     isEditing,
     setIsEditing,
     toggleEdit,
+    showMissingTranslations,
+    toggleShowMissingTranslations,
     handleAddKey,
     handleRemoveKey,
     handleAddLanguage,
     handleRemoveLanguage,
+    focusedCell,
+    setFocusedCell,
   };
 });

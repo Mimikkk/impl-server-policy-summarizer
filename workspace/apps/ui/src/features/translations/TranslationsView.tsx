@@ -1,7 +1,6 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
-import { Text } from "@core/components/typography/Text.tsx";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
@@ -23,6 +22,8 @@ const Content = () => {
     handleAddKey,
     handleAddLanguage,
     handleRemoveLanguage,
+    showMissingTranslations,
+    toggleShowMissingTranslations,
   } = useTranslationsView();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -33,12 +34,18 @@ const Content = () => {
       columns: Object.keys(storage?.contents?.[0] ?? {}).map((key) => ({ id: key, label: key })),
     }), [storage?.contents]);
 
+  const visibleRows = useMemo(() => {
+    return showMissingTranslations
+      ? table.rows.filter((row) => table.columns.some((column) => !row.original[column.id]))
+      : table.rows;
+  }, [table.rows, table.columns, showMissingTranslations]);
+
   const filteredRows = useMemo(
     () =>
-      table.rows.filter((row) =>
-        table.columns.some((column) => row.original[column.id].toLowerCase().includes(query.toLowerCase()))
+      visibleRows.filter((row) =>
+        !query || table.columns.some((column) => row.original[column.id].toLowerCase().includes(query.toLowerCase()))
       ),
-    [table.rows, table.columns, query],
+    [visibleRows, query],
   );
 
   const virtualizer = useVirtualizer({
@@ -50,8 +57,8 @@ const Content = () => {
 
   return (
     <Card className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex gap-2 items-start">
+      <div className="flex justify-between gap-2">
+        <div className="flex gap-2 content-start self-start">
           <IconButton name="Plus" variant="solid" className="min-w-40" onClick={handleAddLanguage}>
             New language
           </IconButton>
@@ -70,7 +77,7 @@ const Content = () => {
               className="w-full"
             />
           </div>
-          <Card label="fileinfo" compact className="px-2 py-1" color={storage ? "info" : "error"}>
+          <Card label="csv content" compact className="px-2 py-1" color={storage ? "info" : "error"}>
             {storage
               ? (
                 <div>
@@ -86,7 +93,7 @@ const Content = () => {
         <div className="grid grid-cols-[1fr_auto] gap-2 grid-rows-[1fr_auto]">
           <div
             ref={scrollContainerRef}
-            className="bg-primary-5 w-full overflow-auto block h-[500px] relative border border-primary-6 rounded-sm"
+            className="overflow-auto block h-[500px] relative border border-primary-6 rounded-sm"
           >
             <table className="border-separate w-full" cellSpacing="0" cellPadding="0">
               <thead className="z-10 sticky top-0 left-0 bg-primary-6 text-left uppercase">
@@ -110,7 +117,7 @@ const Content = () => {
                           data-target={isTargetLanguage}
                         >
                           <div className="flex flex-col items-center">
-                            <div className="flex justify-between w-full items-center">
+                            <div className="flex justify-between w-full items-center px-2">
                               <span>{column.label}</span>
                               <IconButton
                                 color="error"
@@ -119,12 +126,12 @@ const Content = () => {
                                 onClick={() => handleRemoveLanguage(column.id)}
                               />
                             </div>
-                            <div className="flex w-full">
+                            <div className="flex w-full bg-primary-4">
                               <IconButton
-                                compact
                                 className="flex-1 justify-start"
-                                variant="solid"
                                 name={isSourceLanguage ? "BadgeCheck" : "Badge"}
+                                color={isSourceLanguage ? "success" : "primary"}
+                                active={isSourceLanguage}
                                 onClick={() => {
                                   if (isTargetLanguage) {
                                     setTargetLanguage(null);
@@ -132,13 +139,13 @@ const Content = () => {
                                   return setSourceLanguage(column.id);
                                 }}
                               >
-                                abc
+                                source language
                               </IconButton>
                               <IconButton
-                                compact
                                 className="flex-1 justify-start"
-                                variant="solid"
                                 name={isTargetLanguage ? "BadgeCheck" : "Badge"}
+                                color={isTargetLanguage ? "info" : "primary"}
+                                active={isTargetLanguage}
                                 onClick={() => {
                                   if (isSourceLanguage) {
                                     setSourceLanguage(null);
@@ -146,7 +153,7 @@ const Content = () => {
                                   return setTargetLanguage(column.id);
                                 }}
                               >
-                                abc
+                                target language
                               </IconButton>
                             </div>
                           </div>
@@ -169,7 +176,7 @@ const Content = () => {
                     <tr
                       key={row.id}
                       className="
-                      flex w-full items-center absolute top-0 left-0
+                      flex w-full items-stretch absolute top-0 left-0
                       divide-x divide-primary-6
                       min-h-10 h-full   
                       hover:bg-primary-4 bg-primary-5 even:bg-primary-6
@@ -189,25 +196,10 @@ const Content = () => {
             </table>
           </div>
           {isEditing
-            ? (
-              <IconButton
-                name="Plus"
-                variant="solid"
-                className="h-full flex-col max-w-7 justify-start gap-2 tracking-wide"
-                onClick={handleAddLanguage}
-              >
-                <span style={{ writingMode: "vertical-rl" }}>
-                  New language
-                </span>
-              </IconButton>
-            )
+            ? <IconButton name="Plus" variant="solid" className="h-full  max-w-7" onClick={handleAddLanguage} />
             : <div />}
           {isEditing
-            ? (
-              <IconButton name="Plus" variant="solid" className="h-7 w-full justify-start" onClick={handleAddKey}>
-                New key
-              </IconButton>
-            )
+            ? <IconButton name="Plus" variant="solid" className="w-full max-h-7" onClick={handleAddKey} />
             : <div />}
           <IconButton name={isEditing ? "Check" : "FilePen"} variant="solid" onClick={toggleEdit} />
         </div>
@@ -215,10 +207,10 @@ const Content = () => {
       <div className="flex flex-col gap-2">
         <div>
           <IconButton
-            name={sourceLanguage ? "Check" : "X"}
+            name={sourceLanguage ? "Check" : "TriangleAlert"}
             onClick={() => setSourceLanguage(null)}
             className="flex items-center gap-1 min-w-52 justify-start"
-            color={sourceLanguage ? "success" : "error"}
+            color={sourceLanguage ? "success" : "warning"}
           >
             {sourceLanguage
               ? (
@@ -227,13 +219,13 @@ const Content = () => {
                   <span>{sourceLanguage}</span>
                 </>
               )
-              : <span className="font-bold">select source language...</span>}
+              : <span className="font-bold">Select source language...</span>}
           </IconButton>
           <IconButton
-            name={targetLanguage ? "Check" : "X"}
+            name={targetLanguage ? "Check" : "TriangleAlert"}
             onClick={() => setTargetLanguage(null)}
             className="flex items-center gap-1 min-w-52 justify-start"
-            color={targetLanguage ? "info" : "error"}
+            color={targetLanguage ? "info" : "warning"}
           >
             {targetLanguage
               ? (
@@ -242,7 +234,7 @@ const Content = () => {
                   <span>{targetLanguage}</span>
                 </>
               )
-              : <span className="font-bold">select target language...</span>}
+              : <span className="font-bold">Select target language...</span>}
           </IconButton>
         </div>
         <div className="flex gap-2">
@@ -257,8 +249,12 @@ const Content = () => {
           </IconButton>
         </div>
         <div className="flex gap-2">
-          <IconButton name="Eye" variant="solid">
-            Show rows with missing translations
+          <IconButton
+            name={showMissingTranslations ? "Eye" : "EyeOff"}
+            variant="solid"
+            onClick={toggleShowMissingTranslations}
+          >
+            {showMissingTranslations ? "Show missing translations" : "Clear show missing translations"}
           </IconButton>
         </div>
       </div>
@@ -272,6 +268,8 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
     sourceLanguage,
     targetLanguage,
     handleRemoveKey,
+    focusedCell,
+    setFocusedCell,
   } = useTranslationsView();
 
   const isSourceLanguage = sourceLanguage === column.id;
@@ -286,9 +284,12 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
     <td
       data-source={isSourceLanguage ? "" : undefined}
       data-target={isTargetLanguage ? "" : undefined}
-      className="px-2 py-1 flex-1"
+      className={clsx(
+        "flex-1",
+        !isEditing && "flex items-center px-[13px] overflow-auto",
+      )}
     >
-      <div className="flex justify-between">
+      <div className="flex justify-between h-full">
         {isEditing && column.id === "key" && (
           <IconButton
             name="Trash"
@@ -298,8 +299,24 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
           />
         )}
         {isEditing
-          ? <InputField className="w-full" value={value} onValueChange={setValue} compact />
-          : <Text>{value}</Text>}
+          ? (
+            <InputField
+              onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
+              onBlur={() => setFocusedCell(null)}
+              className="w-full"
+              color={focusedCell?.rowId === row.id && focusedCell?.columnId === column.id
+                ? "secondary"
+                : isSourceLanguage
+                ? "success"
+                : isTargetLanguage
+                ? "info"
+                : undefined}
+              value={value}
+              onValueChange={setValue}
+              compact
+            />
+          )
+          : <span className="flex items-center h-full">{value}</span>}
       </div>
     </td>
   );

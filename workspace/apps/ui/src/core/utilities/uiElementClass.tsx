@@ -7,6 +7,7 @@ export interface UiElementParameters {
   interactive?: boolean;
   usesDisabled?: boolean;
   disabled?: boolean;
+  active?: boolean;
 }
 
 const interactiveVariants = {
@@ -38,8 +39,15 @@ const variants = {
         `,
 };
 export const uiElementClass = (
-  { color, light = false, disabled = false, usesDisabled = false, variant = "solid", interactive = true }:
-    UiElementParameters,
+  {
+    color,
+    light = false,
+    disabled = false,
+    usesDisabled = false,
+    variant = "solid",
+    interactive = true,
+    active = false,
+  }: UiElementParameters,
 ) => {
   let template = variants[variant];
 
@@ -53,6 +61,10 @@ export const uiElementClass = (
     if (!disabled) {
       template += " " + interactiveVariants[variant];
     }
+  }
+
+  if (active) {
+    template += " bg-{{color}}-4";
   }
 
   return template
