@@ -75,13 +75,16 @@ const Content = () => {
             <IconButton variant="solid" name="Upload" className="min-w-20 shrink-0" onClick={handleLoadCsv}>
               Load CSV
             </IconButton>
-            <InputField
-              compact
-              label="Search..."
-              value={query}
-              onValueChange={setQuery}
-              className="w-full"
-            />
+            <div className="flex w-full">
+              <InputField
+                compact
+                label="Search..."
+                value={query}
+                onValueChange={setQuery}
+                className="w-full"
+              />
+              <IconButton className="shrink-0" name="Search" variant="solid" />
+            </div>
           </div>
           <Card label="csv content" compact className="px-2 py-1" color={storage ? "info" : "error"}>
             {storage
@@ -186,6 +189,7 @@ const Content = () => {
                               onValueChange={setKeyQuery}
                               className="h-full w-full"
                             />
+                            <IconButton name="Search" variant="solid" />
                           </div>
                         </div>
                       </th>
