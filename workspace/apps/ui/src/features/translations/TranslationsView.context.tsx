@@ -18,12 +18,13 @@ const StorageParam = Param.new<Storage>({
   deserialize: (value) => value ? JSON.parse(value) : undefined,
 });
 
+const QueryParam = Param.string({ key: "query" });
+const KeyQueryParam = Param.string({ key: "filters[key]" });
+
 export const [useTranslationsView, TranslationsViewProvider] = createContext(() => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
   const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
-
-  console.log({ showMissingTranslations });
 
   const [focusedCell, setFocusedCell] = useState<{ rowId: string; columnId: string } | null>(null);
   const [sourceLanguage, setSourceLanguage] = useState<string | null>(null);
@@ -41,7 +42,8 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     setStorage({ version: Date.now(), filename: file.name, contents });
   }, []);
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = QueryParam.use();
+  const [keyQuery, setKeyQuery] = KeyQueryParam.use();
 
   const updateStorage = useCallback((updater: Updater<Storage>) => {
     setStorage((s) => {
@@ -118,6 +120,8 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
   return {
     query,
     setQuery,
+    keyQuery,
+    setKeyQuery,
     storage,
     handleLoadCsv,
     sourceLanguage,

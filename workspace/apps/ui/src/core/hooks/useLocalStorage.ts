@@ -62,6 +62,14 @@ export class Param<T> {
     });
   }
 
+  static string({ key }: { key: string }): Param<string> {
+    return Param.new({
+      key,
+      serialize: (value) => value,
+      deserialize: (value) => value ?? "",
+    });
+  }
+
   static object<T>({ key }: { key: string }): Param<T> {
     return Param.new({
       key,

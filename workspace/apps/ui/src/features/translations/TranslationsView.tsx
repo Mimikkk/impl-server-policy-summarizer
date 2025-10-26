@@ -12,6 +12,8 @@ const Content = () => {
   const {
     handleLoadCsv,
     storage,
+    keyQuery,
+    setKeyQuery,
     query,
     setQuery,
     sourceLanguage,
@@ -44,11 +46,11 @@ const Content = () => {
     () =>
       visibleRows.filter((row) =>
         !query || table.columns.some((column) => row.original[column.id].toLowerCase().includes(query.toLowerCase()))
+      ).filter(
+        (row) => !keyQuery || row.original.key.toLowerCase().includes(keyQuery.toLowerCase()),
       ),
-    [visibleRows, query],
+    [visibleRows, query, keyQuery],
   );
-
-  console.log({ visibleRows, showMissingTranslations, filteredRows });
 
   const virtualizer = useVirtualizer({
     count: filteredRows.length,
@@ -173,8 +175,18 @@ const Content = () => {
 
                     return (
                       <th className="flex-1 h-auto" key={column.id}>
-                        <div className="px-2 py-1 flex items-center h-full justify-center bg-primary-4">
-                          {column.label}
+                        <div className="flex flex-col items-center">
+                          <div className="flex justify-between w-full items-center h-7">
+                            <span className="px-3">{column.label}</span>
+                          </div>
+                          <div className="flex justify-between w-full items-center h-7">
+                            <InputField
+                              compact
+                              value={keyQuery}
+                              onValueChange={setKeyQuery}
+                              className="h-full w-full"
+                            />
+                          </div>
                         </div>
                       </th>
                     );
