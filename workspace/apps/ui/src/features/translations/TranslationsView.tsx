@@ -218,7 +218,7 @@ const Content = () => {
                         transform: `translateY(${virtualRow.start}px)`,
                       }}
                     >
-                      {table.columns.map((column) => <Cell key={column.id} row={row} column={column} />)}
+                      {table.columns.map((column) => <BodyCell key={column.id} row={row} column={column} />)}
                     </tr>
                   );
                 })}
@@ -300,7 +300,19 @@ const Content = () => {
   );
 };
 
-const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(function Cell({ row, column }) {
+const inputColorMap = {
+  focused: "secondary",
+  source: "success",
+  target: "info",
+  none: undefined,
+} as const;
+const buttonColorMap = {
+  focused: "secondary",
+  source: "info",
+  target: "success",
+  none: undefined,
+} as const;
+const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(function Cell({ row, column }) {
   const {
     isEditing,
     sourceLanguage,
@@ -330,6 +342,9 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
     setValue(row.original[column.id]);
   }, [row.original[column.id]]);
 
+  const isFocused = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
+  const type = isFocused ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";
+
   return (
     <td
       ref={ref}
@@ -351,21 +366,41 @@ const Cell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(functio
         )}
         {isEditing
           ? (
-            <InputField
-              onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
-              onBlur={() => setFocusedCell(null)}
-              className="w-full"
-              color={focusedCell?.rowId === row.id && focusedCell?.columnId === column.id
-                ? "secondary"
-                : isSourceLanguage
-                ? "success"
-                : isTargetLanguage
-                ? "info"
-                : undefined}
-              value={value}
-              onValueChange={setValue}
-              compact
-            />
+            <div className="flex w-full">
+              <InputField
+                onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
+                onBlur={() => setFocusedCell(null)}
+                className="w-full"
+                color={inputColorMap[type]}
+                value={value}
+                onValueChange={setValue}
+                compact
+              />
+              <IconButton
+                title="Fill in missing translations"
+                name="WandSparkles"
+                variant="solid"
+                color={buttonColorMap[type]}
+                onClick={() => handleRemoveKey(row.id)}
+                className={clsx(type !== "focused" && "opacity-80")}
+              />
+              <IconButton
+                title="Check grammar & syntax"
+                name="BrainCircuit"
+                variant="solid"
+                color={buttonColorMap[type]}
+                onClick={() => handleRemoveKey(row.id)}
+                className={clsx(type !== "focused" && "opacity-80")}
+              />
+              <IconButton
+                title="Regenerate translations"
+                name="RotateCcw"
+                variant="solid"
+                color={buttonColorMap[type]}
+                onClick={() => handleRemoveKey(row.id)}
+                className={clsx(type !== "focused" && "opacity-80")}
+              />
+            </div>
           )
           : <span className="flex items-center h-full">{value}</span>}
       </div>
