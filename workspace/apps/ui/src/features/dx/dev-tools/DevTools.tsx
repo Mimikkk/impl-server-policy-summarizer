@@ -90,7 +90,7 @@ export const DevTools = memo(function DevTools() {
   });
 
   return (
-    <div className="fixed bottom-0 left-0 w-full">
+    <div className="fixed bottom-0 left-0 w-full z-100">
       <Show when={isOpen}>
         <DevToolsNavigation height={height} items={items} value={selectedTab} onValueChange={setSelectedTab} />
         <DevToolsResizer ref={setRef} />

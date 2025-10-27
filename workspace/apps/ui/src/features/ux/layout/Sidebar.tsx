@@ -21,7 +21,6 @@ const links: NavLink[] = [
 
 export const Sidebar = memo(function Sidebar() {
   const [isOpen, setIsOpen] = sidebarOpenParam.use();
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [internalIsOpen, setInternalIsOpen] = useState(isOpen);
   const state = useRouterState();
   const currentPath = state.location.pathname;
@@ -29,13 +28,11 @@ export const Sidebar = memo(function Sidebar() {
   useEffect(() => {
     if (isOpen) {
       setInternalIsOpen(true);
-      setIsTransitioning(true);
     } else {
-      setIsTransitioning(true);
       const timer = setTimeout(() => {
         setInternalIsOpen(false);
-        setIsTransitioning(false);
       }, 300);
+
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
