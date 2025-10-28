@@ -1,10 +1,11 @@
-import { Button } from "@components/actions/Button.tsx";
-import { SelectField } from "@components/forms/selects/SelectField.tsx";
-import type { Nil } from "@utilities/common.ts";
-import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { EliClient } from "@clients/eli/EliClient.ts";
 import type { PublisherResource } from "@clients/eli/resources/PublisherResource.ts";
 import type { YearItemResource } from "@clients/eli/resources/YearResource.ts";
+import { Button } from "@components/actions/Button.tsx";
+import { SelectField } from "@components/forms/selects/SelectField.tsx";
+import { IconButton } from "@core/components/actions/IconButton.tsx";
+import type { Nil } from "@utilities/common.ts";
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { defineUseOptions, useEliPublisher, useEliPublishers, useEliYear } from "../hooks/eli.hooks.ts";
 
 const usePublisherOptions = defineUseOptions<PublisherResource>({
@@ -52,15 +53,56 @@ const YearSelect = (
   );
   const yearOptions = useYearOptions(publisher?.years);
 
+  const nextYear = useMemo(() => {
+    if (!publisherId) return undefined;
+    return publisher?.years.find((year) => year > +value!);
+  }, [publisherId, value, publisher?.years]);
+
+  const previousYear = useMemo(() => {
+    if (!publisherId) return undefined;
+    return publisher?.years.find((year) => year < +value!);
+  }, [publisherId, value, publisher?.years]);
+
+  const handleNextYear = useCallback(() => {
+    if (!nextYear) return;
+
+    onValueChange(nextYear.toString());
+  }, [onValueChange, nextYear]);
+
+  const handlePreviousYear = useCallback(() => {
+    if (!previousYear) return;
+
+    onValueChange(previousYear.toString());
+  }, [onValueChange, previousYear]);
+
   return (
-    <SelectField
-      id="year"
-      label="Year"
-      options={yearOptions}
-      value={value}
-      onValueChange={onValueChange}
-      disabled={!isPublisherSuccess || isPublisherLoading}
-    />
+    <div className="flex items-center gap-2">
+      <IconButton
+        className="shrink-0"
+        color="secondary"
+        variant="solid"
+        name="ChevronLeft"
+        onClick={handlePreviousYear}
+        disabled={!isPublisherSuccess || isPublisherLoading || !previousYear}
+      />
+      <SelectField
+        className="flex-1 h-7"
+        id="year"
+        label="Year"
+        options={yearOptions}
+        value={value}
+        onValueChange={onValueChange}
+        disabled={!isPublisherSuccess || isPublisherLoading}
+      />
+      <IconButton
+        className="shrink-0"
+        color="secondary"
+        variant="solid"
+        name="ChevronRight"
+        onClick={handleNextYear}
+        disabled={!isPublisherSuccess || isPublisherLoading || !nextYear}
+      />
+    </div>
   );
 };
 
@@ -87,15 +129,56 @@ const ActSelect = ({
   );
   const positionOptions = useActOptions(year?.items);
 
+  const nextPosition = useMemo(() => {
+    if (!yearId) return undefined;
+    return year?.items.find((item) => item.pos > +value!);
+  }, [yearId, value, year?.items]);
+
+  const previousPosition = useMemo(() => {
+    if (!yearId) return undefined;
+    return year?.items.find((item) => item.pos < +value!);
+  }, [yearId, value, year?.items]);
+
+  const handlePreviousPosition = useCallback(() => {
+    if (!previousPosition) return;
+
+    onValueChange(previousPosition.pos.toString());
+  }, [onValueChange, previousPosition]);
+
+  const handleNextPosition = useCallback(() => {
+    if (!nextPosition) return;
+
+    onValueChange(nextPosition.pos.toString());
+  }, [onValueChange, nextPosition]);
+
   return (
-    <SelectField
-      id="position"
-      label="Position"
-      options={positionOptions}
-      value={value}
-      onValueChange={onValueChange}
-      disabled={!isYearSuccess || isYearLoading}
-    />
+    <div className="flex items-center gap-2">
+      <IconButton
+        className="shrink-0"
+        color="secondary"
+        variant="solid"
+        name="ChevronLeft"
+        onClick={handlePreviousPosition}
+        disabled={!isYearSuccess || isYearLoading || !previousPosition}
+      />
+      <SelectField
+        className="flex-1 h-7"
+        id="position"
+        label="Position"
+        options={positionOptions}
+        value={value}
+        onValueChange={onValueChange}
+        disabled={!isYearSuccess || isYearLoading}
+      />
+      <IconButton
+        className="shrink-0"
+        color="secondary"
+        variant="solid"
+        name="ChevronRight"
+        onClick={handleNextPosition}
+        disabled={!isYearSuccess || isYearLoading || !nextPosition}
+      />
+    </div>
   );
 };
 

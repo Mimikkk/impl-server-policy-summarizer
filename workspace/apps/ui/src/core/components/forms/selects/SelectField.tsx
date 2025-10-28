@@ -90,7 +90,15 @@ export const SelectField = memo(
               disabled={disabled}
             >
               <Text ellipsis>{selectedLabel}</Text>
-              <IconButton color="secondary" variant="text" as="span" disabled={disabled} name="ChevronDown" compact />
+              <IconButton
+                className="shrink-0"
+                color="secondary"
+                variant="text"
+                as="span"
+                disabled={disabled}
+                name="ChevronDown"
+                compact
+              />
             </Button>
           </Popover.Trigger>
           <Popover.Content
