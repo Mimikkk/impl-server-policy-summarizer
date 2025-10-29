@@ -4,16 +4,13 @@ import "./api.routes.ts";
 import { container } from "@configs/container.ts";
 import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
-import { CsvService } from "@features/csvs/csv.service.ts";
+import { CsvService } from "@features/csv-operations/csv.service.ts";
 import { MetricMonitor } from "@features/metrics/monitors/MetricMonitor.ts";
-import { PdfService } from "@features/pdfs/pdfs.service.ts";
+import { PdfService } from "@features/pdfs-operations/pdfs.service.ts";
 import { TranslationService } from "@features/translations/translation.service.ts";
 import { DrizzleClient } from "./clients/DrizzleClient.ts";
 import { HonoClient } from "./clients/HonoClient.ts";
 import { OllamaClient } from "./clients/OllamaClient.ts";
-
-const controller = new AbortController();
-const { signal } = controller;
 
 container.logger = Logger;
 container.llm = await OllamaClient.fromEnvironment();
@@ -22,6 +19,9 @@ container.database = DrizzleClient;
 container.services.pdfs = PdfService.new(container);
 container.services.csvs = CsvService.new(container);
 container.services.translations = TranslationService.new(container);
+
+const controller = new AbortController();
+const { signal } = controller;
 
 Deno.serve({
   onListen() {

@@ -2,7 +2,7 @@ import type { z } from "@hono/zod-openapi";
 import { defineEntity } from "@persistence/entities/defineEntity.ts";
 import { text } from "drizzle-orm/sqlite-core";
 import { samples } from "../docs/samples.ts";
-import { TextSummaryResource } from "../pdfs/pdfs.resource.ts";
+import { TextSummaryResource } from "../pdfs-operations/pdfs.resource.ts";
 
 export const EliResource = defineEntity({
   tableName: "eli",
