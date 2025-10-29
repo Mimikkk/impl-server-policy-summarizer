@@ -1,7 +1,7 @@
 import type { Container } from "@configs/container.ts";
 import { z } from "@hono/zod-openapi";
 import { compactMessage } from "@utilities/messages.ts";
-import type { TranslationSample } from "./translation.resources.ts";
+import { type TranslationSample, translationSampleSchema } from "./translation.resources.ts";
 
 export const verificationSchema = z.object({
   isValid: z.boolean().openapi({ example: true, description: "Whether the translation is valid" }),
@@ -17,10 +17,7 @@ export const verificationSchema = z.object({
 export type Verification = z.infer<typeof verificationSchema>;
 
 export const verifySchema = z.object({
-  samples: z.array(z.object({
-    original: z.string().openapi({ example: "There once was a ship.", description: "The original text" }),
-    translation: z.string().openapi({ example: "Kiedyś tam był statek.", description: "The translation" }),
-  })).optional(),
+  samples: z.array(translationSampleSchema).optional(),
   context: z.string().optional().openapi({
     example: "casual conversation",
     description: "The context of the translation",
@@ -30,6 +27,17 @@ export const verifySchema = z.object({
   original: z.string().openapi({ example: "Hello, how are you?", description: "The original text" }),
   translation: z.string().openapi({ example: "Cześć, jak się masz?", description: "The translation" }),
 });
+
+const verificationFormat = {
+  type: "object",
+  properties: {
+    isValid: { type: "boolean" },
+    issues: { type: "array", items: { type: "string" } },
+    score: { type: "number" },
+    suggestions: { type: "array", items: { type: "string" } },
+  },
+  required: ["isValid", "issues", "score", "suggestions"],
+};
 
 export type VerifyPayload = z.infer<typeof verifySchema>;
 
@@ -43,20 +51,9 @@ export class TranslationVerifier {
     private readonly logger: Container["logger"],
   ) {}
 
-  static #format = {
-    type: "object",
-    properties: {
-      isValid: { type: "boolean" },
-      issues: { type: "array", items: { type: "string" } },
-      score: { type: "number" },
-      suggestions: { type: "array", items: { type: "string" } },
-    },
-    required: ["isValid", "issues", "score", "suggestions"],
-  };
-
-  async *verify(
+  async verify(
     { samples, context, sourceLanguage, targetLanguage, original, translation }: VerifyPayload,
-  ): AsyncGenerator<Verification, void, unknown> {
+  ): Promise<Verification | undefined> {
     const systemPrompt = this.#buildSystemPrompt({ context, sourceLanguage, targetLanguage });
     const userPrompt = this.#buildUserPrompt({
       samples,
@@ -69,25 +66,15 @@ export class TranslationVerifier {
     let retries = 3;
     while (retries-- > 0) {
       try {
-        let response = "";
-
-        const options = {
+        const { response } = await this.llm.infer({
           prompt: userPrompt,
           system: systemPrompt,
-          format: TranslationVerifier.#format,
-        };
+          format: verificationFormat,
+        });
 
-        for await (const chunk of this.llm.stream(options)) {
-          response += chunk;
-        }
-
-        yield verificationSchema.parse(JSON.parse(response));
-        break;
+        return verificationSchema.parse(JSON.parse(response));
       } catch (error) {
         this.logger.error(error, "[TranslationVerifier] [verify] Failed to parse verification");
-        if (retries === 0) {
-          return;
-        }
       }
     }
   }

@@ -3,6 +3,7 @@ import { z } from "@hono/zod-openapi";
 import { compactMessage } from "@utilities/messages.ts";
 import {
   type Translation,
+  translationFormat,
   type TranslationSample,
   translationSampleSchema,
   translationSchema,
@@ -35,12 +36,6 @@ export class TranslationRegenerator {
     private readonly logger: Container["logger"],
   ) {}
 
-  static #format = {
-    type: "object",
-    properties: { translation: { type: "string" } },
-    required: ["translation"],
-  };
-
   static #styles = [
     "Focus on natural fluency - make it sound like a native speaker.",
     "Focus on precision - ensure every nuance is captured accurately.",
@@ -50,11 +45,12 @@ export class TranslationRegenerator {
     "Focus on creativity - find a unique way to express the same idea.",
   ];
 
-  async *regenerate(
+  async regenerate(
     { samples, context, sourceLanguage, targetLanguage, original, translation, alternativesCount }: RegeneratePayload,
-  ): AsyncGenerator<Translation, void, unknown> {
+  ): Promise<Translation[]> {
     const systemPrompt = this.#buildSystemPrompt({ context, sourceLanguage, targetLanguage });
     const previousTranslations: string[] = [translation];
+    const results: Translation[] = [];
 
     for (let i = 0; i < alternativesCount; i++) {
       let retries = 3;
@@ -69,28 +65,23 @@ export class TranslationRegenerator {
             previousTranslations,
           });
 
-          let response = "";
-          const options = {
+          const { response } = await this.llm.infer({
             prompt: userPrompt,
             system: systemPrompt,
-            format: TranslationRegenerator.#format,
-          };
-          for await (const chunk of this.llm.stream(options)) {
-            response += chunk;
-          }
+            format: translationFormat,
+          });
 
           const result = translationSchema.parse(JSON.parse(response));
           previousTranslations.push(result.translation);
-          yield result;
+          results.push(result);
           break;
         } catch (error) {
           this.logger.error(error, "[TranslationRegenerator] [regenerate] Failed to parse translation.");
-          if (retries === 0) {
-            return;
-          }
         }
       }
     }
+
+    return results;
   }
 
   #buildSystemPrompt(

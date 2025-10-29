@@ -1,13 +1,16 @@
 import type { Container } from "@configs/container.ts";
 import { z } from "@hono/zod-openapi";
 import { compactMessage } from "@utilities/messages.ts";
-import { type Translation, type TranslationSample, translationSchema } from "./translation.resources.ts";
+import {
+  type Translation,
+  translationFormat,
+  type TranslationSample,
+  translationSampleSchema,
+  translationSchema,
+} from "./translation.resources.ts";
 
 export const translateSchema = z.object({
-  samples: z.array(z.object({
-    original: z.string().openapi({ example: "There once was a ship.", description: "The original text" }),
-    translation: z.string().openapi({ example: "Kiedyś tam był statek.", description: "The translation" }),
-  })).optional(),
+  samples: z.array(translationSampleSchema).optional(),
   context: z.string().optional().openapi({
     example: "casual conversation",
     description: "The context of the translation",
@@ -33,12 +36,6 @@ export class TranslationTranslator {
     private readonly logger: Container["logger"],
   ) {}
 
-  static #format = {
-    type: "object",
-    properties: { translation: { type: "string" } },
-    required: ["translation"],
-  };
-
   static #styles = [
     "Use natural, everyday language.",
     "Use a more formal, professional tone.",
@@ -48,11 +45,12 @@ export class TranslationTranslator {
     "Use simple, clear language suitable for all audiences.",
   ];
 
-  async *translate(
+  async translate(
     { samples, context, sourceLanguage, targetLanguage, original, alternativesCount }: TranslatePayload,
-  ): AsyncGenerator<Translation, void, unknown> {
+  ): Promise<Translation[]> {
     const systemPrompt = this.#buildSystemPrompt({ context, sourceLanguage, targetLanguage });
     const previousTranslations: string[] = [];
+    const results: Translation[] = [];
 
     for (let i = 0; i < alternativesCount; i++) {
       let retries = 3;
@@ -67,28 +65,23 @@ export class TranslationTranslator {
             previousTranslations,
           });
 
-          let response = "";
-          const options = {
+          const { response } = await this.llm.infer({
             prompt: userPrompt,
             system: systemPrompt,
-            format: TranslationTranslator.#format,
-          };
-          for await (const chunk of this.llm.stream(options)) {
-            response += chunk;
-          }
+            format: translationFormat,
+          });
 
           const result = translationSchema.parse(JSON.parse(response));
           previousTranslations.push(result.translation);
-          yield result;
+          results.push(result);
           break;
         } catch (error) {
           this.logger.error(error, "[TranslationTranslator] [translate] Failed to parse translation");
-          if (retries === 0) {
-            return;
-          }
         }
       }
     }
+
+    return results;
   }
 
   #buildSystemPrompt(
