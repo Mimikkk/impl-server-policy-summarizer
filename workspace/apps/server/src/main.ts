@@ -4,6 +4,7 @@ import "./api.routes.ts";
 import { container } from "@configs/container.ts";
 import { Environment } from "@configs/environment.ts";
 import { Logger } from "@configs/logger.ts";
+import { CsvService } from "@features/csvs/csv.service.ts";
 import { MetricMonitor } from "@features/metrics/monitors/MetricMonitor.ts";
 import { PdfService } from "@features/pdfs/pdfs.service.ts";
 import { TranslationService } from "@features/translations/translation.service.ts";
@@ -19,6 +20,7 @@ container.llm = await OllamaClient.fromEnvironment();
 container.metrics = MetricMonitor.empty();
 container.database = DrizzleClient;
 container.services.pdfs = PdfService.new(container);
+container.services.csvs = CsvService.new(container);
 container.services.translations = TranslationService.new(container);
 
 Deno.serve({

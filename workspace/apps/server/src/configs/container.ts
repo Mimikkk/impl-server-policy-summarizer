@@ -1,3 +1,4 @@
+import { CsvService } from "@features/csvs/csv.service.ts";
 import type { MetricMonitor } from "@features/metrics/monitors/MetricMonitor.ts";
 import type { PdfService } from "@features/pdfs/pdfs.service.ts";
 import type { TranslationService } from "@features/translations/translation.service.ts";
@@ -11,6 +12,7 @@ export interface Container {
   llm: OllamaClient;
   metrics: MetricMonitor;
   services: {
+    csvs: CsvService;
     pdfs: PdfService;
     translations: TranslationService;
   };
@@ -22,6 +24,7 @@ export const container: Container = {
   llm: null!,
   metrics: null!,
   services: {
+    csvs: null!,
     pdfs: null!,
     translations: null!,
   },

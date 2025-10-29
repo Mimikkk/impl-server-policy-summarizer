@@ -1,17 +1,19 @@
 import type { Container } from "@configs/container.ts";
 import { z } from "zod/v4";
-import { parseCsv } from "../csvs/csv.routes.ts";
-import { Translation, TranslationResource } from "./translation.resources.ts";
+import { type Translation, TranslationResource } from "./translation.resources.ts";
 
 export class TranslationService {
-  static new({ database, llm, logger }: Pick<Container, "database" | "llm" | "logger">): TranslationService {
-    return new TranslationService(database, llm, logger);
+  static new(
+    { database, llm, logger, services }: Pick<Container, "database" | "llm" | "logger" | "services">,
+  ): TranslationService {
+    return new TranslationService(database, llm, logger, services.csvs);
   }
 
   private constructor(
     private readonly database: Container["database"],
     private readonly llm: Container["llm"],
     private readonly logger: Container["logger"],
+    private readonly csvs: Container["services"]["csvs"],
   ) {}
 
   static #translationFormat = {
@@ -143,11 +145,17 @@ export class TranslationService {
       targetLanguage: string;
       file: File;
     },
-  ): Promise<Translation[]> {
+  ): Promise<Translation[] | undefined> {
     this.logger.debug(`[TranslateService] Starting translation of CSV file.`);
 
     try {
-      const rows = await parseCsv(file);
+      const rows = await this.csvs.importCsv(file);
+
+      if (!rows) {
+        this.logger.warn(`[TranslateService] Failed to import CSV file: ${file.name}.`);
+        return undefined;
+      }
+
       return this.translateMany({ sourceLanguage, targetLanguage, original: rows.map((row) => row[sourceLanguage]) });
     } catch (error) {
       this.logger.error(`[TranslateService] Error parsing CSV file: ${error}.`);

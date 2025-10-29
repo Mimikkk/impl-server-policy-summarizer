@@ -4,7 +4,7 @@ import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import { Text } from "@core/components/typography/Text.tsx";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import clsx from "clsx";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createTable, type TableColumn, type TableRow } from "./createTable.tsx";
 import { TranslationsViewProvider, useTranslationsView } from "./TranslationsView.context.tsx";
 
@@ -22,12 +22,16 @@ const Content = () => {
     setTargetLanguage,
     isEditing,
     toggleEdit,
+    handleCancel,
+    handleSave,
     handleAddKey,
     handleAddLanguage,
     handleRemoveLanguage,
+    scrollContainerRef,
     showMissingTranslations,
     toggleShowMissingTranslations,
-    scrollContainerRef,
+    showChangedTranslations,
+    toggleShowChangedTranslations,
   } = useTranslationsView();
 
   const table = useMemo(() =>
@@ -55,7 +59,7 @@ const Content = () => {
   const virtualizer = useVirtualizer({
     count: filteredRows.length,
     getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => 40,
+    estimateSize: () => 30,
     overscan: 5,
   });
 
@@ -207,7 +211,7 @@ const Content = () => {
                         `
                       flex w-full items-stretch absolute top-0 left-0
                       divide-x divide-primary-6
-                      min-h-10 h-full   
+                      min-h-7.5 h-full   
                       hover:bg-primary-4 bg-primary-5 even:bg-primary-6
                       hover:[&_[data-source]]:bg-success-4  [&_[data-source]]:bg-success-5 even:[&_[data-source]]:bg-success-6
                       hover:[&_[data-target]]:bg-info-4 [&_[data-target]]:bg-info-5 even:[&_[data-target]]:bg-info-6
@@ -227,18 +231,61 @@ const Content = () => {
           </div>
           {isEditing
             ? <IconButton name="Plus" variant="solid" className="h-full  max-w-7" onClick={handleAddLanguage} />
-            : <div />}
-          {isEditing
-            ? <IconButton name="Plus" variant="solid" className="w-full max-h-7" onClick={handleAddKey} />
-            : <div />}
-          <IconButton name={isEditing ? "Check" : "FilePen"} variant="solid" onClick={toggleEdit} />
-          <div className="flex items-center gap-1 text-xs">
-            <Text light>
-              Visible rows:
-            </Text>
-            <span>{filteredRows.length}</span>
-            <span>/</span>
-            <span>{table.rows.length}</span>
+            : <div className="w-7" />}
+
+          <div className="col-span-full flex items-center gap-2 w-full justify-end">
+            {isEditing && <IconButton name="Plus" variant="solid" className="w-full max-h-7" onClick={handleAddKey} />}
+            {!isEditing && (
+              <IconButton name="FilePen" variant="solid" className="" onClick={toggleEdit}>
+                Toggle edit
+              </IconButton>
+            )}
+            {isEditing && <IconButton color="error" title="Cancel" name="X" variant="solid" onClick={handleCancel} />}
+            {isEditing && <IconButton color="success" name="Check" title="Save" variant="solid" onClick={handleSave} />}
+          </div>
+          <div className="flex items-center gap-1 col-span-full">
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1">
+                <Text light>
+                  Filtered rows:
+                </Text>
+                <div className="flex items-center gap-1">
+                  <span>{filteredRows.length}</span>
+                  <span>/</span>
+                  <span>{table.rows.length}</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-[1fr_auto] gap-1">
+                <Text light className="flex items-center gap-1">
+                  <IconButton
+                    name={showMissingTranslations ? "EyeOff" : "Eye"}
+                    variant="solid"
+                    color={showMissingTranslations ? "info" : "primary"}
+                    onClick={toggleShowMissingTranslations}
+                  />
+                  Missing rows:
+                </Text>
+                <div className="flex items-center gap-1">
+                  <span>{filteredRows.length}</span>
+                </div>
+                {isEditing && (
+                  <>
+                    <Text light className="flex items-center gap-1">
+                      <IconButton
+                        name={showChangedTranslations ? "EyeOff" : "Eye"}
+                        variant="solid"
+                        color={showChangedTranslations ? "info" : "primary"}
+                        onClick={toggleShowChangedTranslations}
+                      />
+                      Changed rows:
+                    </Text>
+                    <div className="flex items-center gap-1">
+                      <span>{filteredRows.length}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -286,13 +333,24 @@ const Content = () => {
             Regenerate translations
           </IconButton>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 max-w-80">
           <IconButton
             name={showMissingTranslations ? "EyeOff" : "Eye"}
             variant="solid"
             onClick={toggleShowMissingTranslations}
+            className="w-full"
+            color={showMissingTranslations ? "info" : "primary"}
           >
             {showMissingTranslations ? "Clear show missing translations" : "Show missing translations"}
+          </IconButton>
+          <IconButton
+            name={showChangedTranslations ? "EyeOff" : "Eye"}
+            variant="solid"
+            onClick={toggleShowChangedTranslations}
+            className="w-full"
+            color={showChangedTranslations ? "info" : "primary"}
+          >
+            {showChangedTranslations ? "Clear show changed translations" : "Show changed translations"}
           </IconButton>
         </div>
       </div>
@@ -317,7 +375,6 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
     isEditing,
     sourceLanguage,
     targetLanguage,
-    handleRemoveKey,
     focusedCell,
     setFocusedCell,
   } = useTranslationsView();
@@ -342,9 +399,41 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
     setValue(row.original[column.id]);
   }, [row.original[column.id]]);
 
-  const isFocused = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
-  const type = isFocused ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";
+  const isFocusedRow = focusedCell?.rowId === row.id;
+  const isFocusedCell = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
+  const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";
 
+  const handleRowRemove = useCallback(() => {
+    console.log("remove row", row.id);
+  }, [row.id]);
+
+  const handleRowRegenerate = useCallback(() => {
+    console.log("regenerate row", row.id);
+  }, [row.id]);
+
+  const handleRowCheckGrammar = useCallback(() => {
+    console.log("check grammar", row.id);
+  }, [row.id]);
+
+  const handleRowFillMissing = useCallback(() => {
+    console.log("fill in missing translations", row.id);
+  }, [row.id]);
+
+  const handleCellRegenerate = useCallback(() => {
+    console.log("regenerate cell", row.id, column.id);
+  }, [row.id, column.id]);
+
+  const handleCellCheckGrammar = useCallback(() => {
+    console.log("check grammar cell", row.id, column.id);
+  }, [row.id, column.id]);
+
+  const handleCellFillMissing = useCallback(() => {
+    console.log("fill in missing translations cell", row.id, column.id);
+  }, [row.id, column.id]);
+
+  const opacity = type !== "focused" ? "opacity-80" : undefined;
+  const buttonColor = buttonColorMap[type];
+  const inputColor = inputColorMap[type];
   return (
     <td
       ref={ref}
@@ -357,12 +446,35 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
     >
       <div className="flex justify-between h-full">
         {isEditing && isKey && (
-          <IconButton
-            name="Trash"
-            variant="solid"
-            color="error"
-            onClick={() => handleRemoveKey(row.id)}
-          />
+          <>
+            <IconButton
+              name="Trash"
+              variant="solid"
+              color="error"
+              onClick={handleRowRemove}
+            />
+            <IconButton
+              title="Fill in missing translations"
+              name="WandSparkles"
+              variant="solid"
+              color={isFocusedRow ? "info" : "secondary"}
+              onClick={handleRowFillMissing}
+            />
+            <IconButton
+              title="Check grammar & syntax"
+              name="BrainCircuit"
+              variant="solid"
+              color={isFocusedRow ? "info" : "secondary"}
+              onClick={handleRowCheckGrammar}
+            />
+            <IconButton
+              title="Regenerate translations"
+              name="RotateCcw"
+              variant="solid"
+              color={isFocusedRow ? "info" : "secondary"}
+              onClick={handleRowRegenerate}
+            />
+          </>
         )}
         {isEditing
           ? (
@@ -371,38 +483,41 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
                 onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
                 onBlur={() => setFocusedCell(null)}
                 className="w-full"
-                color={inputColorMap[type]}
+                color={inputColor}
                 value={value}
                 onValueChange={setValue}
-                compact
               />
-              <IconButton
-                title="Fill in missing translations"
-                name="WandSparkles"
-                variant="solid"
-                color={buttonColorMap[type]}
-                onClick={() => handleRemoveKey(row.id)}
-                className={clsx(type !== "focused" && "opacity-80")}
-              />
-              <IconButton
-                title="Check grammar & syntax"
-                name="BrainCircuit"
-                variant="solid"
-                color={buttonColorMap[type]}
-                onClick={() => handleRemoveKey(row.id)}
-                className={clsx(type !== "focused" && "opacity-80")}
-              />
-              <IconButton
-                title="Regenerate translations"
-                name="RotateCcw"
-                variant="solid"
-                color={buttonColorMap[type]}
-                onClick={() => handleRemoveKey(row.id)}
-                className={clsx(type !== "focused" && "opacity-80")}
-              />
+              {!isKey && (
+                <>
+                  <IconButton
+                    title="Fill in missing translations"
+                    name="WandSparkles"
+                    variant="solid"
+                    color={buttonColor}
+                    onClick={handleCellFillMissing}
+                    className={opacity}
+                  />
+                  <IconButton
+                    title="Check grammar & syntax"
+                    name="BrainCircuit"
+                    variant="solid"
+                    color={buttonColor}
+                    onClick={handleCellCheckGrammar}
+                    className={opacity}
+                  />
+                  <IconButton
+                    title="Regenerate translations"
+                    name="RotateCcw"
+                    variant="solid"
+                    color={buttonColor}
+                    onClick={handleCellRegenerate}
+                    className={opacity}
+                  />
+                </>
+              )}
             </div>
           )
-          : <span className="flex items-center h-full">{value}</span>}
+          : <span className="flex items-center h-full truncate text-ellipsis">{value}</span>}
       </div>
     </td>
   );

@@ -13,12 +13,18 @@ export namespace ServerClient {
     return response.json();
   };
 
-  export const csv = async (file: File): Promise<Record<string, string>[]> => {
+  export const importCsv = async (file: File): Promise<Record<string, string>[]> => {
     const formData = new FormData();
     formData.append("file", file);
 
     /* @ts-expect-error - multipart/form-data is not supported in ky types */
-    const response = await client.api.post("api/v1/csv-operations/contents", { body: formData, timeout: TimeMs.s30 });
+    const response = await client.api.post("api/v1/csv-operations/import", { body: formData, timeout: TimeMs.s30 });
+
+    return response.json();
+  };
+
+  export const exportCsv = async (contents: Record<string, string>[]): Promise<void> => {
+    const response = await client.api.post("api/v1/csv-operations/export", { json: contents, timeout: TimeMs.s30 });
 
     return response.json();
   };
@@ -30,6 +36,7 @@ export const ServerQuery = adaptQuery({
   mutations: {},
   queries: {
     summarize: {},
-    csv: {},
+    importCsv: {},
+    exportCsv: {},
   },
 });

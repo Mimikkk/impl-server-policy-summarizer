@@ -7,9 +7,9 @@ import {
   InternalServerErrorResponseSchema,
   TimeoutResponseSchema,
 } from "../../core/messages/responses.ts";
-import { samples } from "./samples.ts";
 
-type ResponseShape = z.ZodObject<any, any> | z.ZodRecord<any, any> | z.ZodArray<any> | z.ZodUnion<any>;
+type ResponseShape = z.ZodObject<any, any> | z.ZodRecord<any, any> | z.ZodArray<any> | z.ZodUnion<any> | z.ZodString;
+type ResponseType = "application/json" | "text/csv";
 
 type ResponseOpenApiSchema<T extends ResponseShape = ResponseShape> = {
   content: { "application/json": { schema: T } };
@@ -31,33 +31,39 @@ const GlobalResponses = {
   },
 } satisfies Record<number, ResponseOpenApiSchema>;
 
-interface ResponseOptions<T extends ResponseShape = ResponseShape> {
-  schema: T;
+interface ResponseOptions<
+  TShape extends ResponseShape,
+  TType extends ResponseType,
+> {
+  schema: TShape;
   description: string;
-  example?: z.infer<T>;
+  example?: z.infer<TShape>;
+  type?: TType;
 }
-type ResponseOptionsRecord = Record<number, ResponseOptions>;
+type ResponseOptionsRecord = Record<number, ResponseOptions<ResponseShape, ResponseType>>;
 
 type ResponsesResult<R extends ResponseOptionsRecord> = Merge<
   {
     [K in Extract<keyof R, number>]: {
-      content: { "application/json": { schema: R[K]["schema"] } };
+      content: { [Y in Extract<R[K]["type"], ResponseType>]: { schema: R[K]["schema"] } };
       description: R[K]["description"];
     };
   },
   typeof GlobalResponses
 >;
 
-export const defineResponse = <T extends ResponseShape>(options: ResponseOptions<T>): ResponseOptions<T> => options;
+export const defineResponse = <TShape extends ResponseShape, TType extends ResponseType>(
+  options: ResponseOptions<TShape, TType>,
+): ResponseOptions<TShape, TType> => options;
 
 const ResponsesContext = {
   common: {
-    resources: <const T extends Entity>(entity: T): ResponseOptions<z.ZodArray<T["schema"]>> =>
+    resources: <const T extends Entity>(entity: T): ResponseOptions<z.ZodArray<T["schema"]>, "application/json"> =>
       defineResponse({
         schema: z.array(entity.schema),
         description: `The ${upperFirst(entity.options.resourceName)} resources`,
       }),
-    resource: <const T extends Entity>(entity: T): ResponseOptions<T["schema"]> =>
+    resource: <const T extends Entity>(entity: T): ResponseOptions<T["schema"], "application/json"> =>
       defineResponse({
         schema: entity.schema,
         description: `The ${upperFirst(entity.options.resourceName)} resource`,
@@ -91,34 +97,9 @@ export const defineResponses = <const R extends ResponseOptionsRecord>(
   }
 
   for (const key in options) {
-    const { description, schema, example } = options[key];
-    result[key] = { content: { "application/json": { schema, example } }, description } as never;
+    const { description, schema, example, type = "application/json" } = options[key];
+    result[key] = { content: { [type]: { schema, example } }, description } as never;
   }
 
   return result;
-};
-
-type ParamShape = z.ZodType<any, any, any>;
-
-export const defineParam = <T extends ParamShape>(options: ParamOptions<T>): ParamOptions<T> => options;
-
-type ParamOptions<T extends ParamShape = ParamShape> = T;
-
-export const ParamsContext = {
-  common: {
-    id: z.string().openapi({
-      description: "Resource identifier",
-      example: samples.ids.uuid,
-    }),
-  },
-};
-
-export const defineParams = <const T extends z.core.$ZodLooseShape>(
-  options: T | ((context: typeof ParamsContext) => T),
-): z.ZodObject<T> => {
-  if (typeof options === "function") {
-    options = options(ParamsContext);
-  }
-
-  return z.object(options);
 };

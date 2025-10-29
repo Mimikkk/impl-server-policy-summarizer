@@ -1,6 +1,7 @@
 import { z } from "@hono/zod-openapi";
 import { HonoClient } from "../../clients/HonoClient.ts";
-import { defineParams, defineResponses } from "../docs/defineResponses.ts";
+import { defineParams } from "../docs/defineParams.ts";
+import { defineResponses } from "../docs/defineResponses.ts";
 import { samples } from "../docs/samples.ts";
 import { TextExtractionResource, TextSummaryResource } from "./pdfs.resource.ts";
 import type { TextSource } from "./pdfs.service.ts";

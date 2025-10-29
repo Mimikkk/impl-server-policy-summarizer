@@ -12,6 +12,7 @@ interface Storage {
 }
 
 const ShowMissingTranslationsParam = Param.boolean({ key: "show-missing-translations" });
+const ShowChangedTranslationsParam = Param.boolean({ key: "show-changed-translations" });
 const StorageParam = Param.new<Storage>({
   key: "translations-storage",
   serialize: (value) => JSON.stringify(value),
@@ -24,7 +25,9 @@ const KeyQueryParam = Param.string({ key: "filters[key]" });
 export const [useTranslationsView, TranslationsViewProvider] = createContext(() => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
+  const [showChangedTranslations, setShowChangedTranslations] = ShowChangedTranslationsParam.use();
   const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
+  const toggleShowChangedTranslations = useCallback(() => setShowChangedTranslations((x) => !x), []);
 
   const [focusedCell, setFocusedCell] = useState<{ rowId: string; columnId: string } | null>(null);
   const [sourceLanguage, setSourceLanguage] = useState<string | null>(null);
@@ -38,7 +41,7 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     const file = await requestFilePicker({ types: ["text/csv"] });
     if (!file) return;
 
-    const contents = await ServerClient.csv(file);
+    const contents = await ServerClient.importCsv(file);
     setStorage({ version: Date.now(), filename: file.name, contents });
   }, []);
 
@@ -52,6 +55,14 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
 
       return ({ ...s, version: Date.now(), ...result });
     });
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    setIsEditing(false);
+  }, []);
+
+  const handleSave = useCallback(() => {
+    setIsEditing(false);
   }, []);
 
   const handleAddKey = useCallback(() => {
@@ -133,6 +144,8 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     toggleEdit,
     showMissingTranslations,
     toggleShowMissingTranslations,
+    showChangedTranslations,
+    toggleShowChangedTranslations,
     handleAddKey,
     handleRemoveKey,
     handleAddLanguage,
@@ -140,5 +153,7 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     focusedCell,
     setFocusedCell,
     scrollContainerRef,
+    handleCancel,
+    handleSave,
   };
 });
