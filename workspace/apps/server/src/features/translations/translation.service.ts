@@ -1,49 +1,61 @@
 import type { Container } from "@configs/container.ts";
 import { compactMessage } from "@utilities/messages.ts";
+import z from "zod";
 
 export interface TranslationSample {
   original: string;
   translation: string;
 }
 
-export interface Translation {
-  translation: string;
-}
+export const translationSchema = z.object({
+  translation: z.string().openapi({ example: "Cześć, jak się masz?", description: "The translation" }),
+});
 
-export interface Verification {
-  isValid: boolean;
-  issues?: string[];
-  score?: number;
-  suggestions?: string[];
-}
+export type Translation = z.infer<typeof translationSchema>;
 
-export interface TranslatePayload {
-  samples?: TranslationSample[];
-  context?: string;
-  sourceLanguage: string;
-  targetLanguage: string;
-  original: string;
-  alternativesCount: number;
-}
+export const verificationSchema = z.object({
+  isValid: z.boolean().openapi({ example: true, description: "Whether the translation is valid" }),
+  issues: z.array(
+    z.string().openapi({ example: "The translation is not natural.", description: "The issues with the translation" }),
+  ),
+  score: z.number().openapi({ example: 80, description: "The score of the translation" }),
+  suggestions: z.array(
+    z.string().openapi({ example: "Use more natural language.", description: "The suggestions for the translation" }),
+  ),
+});
 
-export interface RegeneratePayload {
-  samples?: TranslationSample[];
-  context?: string;
-  sourceLanguage: string;
-  targetLanguage: string;
-  original: string;
-  translation: string;
-  alternativesCount: number;
-}
+export type Verification = z.infer<typeof verificationSchema>;
 
-export interface VerifyPayload {
-  samples?: TranslationSample[];
-  context?: string;
-  sourceLanguage: string;
-  targetLanguage: string;
-  original: string;
-  translation: string;
-}
+export const translateSchema = z.object({
+  samples: z.array(z.object({
+    original: z.string().openapi({ example: "There once was a ship.", description: "The original text" }),
+    translation: z.string().openapi({ example: "Kiedyś tam był statek.", description: "The translation" }),
+  })).optional(),
+  context: z.string().optional().openapi({
+    example: "casual conversation",
+    description: "The context of the translation",
+  }),
+  sourceLanguage: z.string().openapi({ example: "en", description: "The source language" }),
+  targetLanguage: z.string().openapi({ example: "pl", description: "The target language" }),
+  original: z.string().openapi({ example: "Hello, how are you?", description: "The original text" }),
+  alternativesCount: z.number().optional().openapi({
+    example: 1,
+    description: "The number of alternatives to generate",
+  }).default(1),
+});
+
+export type TranslatePayload = z.infer<typeof translateSchema>;
+
+export const regenerateSchema = translateSchema.extend({
+  translation: z.string().openapi({ example: "Cześć, jak się masz?", description: "The translation" }),
+});
+export type RegeneratePayload = z.infer<typeof regenerateSchema>;
+
+export const verifySchema = translateSchema.omit({ alternativesCount: true }).extend({
+  translation: z.string().openapi({ example: "Cześć, jak się masz?", description: "The translation" }),
+});
+
+export type VerifyPayload = z.infer<typeof verifySchema>;
 
 export class TranslationService {
   static new({ llm, logger }: Pick<Container, "llm" | "logger">): TranslationService {
