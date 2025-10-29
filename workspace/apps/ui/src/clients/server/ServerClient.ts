@@ -3,6 +3,7 @@ import { adaptQuery } from "@core/queries/adaptQuery.ts";
 import { TimeMs } from "@utilities/common.ts";
 import { Client } from "../Client.ts";
 import type { SummaryResource } from "./resources/SummaryResource.ts";
+import type { Translation, TranslationSample, Verification } from "./resources/TranslationResource.ts";
 
 export namespace ServerClient {
   export const client = Client.new({ url: Environment.Clients.ServerUrl });
@@ -35,46 +36,43 @@ export namespace ServerClient {
     return new File([buffer], "export.csv", { type: "text/csv" });
   };
 
-  interface TranslatePayload {
-    samples: { original: string; translation: string }[];
-    sourceLanguage: string;
-    targetLanguage: string;
-    original: string | string[];
-  }
-
-  export interface Translation {
+  export interface TranslatePayload {
+    samples?: TranslationSample[];
+    context?: string;
     sourceLanguage: string;
     targetLanguage: string;
     original: string;
-    translation: string;
+    alternativesCount?: number;
   }
 
-  export const translate = async (payload: TranslatePayload): Promise<Translation[]> => {
+  export const translate = async (payload: TranslatePayload): Promise<{ translations: Translation[] }> => {
     return await client.api.post("api/v1/translations/translate", { json: payload, timeout: TimeMs.s30 }).json();
   };
 
-  interface RegeneratePayload {
-    samples: { original: string; translation: string }[];
+  export interface RegeneratePayload {
+    samples?: TranslationSample[];
+    context?: string;
     sourceLanguage: string;
     targetLanguage: string;
     original: string;
     translation: string;
-    count: number;
+    alternativesCount?: number;
   }
 
-  export const regenerate = async (payload: RegeneratePayload): Promise<Translation[]> => {
+  export const regenerate = async (payload: RegeneratePayload): Promise<{ translations: Translation[] }> => {
     return await client.api.post("api/v1/translations/regenerate", { json: payload, timeout: TimeMs.s30 }).json();
   };
 
-  interface VerifyPayload {
-    samples: { original: string; translation: string }[];
+  export interface VerifyPayload {
+    samples?: TranslationSample[];
+    context?: string;
     sourceLanguage: string;
     targetLanguage: string;
     original: string;
     translation: string;
   }
 
-  export const verify = async (payload: VerifyPayload): Promise<Translation[]> => {
+  export const verify = async (payload: VerifyPayload): Promise<Verification> => {
     return await client.api.post("api/v1/translations/verify", { json: payload, timeout: TimeMs.s30 }).json();
   };
 }

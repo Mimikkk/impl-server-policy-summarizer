@@ -8,6 +8,7 @@ import { requestSaveFile } from "@utilities/requestFilePicker.ts";
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createTable, type TableColumn, type TableRow } from "./createTable.tsx";
+import { TranslationPreviewModal } from "./TranslationPreviewModal.tsx";
 import { TranslationsViewProvider, useTranslationsView } from "./TranslationsView.context.tsx";
 
 const Content = () => {
@@ -34,6 +35,12 @@ const Content = () => {
     toggleShowMissingTranslations,
     showChangedTranslations,
     toggleShowChangedTranslations,
+    currentResult,
+    resultsQueue,
+    selectedResultIndex,
+    handleSelectResult,
+    handlePreviewAccept,
+    handlePreviewReject,
   } = useTranslationsView();
 
   const table = useMemo(() =>
@@ -165,9 +172,7 @@ const Content = () => {
                                 color={isSourceLanguage ? "success" : "primary"}
                                 active={isSourceLanguage}
                                 onClick={() => {
-                                  if (isTargetLanguage) {
-                                    setTargetLanguage(null);
-                                  }
+                                  if (isTargetLanguage) setTargetLanguage("");
                                   return setSourceLanguage(column.id);
                                 }}
                               >
@@ -179,9 +184,7 @@ const Content = () => {
                                 color={isTargetLanguage ? "info" : "primary"}
                                 active={isTargetLanguage}
                                 onClick={() => {
-                                  if (isSourceLanguage) {
-                                    setSourceLanguage(null);
-                                  }
+                                  if (isSourceLanguage) setSourceLanguage("");
                                   return setTargetLanguage(column.id);
                                 }}
                               >
@@ -322,7 +325,7 @@ const Content = () => {
         <div>
           <IconButton
             name={sourceLanguage ? "Check" : "TriangleAlert"}
-            onClick={() => setSourceLanguage(null)}
+            onClick={() => setSourceLanguage("")}
             className="flex items-center gap-1 min-w-52 justify-start"
             color={sourceLanguage ? "success" : "warning"}
           >
@@ -337,7 +340,7 @@ const Content = () => {
           </IconButton>
           <IconButton
             name={targetLanguage ? "Check" : "TriangleAlert"}
-            onClick={() => setTargetLanguage(null)}
+            onClick={() => setTargetLanguage("")}
             className="flex items-center gap-1 min-w-52 justify-start"
             color={targetLanguage ? "info" : "warning"}
           >
@@ -383,6 +386,58 @@ const Content = () => {
           </IconButton>
         </div>
       </div>
+      {resultsQueue.length > 0 && (
+        <Card className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Text light className="font-bold">Pending Reviews:</Text>
+            <Text>{resultsQueue.length} {resultsQueue.length === 1 ? "result" : "results"}</Text>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {resultsQueue.slice(0, 6).map((result, idx) => {
+              const icon = result.type === "translate"
+                ? "WandSparkles"
+                : result.type === "regenerate"
+                ? "RotateCcw"
+                : "BrainCircuit";
+              const color = result.type === "translate" ? "success" : result.type === "regenerate" ? "warning" : "info";
+              const label = result.type === "translate"
+                ? "Translate"
+                : result.type === "regenerate"
+                ? "Regenerate"
+                : "Verify";
+
+              return (
+                <IconButton
+                  key={idx}
+                  name={icon}
+                  variant="solid"
+                  color={color}
+                  className={selectedResultIndex === idx ? "ring-2 ring-offset-2 ring-info-7" : ""}
+                  title={`${label} for row ${result.rowId}, column ${result.columnId}`}
+                  onClick={() => handleSelectResult(idx)}
+                >
+                  {label}
+                </IconButton>
+              );
+            })}
+            {resultsQueue.length > 6 && (
+              <IconButton
+                name="Plus"
+                variant="solid"
+                color="secondary"
+                title={`${resultsQueue.length - 6} more results`}
+              >
+                +{resultsQueue.length - 6}
+              </IconButton>
+            )}
+          </div>
+        </Card>
+      )}
+      <TranslationPreviewModal
+        result={currentResult}
+        onAccept={handlePreviewAccept}
+        onReject={handlePreviewReject}
+      />
     </Card>
   );
 };
@@ -406,6 +461,11 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
     targetLanguage,
     focusedCell,
     setFocusedCell,
+    handleCellTranslate,
+    handleCellRegenerate,
+    handleCellVerify,
+    isCellProcessing,
+    hasPendingReview,
   } = useTranslationsView();
   const isKey = column.id === "key";
 
@@ -428,7 +488,6 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
     setValue(row.original[column.id]);
   }, [row.original[column.id]]);
 
-  const isFocusedRow = focusedCell?.rowId === row.id;
   const isFocusedCell = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
   const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";
 
@@ -436,29 +495,20 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
     console.log("remove row", row.id);
   }, [row.id]);
 
-  const handleRowRegenerate = useCallback(() => {
-    console.log("regenerate row", row.id);
-  }, [row.id]);
+  const onCellTranslate = useCallback(() => {
+    handleCellTranslate(row.id, column.id);
+  }, [row.id, column.id, handleCellTranslate]);
 
-  const handleRowCheckGrammar = useCallback(() => {
-    console.log("check grammar", row.id);
-  }, [row.id]);
+  const onCellRegenerate = useCallback(() => {
+    handleCellRegenerate(row.id, column.id);
+  }, [row.id, column.id, handleCellRegenerate]);
 
-  const handleRowFillMissing = useCallback(() => {
-    console.log("fill in missing translations", row.id);
-  }, [row.id]);
+  const onCellVerify = useCallback(() => {
+    handleCellVerify(row.id, column.id);
+  }, [row.id, column.id, handleCellVerify]);
 
-  const handleCellRegenerate = useCallback(() => {
-    console.log("regenerate cell", row.id, column.id);
-  }, [row.id, column.id]);
-
-  const handleCellCheckGrammar = useCallback(() => {
-    console.log("check grammar cell", row.id, column.id);
-  }, [row.id, column.id]);
-
-  const handleCellFillMissing = useCallback(() => {
-    console.log("fill in missing translations cell", row.id, column.id);
-  }, [row.id, column.id]);
+  const isProcessing = isCellProcessing(row.id, column.id);
+  const isPendingReview = hasPendingReview(row.id, column.id);
 
   const opacity = type !== "focused" ? "opacity-80" : undefined;
   const buttonColor = buttonColorMap[type];
@@ -482,27 +532,6 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
               color="error"
               onClick={handleRowRemove}
             />
-            <IconButton
-              title="Fill in missing translations"
-              name="WandSparkles"
-              variant="solid"
-              color={isFocusedRow ? "info" : "secondary"}
-              onClick={handleRowFillMissing}
-            />
-            <IconButton
-              title="Check grammar & syntax"
-              name="BrainCircuit"
-              variant="solid"
-              color={isFocusedRow ? "info" : "secondary"}
-              onClick={handleRowCheckGrammar}
-            />
-            <IconButton
-              title="Regenerate translations"
-              name="RotateCcw"
-              variant="solid"
-              color={isFocusedRow ? "info" : "secondary"}
-              onClick={handleRowRegenerate}
-            />
           </>
         )}
         {isEditing
@@ -515,33 +544,56 @@ const BodyCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(fun
                 color={inputColor}
                 value={value}
                 onValueChange={setValue}
+                disabled={isProcessing}
               />
               {!isKey && (
                 <>
-                  <IconButton
-                    title="Fill in missing translations"
-                    name="WandSparkles"
-                    variant="solid"
-                    color={buttonColor}
-                    onClick={handleCellFillMissing}
-                    className={opacity}
-                  />
-                  <IconButton
-                    title="Check grammar & syntax"
-                    name="BrainCircuit"
-                    variant="solid"
-                    color={buttonColor}
-                    onClick={handleCellCheckGrammar}
-                    className={opacity}
-                  />
-                  <IconButton
-                    title="Regenerate translations"
-                    name="RotateCcw"
-                    variant="solid"
-                    color={buttonColor}
-                    onClick={handleCellRegenerate}
-                    className={opacity}
-                  />
+                  {isProcessing && (
+                    <IconButton
+                      title="Processing..."
+                      name="Loader"
+                      variant="solid"
+                      color="warning"
+                      iconClassName="animate-spin"
+                    />
+                  )}
+                  {isPendingReview && !isProcessing && (
+                    <IconButton
+                      title="Pending review"
+                      name="MessageSquare"
+                      variant="solid"
+                      color="warning"
+                      iconClassName="animate-pulse"
+                    />
+                  )}
+                  {!isProcessing && (
+                    <>
+                      <IconButton
+                        title="Translate"
+                        name="WandSparkles"
+                        variant="solid"
+                        color={buttonColor}
+                        onClick={onCellTranslate}
+                        className={opacity}
+                      />
+                      <IconButton
+                        title="Verify translation"
+                        name="BrainCircuit"
+                        variant="solid"
+                        color={buttonColor}
+                        onClick={onCellVerify}
+                        className={opacity}
+                      />
+                      <IconButton
+                        title="Regenerate translation"
+                        name="RotateCcw"
+                        variant="solid"
+                        color={buttonColor}
+                        onClick={onCellRegenerate}
+                        className={opacity}
+                      />
+                    </>
+                  )}
                 </>
               )}
             </div>
