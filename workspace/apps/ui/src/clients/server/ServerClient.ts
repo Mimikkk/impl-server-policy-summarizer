@@ -34,6 +34,49 @@ export namespace ServerClient {
     const buffer = await response.arrayBuffer();
     return new File([buffer], "export.csv", { type: "text/csv" });
   };
+
+  interface TranslatePayload {
+    samples: { original: string; translation: string }[];
+    sourceLanguage: string;
+    targetLanguage: string;
+    original: string | string[];
+  }
+
+  export interface Translation {
+    sourceLanguage: string;
+    targetLanguage: string;
+    original: string;
+    translation: string;
+  }
+
+  export const translate = async (payload: TranslatePayload): Promise<Translation[]> => {
+    return await client.api.post("api/v1/translations/translate", { json: payload, timeout: TimeMs.s30 }).json();
+  };
+
+  interface RegeneratePayload {
+    samples: { original: string; translation: string }[];
+    sourceLanguage: string;
+    targetLanguage: string;
+    original: string;
+    translation: string;
+    count: number;
+  }
+
+  export const regenerate = async (payload: RegeneratePayload): Promise<Translation[]> => {
+    return await client.api.post("api/v1/translations/regenerate", { json: payload, timeout: TimeMs.s30 }).json();
+  };
+
+  interface VerifyPayload {
+    samples: { original: string; translation: string }[];
+    sourceLanguage: string;
+    targetLanguage: string;
+    original: string;
+    translation: string;
+  }
+
+  export const verify = async (payload: VerifyPayload): Promise<Translation[]> => {
+    return await client.api.post("api/v1/translations/verify", { json: payload, timeout: TimeMs.s30 }).json();
+  };
 }
 
 export const ServerQuery = adaptQuery({

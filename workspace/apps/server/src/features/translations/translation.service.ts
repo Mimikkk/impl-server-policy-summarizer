@@ -1,19 +1,58 @@
 import type { Container } from "@configs/container.ts";
-import { z } from "zod/v4";
-import { type Translation, TranslationResource } from "./translation.resources.ts";
+import { compactMessage } from "@utilities/messages.ts";
+
+export interface TranslationSample {
+  original: string;
+  translation: string;
+}
+
+export interface Translation {
+  translation: string;
+}
+
+export interface Verification {
+  isValid: boolean;
+  issues?: string[];
+  score?: number;
+  suggestions?: string[];
+}
+
+export interface TranslatePayload {
+  samples?: TranslationSample[];
+  context?: string;
+  sourceLanguage: string;
+  targetLanguage: string;
+  original: string;
+  alternativesCount: number;
+}
+
+export interface RegeneratePayload {
+  samples?: TranslationSample[];
+  context?: string;
+  sourceLanguage: string;
+  targetLanguage: string;
+  original: string;
+  translation: string;
+  alternativesCount: number;
+}
+
+export interface VerifyPayload {
+  samples?: TranslationSample[];
+  context?: string;
+  sourceLanguage: string;
+  targetLanguage: string;
+  original: string;
+  translation: string;
+}
 
 export class TranslationService {
-  static new(
-    { database, llm, logger, services }: Pick<Container, "database" | "llm" | "logger" | "services">,
-  ): TranslationService {
-    return new TranslationService(database, llm, logger, services.csvs);
+  static new({ llm, logger }: Pick<Container, "llm" | "logger">): TranslationService {
+    return new TranslationService(llm, logger);
   }
 
   private constructor(
-    private readonly database: Container["database"],
     private readonly llm: Container["llm"],
     private readonly logger: Container["logger"],
-    private readonly csvs: Container["services"]["csvs"],
   ) {}
 
   static #translationFormat = {
@@ -22,144 +61,324 @@ export class TranslationService {
     required: ["translation"],
   };
 
-  static #translationSystem = `
-    You are a translation engine. You translate the text from the source language to the target language.
-    `;
-  static #translationSchema = TranslationResource.schema.pick({ translation: true });
+  async *translate(
+    { samples, context, sourceLanguage, targetLanguage, original, alternativesCount }: TranslatePayload,
+  ): AsyncGenerator<Translation, void, unknown> {
+    const systemPrompt = this.#buildTranslationSystemPrompt({ context, sourceLanguage, targetLanguage });
+    const previousTranslations: string[] = [];
 
-  async translate(
-    { sourceLanguage, targetLanguage, original }: { sourceLanguage: string; targetLanguage: string; original: string },
-  ): Promise<Translation | undefined> {
-    let retries = 5;
-    this.logger.debug(`[TranslateService] Starting translation from "${sourceLanguage}" to "${targetLanguage}".`);
-
-    while (retries-- > 0) {
-      try {
-        this.logger.debug(`[TranslateService] Requesting translation. Retries left: ${retries}.`);
-        const { response } = await this.llm.infer({
-          format: TranslationService.#translationFormat,
-          system: TranslationService.#translationSystem,
-          prompt: `Translate the text from "${sourceLanguage}" to "${targetLanguage}":\n${original}.`,
-        });
-
-        const { success, data } = TranslationService.#translationSchema.safeParse(JSON.parse(response));
-        if (!success) {
-          this.logger.warn(`[TranslateService] Validation failed for response. Retries left: ${retries}.`);
-          this.logger.warn(`[TranslateService] Response: ${response}.`);
-          continue;
-        }
-
-        this.logger.debug(
-          `[TranslateService] Inserting translation for "${original.substring(0, 20)}..." into database.`,
-        );
-        const result = await this.database.insert(TranslationResource.table).values({
-          sourceLanguage,
-          targetLanguage,
-          original,
-          translation: data.translation,
-        }).returning().get();
-
-        this.logger.debug(`[TranslateService] Successfully translated and saved.`);
-        return result;
-      } catch (error) {
-        this.logger.error(`[TranslateService] Error during translation: ${error}. Retries left: ${retries}.`);
-      }
-    }
-
-    this.logger.warn(`[TranslateService] Translation failed after all retries for "${original.substring(0, 20)}...".`);
-    return undefined;
-  }
-
-  static #translateManyFormat = {
-    type: "array",
-    items: {
-      type: "object",
-      properties: { translation: { type: "string" } },
-    },
-    required: ["translation"],
-  };
-  static #translateManySchema = z.array(TranslationResource.schema.pick({ translation: true }));
-  static #translateManyBatchSize = 50;
-  async translateMany(
-    { sourceLanguage, targetLanguage, original }: {
-      sourceLanguage: string;
-      targetLanguage: string;
-      original: string[];
-    },
-  ): Promise<Translation[]> {
-    this.logger.debug(
-      `[TranslateService] Starting translation: ${original.length} items from "${sourceLanguage}" to "${targetLanguage}". Batch size: ${TranslationService.#translateManyBatchSize}.`,
-    );
-    const allResults: Translation[] = [];
-    const size = TranslationService.#translateManyBatchSize;
-
-    for (let i = 0; i < original.length; i += size) {
-      const batch = original.slice(i, i + size);
-      this.logger.debug(`[TranslateService] Processing batch ${i / size + 1}: ${batch.length} items.`);
-
-      let retries = 5;
+    for (let index = 0; index < alternativesCount; index++) {
+      let retries = 3;
       while (retries-- > 0) {
         try {
-          const { response } = await this.llm.infer({
-            format: TranslationService.#translateManyFormat,
-            system: TranslationService.#translationSystem,
-            prompt: `Translate the texts from ${sourceLanguage} to ${targetLanguage}:\n${
-              batch.map((text) => `"${text}"`).join("\n")
-            }.`,
+          const userPrompt = this.#buildTranslationUserPrompt({
+            samples,
+            original,
+            sourceLanguage,
+            targetLanguage,
+            alternativeIndex: index,
+            previousTranslations,
           });
 
-          const { success, data } = TranslationService.#translateManySchema.safeParse(JSON.parse(response));
-          if (!success || !Array.isArray(data) || data.length !== batch.length) {
-            this.logger.warn(
-              `[TranslateService] Validation failed for batch ${i / size + 1}. Retries left: ${retries}.`,
-            );
-            this.logger.warn(`[TranslateService] Response: ${response}.`);
-            continue;
+          let response = "";
+          const options = {
+            prompt: userPrompt,
+            system: systemPrompt,
+            format: TranslationService.#translationFormat,
+          };
+          for await (const chunk of this.llm.stream(options)) {
+            response += chunk;
           }
 
-          const values = await this.database.insert(TranslationResource.table).values(
-            data.map(({ translation }, i) => ({
-              sourceLanguage,
-              targetLanguage,
-              original: batch[i],
-              translation,
-            })),
-          ).returning().all();
+          const parsed = JSON.parse(response) as Translation;
 
-          this.logger.debug(`[TranslateService] Successfully translated and stored batch ${i / size + 1}.`);
-          allResults.push(...values);
-          break;
+          if (parsed.translation && typeof parsed.translation === "string") {
+            previousTranslations.push(parsed.translation);
+            yield parsed;
+            break;
+          }
         } catch (error) {
-          this.logger.error(`[TranslateService] Error in batch ${i / size + 1}: ${error}. Retries left: ${retries}.`);
+          this.logger.error(error, "[TranslationService] [translate] Failed to parse translation");
+          if (retries === 0) {
+            return;
+          }
         }
       }
     }
-
-    this.logger.debug(`[TranslateService] Finished translation. Total results: ${allResults.length}.`);
-    return allResults;
   }
 
-  async translateCsv(
-    { sourceLanguage, targetLanguage, file }: {
+  #buildTranslationSystemPrompt(
+    { context, sourceLanguage, targetLanguage }: { context?: string; sourceLanguage: string; targetLanguage: string },
+  ): string {
+    return compactMessage(`
+      You are a professional translation engine. You translate text from ${sourceLanguage} to ${targetLanguage}.
+      ${context ? `Context: ${context}` : ""}
+      
+      Rules:
+      - Preserve the meaning and tone of the original text
+      - Use natural, fluent language in the target language
+      - Maintain formatting and structure
+      - Do not add explanations or notes
+    `);
+  }
+
+  static #styles = [
+    "Use natural, everyday language.",
+    "Use a more formal, professional tone.",
+    "Use a casual, conversational style.",
+    "Use precise, technical language.",
+    "Use expressive, colorful language.",
+    "Use simple, clear language suitable for all audiences.",
+  ];
+  #buildTranslationUserPrompt(
+    { samples, original, sourceLanguage, targetLanguage, alternativeIndex, previousTranslations }: {
+      samples?: TranslationSample[];
+      original: string;
       sourceLanguage: string;
       targetLanguage: string;
-      file: File;
+      alternativeIndex: number;
+      previousTranslations: string[];
     },
-  ): Promise<Translation[] | undefined> {
-    this.logger.debug(`[TranslateService] Starting translation of CSV file.`);
+  ): string {
+    const chunks: string[] = [];
 
-    try {
-      const rows = await this.csvs.importCsv(file);
-
-      if (!rows) {
-        this.logger.warn(`[TranslateService] Failed to import CSV file: ${file.name}.`);
-        return undefined;
-      }
-
-      return this.translateMany({ sourceLanguage, targetLanguage, original: rows.map((row) => row[sourceLanguage]) });
-    } catch (error) {
-      this.logger.error(`[TranslateService] Error parsing CSV file: ${error}.`);
-      throw error;
+    if (samples && samples.length > 0) {
+      chunks.push(
+        "Here are some example translations:\n",
+        ...samples.map((sample) =>
+          `${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`
+        ),
+      );
     }
+
+    chunks.push(
+      `Now translate this text from ${sourceLanguage} to ${targetLanguage}:\n${original}\n`,
+    );
+
+    if (previousTranslations.length > 0) {
+      chunks.push(
+        `IMPORTANT: The following translations have already been provided. Generate a DIFFERENT translation with a different style or word choice:\n`,
+        ...previousTranslations.map((prev, idx) => `Alternative ${idx + 1}: ${prev}\n`),
+      );
+    }
+
+    if (alternativeIndex < TranslationService.#styles.length) {
+      chunks.push(`Style guidance: ${TranslationService.#styles[alternativeIndex]}`);
+    } else {
+      chunks.push(`Style guidance: Provide a unique variation, avoiding repetition of previous alternatives.`);
+    }
+
+    return compactMessage(chunks.join("\n"));
+  }
+
+  async *regenerate(
+    { samples, context, sourceLanguage, targetLanguage, original, translation, alternativesCount }: RegeneratePayload,
+  ): AsyncGenerator<Translation, void, unknown> {
+    const systemPrompt = this.#buildTranslationSystemPrompt({ context, sourceLanguage, targetLanguage });
+    const previousTranslations: string[] = [translation];
+
+    for (let i = 0; i < alternativesCount; i++) {
+      let retries = 3;
+      while (retries-- > 0) {
+        try {
+          const userPrompt = this.#buildRegenerateUserPrompt({
+            samples,
+            original,
+            sourceLanguage,
+            targetLanguage,
+            alternativeIndex: i,
+            previousTranslations,
+          });
+
+          let response = "";
+          const options = {
+            prompt: userPrompt,
+            system: systemPrompt,
+            format: TranslationService.#translationFormat,
+          };
+          for await (const chunk of this.llm.stream(options)) {
+            response += chunk;
+          }
+
+          const parsed = JSON.parse(response) as Translation;
+
+          if (parsed.translation && typeof parsed.translation === "string") {
+            previousTranslations.push(parsed.translation);
+            yield parsed;
+            break;
+          }
+        } catch (error) {
+          this.logger.error(error, "[TranslationService] [regenerate] Failed to parse translation");
+          if (retries === 0) {
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  static #approaches = [
+    "Focus on natural fluency - make it sound like a native speaker.",
+    "Focus on precision - ensure every nuance is captured accurately.",
+    "Focus on brevity - make it concise without losing meaning.",
+    "Focus on expressiveness - capture the emotion and tone.",
+    "Focus on formality - adjust the register appropriately.",
+    "Focus on creativity - find a unique way to express the same idea.",
+  ];
+  #buildRegenerateUserPrompt(
+    { samples, original, sourceLanguage, targetLanguage, alternativeIndex, previousTranslations }: {
+      samples?: TranslationSample[];
+      original: string;
+      sourceLanguage: string;
+      targetLanguage: string;
+      alternativeIndex: number;
+      previousTranslations: string[];
+    },
+  ): string {
+    const chunks: string[] = [];
+
+    if (samples && samples.length > 0) {
+      chunks.push(
+        "Here are some example translations:\n",
+        ...samples.map((sample) =>
+          `${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`
+        ),
+      );
+    }
+
+    chunks.push(
+      `Original text (${sourceLanguage}): ${original}`,
+      "\n",
+      `Generate a better alternative translation from ${sourceLanguage} to ${targetLanguage}. `,
+      `Improve clarity, fluency, or accuracy while maintaining the original meaning.`,
+    );
+
+    if (previousTranslations.length > 0) {
+      chunks.push(
+        "IMPORTANT: The following translations have already been considered. Generate a DIFFERENT translation:",
+        ...previousTranslations.map((previous, i) => `- ${i === 0 ? "Original" : `Alternative ${i}`}: ${previous}`),
+      );
+    }
+
+    if (alternativeIndex < TranslationService.#approaches.length) {
+      chunks.push(`Approach: ${TranslationService.#approaches[alternativeIndex]}`);
+    } else {
+      chunks.push(`Approach: Provide a unique variation that differs from all previous attempts.`);
+    }
+
+    return compactMessage(chunks.join("\n"));
+  }
+
+  static #verificationFormat = {
+    type: "object",
+    properties: {
+      isValid: { type: "boolean" },
+      issues: { type: "array", items: { type: "string" } },
+      score: { type: "number" },
+      suggestions: { type: "array", items: { type: "string" } },
+    },
+    required: ["isValid", "issues", "score", "suggestions"],
+  };
+
+  async *verify(
+    { samples, context, sourceLanguage, targetLanguage, original, translation }: VerifyPayload,
+  ): AsyncGenerator<Verification, void, unknown> {
+    const systemPrompt = this.#buildVerificationSystemPrompt({ context, sourceLanguage, targetLanguage });
+    const userPrompt = this.#buildVerificationUserPrompt({
+      samples,
+      original,
+      translation,
+      sourceLanguage,
+      targetLanguage,
+    });
+
+    let retries = 3;
+    while (retries-- > 0) {
+      try {
+        let accumulated = "";
+
+        for await (
+          const chunk of this.llm.stream({
+            prompt: userPrompt,
+            system: systemPrompt,
+            format: TranslationService.#verificationFormat,
+          })
+        ) {
+          accumulated += chunk;
+
+          try {
+            const partial = JSON.parse(accumulated) as Verification;
+            yield partial;
+          } catch {
+          }
+        }
+
+        const parsed = JSON.parse(accumulated) as Verification;
+
+        if (typeof parsed.isValid === "boolean") {
+          yield parsed;
+          return;
+        }
+      } catch (error) {
+        this.logger.error(error, "[TranslationService] [verify] Failed to parse verification");
+        if (retries === 0) {
+          return;
+        }
+      }
+    }
+  }
+
+  #buildVerificationSystemPrompt(
+    { context, sourceLanguage, targetLanguage }: { context?: string; sourceLanguage: string; targetLanguage: string },
+  ): string {
+    return compactMessage(`
+      You are a translation quality evaluator. You verify translations from ${sourceLanguage} to ${targetLanguage}.
+      ${context ? `Context: ${context}` : ""}
+      
+      Evaluate translations based on:
+      - Accuracy: Does it preserve the original meaning?
+      - Fluency: Does it sound natural in the target language?
+      - Context appropriateness: Does it fit the given context?
+      
+      Provide a score from 0-100 where:
+      - 90-100: Excellent, publication-ready
+      - 70-89: Good, minor improvements possible
+      - 50-69: Acceptable, some issues present
+      - 0-49: Poor, significant problems
+    `);
+  }
+
+  #buildVerificationUserPrompt(
+    { samples, original, translation, sourceLanguage, targetLanguage }: {
+      samples?: TranslationSample[];
+      original: string;
+      translation: string;
+      sourceLanguage: string;
+      targetLanguage: string;
+    },
+  ): string {
+    const chunks: string[] = [];
+
+    if (samples && samples.length > 0) {
+      chunks.push(
+        "Here are some reference translations for comparison:",
+        ...samples.map((sample) =>
+          `- ${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`
+        ),
+      );
+    }
+
+    chunks.push(
+      "\n",
+      `Original text (${sourceLanguage}): ${original}\n`,
+      `Translation to verify (${targetLanguage}): ${translation}\n`,
+      `Evaluate this translation and provide:`,
+      `- isValid: true if the translation is acceptable (score >= 50), false otherwise`,
+      `- issues: list of specific problems found (empty array if none)`,
+      `- score: quality score from 0-100`,
+      `- suggestions: list of specific improvements (empty array if none)`,
+    );
+
+    return compactMessage(chunks.join("\n"));
   }
 }

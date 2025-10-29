@@ -3,6 +3,12 @@ import { Logger } from "@configs/logger.ts";
 import { compactMessage } from "@utilities/messages.ts";
 import { Ollama } from "ollama";
 
+interface InferOptions {
+  prompt: string;
+  system?: string;
+  format?: object;
+}
+
 export class OllamaClient {
   private constructor(
     public readonly api: Ollama,
@@ -39,14 +45,28 @@ export class OllamaClient {
     return this;
   }
 
-  async infer(
-    { prompt, system, format }: { prompt: string; system?: string; format?: object },
-  ): Promise<{ response: string }> {
+  async infer({ prompt, system, format }: InferOptions): Promise<{ response: string }> {
     return await this.api.generate({
       model: this.model,
       prompt: compactMessage(prompt),
       system: system ? compactMessage(system) : undefined,
       format,
     });
+  }
+
+  async *stream({ prompt, system, format }: InferOptions): AsyncGenerator<string, void, unknown> {
+    const stream = await this.api.generate({
+      model: this.model,
+      prompt: compactMessage(prompt),
+      system: system ? compactMessage(system) : undefined,
+      format,
+      stream: true,
+    });
+
+    for await (const chunk of stream) {
+      if (chunk.response) {
+        yield chunk.response;
+      }
+    }
   }
 }

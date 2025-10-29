@@ -37,7 +37,7 @@ HonoClient
   )
   .use(withContainer)
   .use(withRequestMonitor)
-  .use(
+  .get(
     except(
       ["api/v1/metrics/*", "/docs/*", "/api/v1/csv-operations/*"],
       cache({ cacheName: "cache", wait: true, cacheControl: "max-age=3600" }),
