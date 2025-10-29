@@ -48,7 +48,7 @@ export const TranslationPreviewModal = ({ result, onAccept, onReject }: Props) =
       : "error";
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50">
         <Card className="max-w-2xl w-full max-h-[80vh] overflow-auto flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <Text className="text-xl font-bold">Translation Verification</Text>
@@ -115,7 +115,7 @@ export const TranslationPreviewModal = ({ result, onAccept, onReject }: Props) =
   const { original, currentTranslation, translations } = result;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50">
       <Card className="max-w-2xl w-full max-h-[80vh] overflow-auto flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <Text className="text-xl font-bold">
