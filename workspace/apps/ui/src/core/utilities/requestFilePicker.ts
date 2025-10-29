@@ -18,3 +18,10 @@ export const requestFilePicker = async ({ types }: RequestFilePickerOptions): Pr
 
   return await promise;
 };
+
+export const requestSaveFile = (file: File): void => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(file);
+  a.download = file.name;
+  a.click();
+};

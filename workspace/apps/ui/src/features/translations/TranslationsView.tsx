@@ -1,8 +1,10 @@
+import { ServerClient } from "@clients/server/ServerClient.ts";
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import { Text } from "@core/components/typography/Text.tsx";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { requestSaveFile } from "@utilities/requestFilePicker.ts";
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createTable, type TableColumn, type TableRow } from "./createTable.tsx";
@@ -63,6 +65,16 @@ const Content = () => {
     overscan: 5,
   });
 
+  const handleDownloadCsv = useCallback(async () => {
+    if (storage?.contents?.length === 0) return;
+
+    const headers = Object.fromEntries(Object.keys(storage.contents[0]).map((key) => [key, key]));
+    const data = storage.contents;
+
+    const file = await ServerClient.exportCsv({ headers, data });
+    requestSaveFile(file);
+  }, [storage?.contents]);
+
   return (
     <Card className="flex flex-col gap-2">
       <div className="flex justify-between gap-2">
@@ -90,12 +102,13 @@ const Content = () => {
               <IconButton className="shrink-0" name="Search" variant="solid" />
             </div>
           </div>
-          <Card label="csv content" compact className="px-2 py-1" color={storage ? "info" : "error"}>
+          <Card label="csv content" compact className="pl-2 pr-1 py-1" color={storage ? "info" : "error"}>
             {storage
               ? (
-                <div>
+                <div className="flex items-center gap-2">
                   <span>Version:</span>
                   <span>{storage?.version && new Date(storage.version).toLocaleString()} - {storage?.filename}</span>
+                  <IconButton color="success" name="Download" variant="solid" onClick={handleDownloadCsv} />
                 </div>
               )
               : <div className="text-center text-primary-10">No selected file.</div>}

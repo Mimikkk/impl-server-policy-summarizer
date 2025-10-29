@@ -23,10 +23,16 @@ export namespace ServerClient {
     return response.json();
   };
 
-  export const exportCsv = async (contents: Record<string, string>[]): Promise<void> => {
-    const response = await client.api.post("api/v1/csv-operations/export", { json: contents, timeout: TimeMs.s30 });
+  export interface ExportCsvPayload {
+    headers: Record<string, string>;
+    data: Record<string, string | number>[];
+  }
 
-    return response.json();
+  export const exportCsv = async (payload: ExportCsvPayload): Promise<File> => {
+    const response = await client.api.post("api/v1/csv-operations/export", { json: payload, timeout: TimeMs.s30 });
+
+    const buffer = await response.arrayBuffer();
+    return new File([buffer], "export.csv", { type: "text/csv" });
   };
 }
 
