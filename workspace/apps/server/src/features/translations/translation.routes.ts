@@ -1,15 +1,10 @@
 import { z } from "@hono/zod-openapi";
 import { HonoClient } from "../../clients/HonoClient.ts";
 import { defineResponses } from "../docs/defineResponses.ts";
-import {
-  regenerateSchema,
-  translateSchema,
-  type Translation,
-  translationSchema,
-  type Verification,
-  verificationSchema,
-  verifySchema,
-} from "./translation.service.ts";
+import { regenerateSchema } from "./translation.regenerator.ts";
+import { type Translation, translationSchema } from "./translation.resources.ts";
+import { translateSchema } from "./translation.translator.ts";
+import { type Verification, verificationSchema, verifySchema } from "./translation.verifier.ts";
 
 HonoClient.openapi(
   {
