@@ -243,11 +243,27 @@ const Content = () => {
             </table>
           </div>
           {isEditing
-            ? <IconButton name="Plus" variant="solid" className="h-full  max-w-7" onClick={handleAddLanguage} />
+            ? (
+              <IconButton
+                name="Plus"
+                variant="solid"
+                className="h-full  max-w-7"
+                title="Add language"
+                onClick={handleAddLanguage}
+              />
+            )
             : <div className="w-7" />}
 
           <div className="col-span-full flex items-center gap-2 w-full justify-end">
-            {isEditing && <IconButton name="Plus" variant="solid" className="w-full max-h-7" onClick={handleAddKey} />}
+            {isEditing && (
+              <IconButton
+                name="Plus"
+                variant="solid"
+                className="w-full max-h-7"
+                title="Add key"
+                onClick={handleAddKey}
+              />
+            )}
             {!isEditing && (
               <IconButton name="FilePen" variant="solid" className="" onClick={toggleEdit}>
                 Toggle edit
