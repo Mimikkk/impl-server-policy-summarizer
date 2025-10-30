@@ -5,6 +5,8 @@ import { createContext } from "@utilities/createContext.tsx";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
 import { useCallback, useRef, useState } from "react";
 import type { PreviewResult } from "./TranslationPreviewModal.tsx";
+import { useTableData } from "./hooks/useTableData.tsx";
+import type { FocusedCell } from "./types.ts";
 
 type Updater<T> = (value: T) => Partial<T> | undefined;
 interface Storage {
@@ -34,7 +36,7 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
   const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
   const toggleShowChangedTranslations = useCallback(() => setShowChangedTranslations((x) => !x), []);
 
-  const [focusedCell, setFocusedCell] = useState<{ rowId: string; columnId: string } | null>(null);
+  const [focusedCell, setFocusedCell] = useState<FocusedCell | null>(null);
   const [sourceLanguage, setSourceLanguage] = sourceLanguageParam.use();
   const [targetLanguage, setTargetLanguage] = targetLanguageParam.use();
   const [isEditing, setIsEditing] = useState(false);
@@ -345,7 +347,16 @@ export const [useTranslationsView, TranslationsViewProvider] = createContext(() 
     setSelectedResultIndex(null);
   }, [selectedResultIndex]);
 
+  const tableData = useTableData({
+    storage,
+    showMissingTranslations,
+    query,
+    keyQuery,
+    scrollContainerRef,
+  });
+
   return {
+    tableData,
     query,
     setQuery,
     keyQuery,
