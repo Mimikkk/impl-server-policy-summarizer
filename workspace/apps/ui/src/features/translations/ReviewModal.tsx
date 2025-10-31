@@ -32,7 +32,7 @@ interface Props {
   onReject: () => void;
 }
 
-export const TranslationPreviewModal = ({ result, onAccept, onReject }: Props) => {
+export const ReviewModal = ({ result, onAccept, onReject }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   if (!result) return null;

@@ -4,7 +4,7 @@ import { Param } from "@hooks/useLocalStorage.ts";
 import { defineContext } from "@utilities/defineContext.tsx";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
 import { useCallback, useRef, useState } from "react";
-import type { PreviewResult } from "./TranslationPreviewModal.tsx";
+import type { PreviewResult } from "./ReviewModal.tsx";
 import { useTranslationsTable } from "./hooks/useTranslationsTable.tsx";
 import type { FocusedCell } from "./types.ts";
 
