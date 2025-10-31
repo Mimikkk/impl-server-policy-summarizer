@@ -2,11 +2,11 @@ import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
 import { TranslationPreviewModal } from "./TranslationPreviewModal.tsx";
 import { TranslationsViewProvider, useTranslationsView } from "./TranslationsView.context.tsx";
-import { ActionButtons } from "./components/ActionButtons.tsx";
+import { ControlPanel } from "./components/ControlPanel.tsx";
 import { LanguageSelector } from "./components/LanguageSelector.tsx";
 import { PendingReviews } from "./components/PendingReviews.tsx";
+import { TranslationsTable } from "./components/Table/TranslationsTable.tsx";
 import { TranslationsStats } from "./components/TranslationsStats.tsx";
-import { TranslationsTable } from "./components/TranslationsTable.tsx";
 import { TranslationsToolbar } from "./components/TranslationsToolbar.tsx";
 
 const Content = () => {
@@ -35,6 +35,7 @@ const Content = () => {
                 variant="solid"
                 className="w-full max-h-7"
                 title="Add key"
+                square={false}
                 onClick={handleAddKey}
               />
             )}
@@ -51,7 +52,7 @@ const Content = () => {
       )}
       <div className="flex flex-col gap-2">
         <LanguageSelector />
-        <ActionButtons />
+        <ControlPanel />
       </div>
       <PendingReviews />
       <TranslationPreviewModal

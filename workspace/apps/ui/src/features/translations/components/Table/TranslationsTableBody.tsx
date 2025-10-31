@@ -1,14 +1,16 @@
 import clsx from "clsx";
-import { useTranslationsView } from "../TranslationsView.context.tsx";
-import { BodyCell } from "./BodyCell.tsx";
+import { memo } from "react";
+import { useTranslationsView } from "../../TranslationsView.context.tsx";
+import { TranslationsTableBodyRowCell } from "./TranslationsTableBodyRowCell.tsx";
 
-export const TranslationsTableBody = () => {
+export const TranslationsTableBody = memo(function TranslationsTableBody() {
   const { tableData: { table, filteredRows, virtualizer } } = useTranslationsView();
 
   return (
     <tbody className="relative" style={{ height: `${virtualizer.getTotalSize()}px` }}>
       {virtualizer.getVirtualItems().map((virtualRow) => {
         const row = filteredRows[virtualRow.index];
+
         return (
           <tr
             key={row.id}
@@ -18,19 +20,16 @@ export const TranslationsTableBody = () => {
                       divide-x divide-primary-6
                       min-h-7.5 h-full   
                       hover:bg-primary-4 bg-primary-5 even:bg-primary-6
-                      hover:[&_[data-source]]:bg-success-4  [&_[data-source]]:bg-success-5 even:[&_[data-source]]:bg-success-6
-                      hover:[&_[data-target]]:bg-info-4 [&_[data-target]]:bg-info-5 even:[&_[data-target]]:bg-info-6
+                      hover:**:data-source:bg-success-4  **:data-source:bg-success-5 even:**:data-source:bg-success-6
+                      hover:**:data-target:bg-info-4 **:data-target:bg-info-5 even:**:data-target:bg-info-6
                       `,
             )}
-            style={{
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start}px)`,
-            }}
+            style={{ height: `${virtualRow.size}px`, transform: `translateY(${virtualRow.start}px)` }}
           >
-            {table.columns.map((column) => <BodyCell key={column.id} row={row} column={column} />)}
+            {table.columns.map((column) => <TranslationsTableBodyRowCell key={column.id} row={row} column={column} />)}
           </tr>
         );
       })}
     </tbody>
   );
-};
+});

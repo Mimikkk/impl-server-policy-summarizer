@@ -1,10 +1,11 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import clsx from "clsx";
-import { useTranslationsView } from "../TranslationsView.context.tsx";
-import { HeaderCell } from "./HeaderCell.tsx";
+import { memo } from "react";
+import { useTranslationsView } from "../../TranslationsView.context.tsx";
+import { TranslationsTableHeadRowCell } from "./TranslationsTableHeadRowCell.tsx";
 
-export const TranslationsTableHeader = () => {
+export const TranslationsTableHead = memo(function TranslationsTableHead() {
   const {
     isEditing,
     sourceLanguage,
@@ -20,7 +21,7 @@ export const TranslationsTableHeader = () => {
   return (
     <thead className="z-10 sticky top-0 left-0 bg-primary-6 text-left">
       <tr className="flex w-full divide-x divide-primary-6 border-b border-primary-5 shadow shadow-primary-5">
-        {table.columns.map((column: any) => {
+        {table.columns.map((column) => {
           const isSelectable = column.id !== "key";
           const isSourceLanguage = sourceLanguage === column.id;
           const isTargetLanguage = targetLanguage === column.id;
@@ -43,7 +44,7 @@ export const TranslationsTableHeader = () => {
                     {isEditing
                       ? (
                         <>
-                          <HeaderCell column={column} />
+                          <TranslationsTableHeadRowCell column={column} />
                           <IconButton
                             color="error"
                             name="Trash"
@@ -107,4 +108,4 @@ export const TranslationsTableHeader = () => {
       </tr>
     </thead>
   );
-};
+});

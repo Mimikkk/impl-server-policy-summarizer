@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './../../routes/__root'
 import { Route as TranslationsIndexRouteImport } from './../../routes/translations/index'
+import { Route as PlaygroundIndexRouteImport } from './../../routes/playground/index'
 import { Route as EliIndexRouteImport } from './../../routes/eli/index'
 import { Route as DxRoutesRouteImport } from './../../routes/dx/routes'
 import { Route as DxComponentsRouteImport } from './../../routes/dx/components'
@@ -18,6 +19,11 @@ import { Route as DxColorPaletteRouteImport } from './../../routes/dx/color-pale
 const TranslationsIndexRoute = TranslationsIndexRouteImport.update({
   id: '/translations/',
   path: '/translations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaygroundIndexRoute = PlaygroundIndexRouteImport.update({
+  id: '/playground/',
+  path: '/playground/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EliIndexRoute = EliIndexRouteImport.update({
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/dx/components': typeof DxComponentsRoute
   '/dx/routes': typeof DxRoutesRoute
   '/eli': typeof EliIndexRoute
+  '/playground': typeof PlaygroundIndexRoute
   '/translations': typeof TranslationsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/dx/components': typeof DxComponentsRoute
   '/dx/routes': typeof DxRoutesRoute
   '/eli': typeof EliIndexRoute
+  '/playground': typeof PlaygroundIndexRoute
   '/translations': typeof TranslationsIndexRoute
 }
 export interface FileRoutesById {
@@ -61,6 +69,7 @@ export interface FileRoutesById {
   '/dx/components': typeof DxComponentsRoute
   '/dx/routes': typeof DxRoutesRoute
   '/eli/': typeof EliIndexRoute
+  '/playground/': typeof PlaygroundIndexRoute
   '/translations/': typeof TranslationsIndexRoute
 }
 export interface FileRouteTypes {
@@ -70,6 +79,7 @@ export interface FileRouteTypes {
     | '/dx/components'
     | '/dx/routes'
     | '/eli'
+    | '/playground'
     | '/translations'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/dx/components'
     | '/dx/routes'
     | '/eli'
+    | '/playground'
     | '/translations'
   id:
     | '__root__'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/dx/components'
     | '/dx/routes'
     | '/eli/'
+    | '/playground/'
     | '/translations/'
   fileRoutesById: FileRoutesById
 }
@@ -92,6 +104,7 @@ export interface RootRouteChildren {
   DxComponentsRoute: typeof DxComponentsRoute
   DxRoutesRoute: typeof DxRoutesRoute
   EliIndexRoute: typeof EliIndexRoute
+  PlaygroundIndexRoute: typeof PlaygroundIndexRoute
   TranslationsIndexRoute: typeof TranslationsIndexRoute
 }
 
@@ -102,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/translations'
       fullPath: '/translations'
       preLoaderRoute: typeof TranslationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground/': {
+      id: '/playground/'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eli/': {
@@ -140,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   DxComponentsRoute: DxComponentsRoute,
   DxRoutesRoute: DxRoutesRoute,
   EliIndexRoute: EliIndexRoute,
+  PlaygroundIndexRoute: PlaygroundIndexRoute,
   TranslationsIndexRoute: TranslationsIndexRoute,
 }
 export const routeTree = rootRouteImport

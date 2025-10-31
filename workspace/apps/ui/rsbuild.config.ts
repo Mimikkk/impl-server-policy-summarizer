@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from "@rsbuild/core";
+import { defineConfig, loadEnv, rspack } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/rspack";
 
@@ -53,11 +53,18 @@ export default defineConfig({
   },
   tools: {
     rspack: {
-      plugins: [tanstackRouter({
-        target: "react",
-        autoCodeSplitting: true,
-        generatedRouteTree: "./src/configs/react-router/RouteTree.gen.ts",
-      })],
+      plugins: [
+        tanstackRouter({
+          target: "react",
+          autoCodeSplitting: true,
+          generatedRouteTree: "./src/configs/react-router/RouteTree.gen.ts",
+        }),
+        new rspack.experiments.RemoveDuplicateModulesPlugin(),
+      ],
+      optimization: {
+        runtimeChunk: true,
+        concatenateModules: true,
+      },
     },
     swc: {
       jsc: {

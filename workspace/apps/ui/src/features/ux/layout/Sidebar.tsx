@@ -1,6 +1,6 @@
 import { IconButton } from "@components/actions/IconButton.tsx";
 import { Text } from "@components/typography/Text.tsx";
-import { Icon } from "@core/components/badges/Icon.tsx";
+import { Icon, type IconName } from "@core/components/badges/Icon.tsx";
 import { Param } from "@hooks/useLocalStorage.ts";
 import { Link, useRouterState } from "@tanstack/react-router";
 import cx from "clsx";
@@ -11,12 +11,13 @@ const sidebarOpenParam = Param.boolean({ key: "sidebar-open" });
 interface NavLink {
   to: string;
   label: string;
-  icon: "BookOpen" | "Languages";
+  icon: IconName;
 }
 
 const links: NavLink[] = [
   { to: "/eli", label: "ELI", icon: "BookOpen" },
   { to: "/translations", label: "Translations", icon: "Languages" },
+  { to: "/playground", label: "Playground", icon: "Wrench" },
 ];
 
 export const Sidebar = memo(function Sidebar() {

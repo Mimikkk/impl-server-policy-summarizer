@@ -1,7 +1,7 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { useTranslationsView } from "../TranslationsView.context.tsx";
 
-export const ActionButtons = () => {
+export const ControlPanel = () => {
   const {
     showMissingTranslations,
     toggleShowMissingTranslations,

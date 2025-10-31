@@ -1,9 +1,10 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
-import { useTranslationsView } from "../TranslationsView.context.tsx";
+import { memo } from "react";
+import { useTranslationsView } from "../../TranslationsView.context.tsx";
 import { TranslationsTableBody } from "./TranslationsTableBody.tsx";
-import { TranslationsTableHeader } from "./TranslationsTableHeader.tsx";
+import { TranslationsTableHead } from "./TranslationsTableHead.tsx";
 
-export const TranslationsTable = () => {
+export const TranslationsTable = memo(function TranslationsTable() {
   const { isEditing, handleAddLanguage, scrollContainerRef } = useTranslationsView();
 
   return (
@@ -13,7 +14,7 @@ export const TranslationsTable = () => {
         className="overflow-auto block h-[500px] relative border border-primary-6 rounded-sm"
       >
         <table className="border-separate w-full" cellSpacing="0" cellPadding="0">
-          <TranslationsTableHeader />
+          <TranslationsTableHead />
           <TranslationsTableBody />
         </table>
       </div>
@@ -30,4 +31,4 @@ export const TranslationsTable = () => {
         : <div className="w-7" />}
     </div>
   );
-};
+});

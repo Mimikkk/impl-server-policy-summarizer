@@ -1,8 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @source inline("{hover:,active:,focus-within:,focus:,}{!,}{bg,text,outline,border,ring,shadow,fill,stroke}-{primary,secondary,info,success,warning,error}-{1..12}");
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap");
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant light (&:where([data-theme=light], [data-theme=light] *));
 
 /* 
 1 - App background
@@ -117,94 +118,184 @@
 
 @layer theme {
   * {
-    @supports (color: color(display-p3 1 1 1)) {
-      @media (color-gamut: p3) {
-        --color-secondary-1: oklch(92.7% 0.0042 288.9);
-        --color-secondary-2: oklch(91.1% 0.0142 288.9);
-        --color-primary-1: oklch(92.6% 0.0336 266);
-        --color-primary-2: oklch(91.2% 0.0609 266);
-        --color-secondary-3: oklch(88.6% 0.0288 288.9);
-        --color-secondary-4: oklch(85.3% 0.0592 288.9);
-        --color-secondary-5: oklch(81.8% 0.0868 288.9);
-        --color-primary-3: oklch(87.9% 0.1103 266);
-        --color-primary-4: oklch(85% 0.1453 266);
-        --color-primary-5: oklch(82.3% 0.1877 266);
-        --color-secondary-6: oklch(77.3% 0.1118 288.9);
-        --color-secondary-7: oklch(71.2% 0.1401 288.9);
-        --color-secondary-8: oklch(63.1% 0.1855 288.9);
-        --color-primary-6: oklch(79.5% 0.2157 266);
-        --color-primary-7: oklch(75.9% 0.2657 266);
-        --color-primary-8: oklch(69.5% 0.3597 266);
-        --color-secondary-9: oklch(52.4% 0.2822 288.9);
-        --color-secondary-10: oklch(47.6% 0.2822 288.9);
-        --color-primary-9: oklch(54.5% 0.3626 266);
-        --color-primary-10: oklch(50.9% 0.3446 266);
-        --color-secondary-11: oklch(41.3% 0.256 288.9);
-        --color-secondary-12: oklch(31.3% 0.1532 288.9);
-        --color-primary-11: oklch(40.9% 0.298 266);
-        --color-primary-12: oklch(24.5% 0.2495 266);
+    @variant light {
+      --color-background: #e7e9fe;
+      --color-secondary-1: #e6e6e9;
+      --color-secondary-2: #e1e0eb;
+      --color-primary-1: #dce7fe;
+      --color-primary-2: #cfe2ff;
+      --color-secondary-3: #d8d7ec;
+      --color-secondary-4: #cdc9f4;
+      --color-secondary-5: #c1bbf9;
+      --color-primary-3: #bfd7ff;
+      --color-primary-4: #b1cdff;
+      --color-primary-5: #a4c4ff;
+      --color-secondary-6: #b3a9f8;
+      --color-secondary-7: #a092f4;
+      --color-secondary-8: #8970f0;
+      --color-primary-6: #97baff;
+      --color-primary-7: #85adff;
+      --color-primary-8: #6795ff;
+      --color-secondary-9: #721efd;
+      --color-secondary-10: #6600ec;
+      --color-primary-9: #2650ff;
+      --color-primary-10: #1c38ff;
+      --color-secondary-11: #5400c9;
+      --color-secondary-12: #341477;
+      --color-primary-11: #1600e7;
+      --color-primary-12: #070078;
 
-        /* other */
-        --color-secondary-contrast: #fff;
-        --color-secondary-surface: color(display-p3 0.8784 0.8667 0.902 / 0.8);
-        --color-secondary-indicator: oklch(52.4% 0.2822 288.9);
-        --color-secondary-track: oklch(52.4% 0.2822 288.9);
-        --color-primary-contrast: #ffffff;
-        --color-primary-surface: color(display-p3 1 1 1 / 80%);
-        --color-primary-indicator: oklch(54.5% 0.3626 266);
-        --color-primary-track: oklch(54.5% 0.3626 266);
+      /* other */
+      --color-secondary-contrast: #fff;
+      --color-secondary-surface: #e0dde6cc;
+      --color-secondary-indicator: #721efd;
+      --color-secondary-track: #721efd;
+      --color-primary-contrast: #ffffff;
+      --color-primary-surface: #ffffffcc;
+      --color-primary-indicator: #2650ff;
+      --color-primary-track: #2650ff;
 
-        --color-info-1: color(display-p3 0.982 0.992 0.996);
-        --color-info-2: color(display-p3 0.955 0.981 0.984);
-        --color-info-3: color(display-p3 0.888 0.965 0.975);
-        --color-info-4: color(display-p3 0.821 0.941 0.959);
-        --color-info-5: color(display-p3 0.751 0.907 0.935);
-        --color-info-6: color(display-p3 0.671 0.862 0.9);
-        --color-info-7: color(display-p3 0.564 0.8 0.854);
-        --color-info-8: color(display-p3 0.388 0.715 0.798);
-        --color-info-9: color(display-p3 0.282 0.627 0.765);
-        --color-info-10: color(display-p3 0.264 0.583 0.71);
-        --color-info-11: color(display-p3 0.08 0.48 0.63);
-        --color-info-12: color(display-p3 0.108 0.232 0.277);
+      --color-info-1: #fafdfe;
+      --color-info-2: #f2fafb;
+      --color-info-3: #def7f9;
+      --color-info-4: #caf1f6;
+      --color-info-5: #b5e9f0;
+      --color-info-6: #9ddde7;
+      --color-info-7: #7dcedc;
+      --color-info-8: #3db9cf;
+      --color-info-9: #00a2c7;
+      --color-info-10: #0797b9;
+      --color-info-11: #107d98;
+      --color-info-12: #0d3c48;
 
-        --color-error-1: color(display-p3 0.998 0.989 0.992);
-        --color-error-2: color(display-p3 0.995 0.971 0.974);
-        --color-error-3: color(display-p3 0.983 0.92 0.928);
-        --color-error-4: color(display-p3 0.987 0.869 0.885);
-        --color-error-5: color(display-p3 0.968 0.817 0.839);
-        --color-error-6: color(display-p3 0.937 0.758 0.786);
-        --color-error-7: color(display-p3 0.897 0.685 0.721);
-        --color-error-8: color(display-p3 0.851 0.588 0.639);
-        --color-error-9: color(display-p3 0.83 0.323 0.408);
-        --color-error-10: color(display-p3 0.795 0.286 0.375);
-        --color-error-11: color(display-p3 0.728 0.211 0.311);
-        --color-error-12: color(display-p3 0.36 0.115 0.171);
+      --color-error-1: #fffcfd;
+      --color-error-2: #fff7f8;
+      --color-error-3: #feeaed;
+      --color-error-4: #ffdce1;
+      --color-error-5: #ffced6;
+      --color-error-6: #f8bfc8;
+      --color-error-7: #efacb8;
+      --color-error-8: #e592a3;
+      --color-error-9: #e54666;
+      --color-error-10: #dc3b5d;
+      --color-error-11: #ca244d;
+      --color-error-12: #64172b;
 
-        --color-warning-1: color(display-p3 0.995 0.992 0.985);
-        --color-warning-2: color(display-p3 0.994 0.986 0.921);
-        --color-warning-3: color(display-p3 0.994 0.969 0.782);
-        --color-warning-4: color(display-p3 0.989 0.937 0.65);
-        --color-warning-5: color(display-p3 0.97 0.902 0.527);
-        --color-warning-6: color(display-p3 0.936 0.844 0.506);
-        --color-warning-7: color(display-p3 0.89 0.762 0.443);
-        --color-warning-8: color(display-p3 0.85 0.65 0.3);
-        --color-warning-9: color(display-p3 1 0.77 0.26);
-        --color-warning-10: color(display-p3 0.959 0.741 0.274);
-        --color-warning-11: color(display-p3 0.64 0.4 0);
-        --color-warning-12: color(display-p3 0.294 0.208 0.145);
+      --color-warning-1: #fefdfb;
+      --color-warning-2: #fefbe9;
+      --color-warning-3: #fff7c2;
+      --color-warning-4: #ffee9c;
+      --color-warning-5: #fbe577;
+      --color-warning-6: #f3d673;
+      --color-warning-7: #e9c162;
+      --color-warning-8: #e2a336;
+      --color-warning-9: #ffc53d;
+      --color-warning-10: #ffba18;
+      --color-warning-11: #ab6400;
+      --color-warning-12: #4f3422;
 
-        --color-success-1: color(display-p3 0.986 0.996 0.985);
-        --color-success-2: color(display-p3 0.966 0.983 0.964);
-        --color-success-3: color(display-p3 0.923 0.965 0.917);
-        --color-success-4: color(display-p3 0.872 0.94 0.865);
-        --color-success-5: color(display-p3 0.811 0.908 0.802);
-        --color-success-6: color(display-p3 0.733 0.864 0.724);
-        --color-success-7: color(display-p3 0.628 0.803 0.622);
-        --color-success-8: color(display-p3 0.477 0.72 0.482);
-        --color-success-9: color(display-p3 0.38 0.647 0.378);
-        --color-success-10: color(display-p3 0.344 0.598 0.342);
-        --color-success-11: color(display-p3 0.263 0.488 0.261);
-        --color-success-12: color(display-p3 0.151 0.233 0.153);
+      --color-success-1: #fbfefb;
+      --color-success-2: #f5fbf5;
+      --color-success-3: #e9f6e9;
+      --color-success-4: #daf1db;
+      --color-success-5: #c9e8ca;
+      --color-success-6: #b2ddb5;
+      --color-success-7: #94ce9a;
+      --color-success-8: #65ba74;
+      --color-success-9: #46a758;
+      --color-success-10: #3e9b4f;
+      --color-success-11: #2a7e3b;
+      --color-success-12: #203c25;
+
+      @supports (color: color(display-p3 1 1 1)) {
+        @media (color-gamut: p3) {
+          --color-secondary-1: oklch(92.7% 0.0042 288.9);
+          --color-secondary-2: oklch(91.1% 0.0142 288.9);
+          --color-primary-1: oklch(92.6% 0.0336 266);
+          --color-primary-2: oklch(91.2% 0.0609 266);
+          --color-secondary-3: oklch(88.6% 0.0288 288.9);
+          --color-secondary-4: oklch(85.3% 0.0592 288.9);
+          --color-secondary-5: oklch(81.8% 0.0868 288.9);
+          --color-primary-3: oklch(87.9% 0.1103 266);
+          --color-primary-4: oklch(85% 0.1453 266);
+          --color-primary-5: oklch(82.3% 0.1877 266);
+          --color-secondary-6: oklch(77.3% 0.1118 288.9);
+          --color-secondary-7: oklch(71.2% 0.1401 288.9);
+          --color-secondary-8: oklch(63.1% 0.1855 288.9);
+          --color-primary-6: oklch(79.5% 0.2157 266);
+          --color-primary-7: oklch(75.9% 0.2657 266);
+          --color-primary-8: oklch(69.5% 0.3597 266);
+          --color-secondary-9: oklch(52.4% 0.2822 288.9);
+          --color-secondary-10: oklch(47.6% 0.2822 288.9);
+          --color-primary-9: oklch(54.5% 0.3626 266);
+          --color-primary-10: oklch(50.9% 0.3446 266);
+          --color-secondary-11: oklch(41.3% 0.256 288.9);
+          --color-secondary-12: oklch(31.3% 0.1532 288.9);
+          --color-primary-11: oklch(40.9% 0.298 266);
+          --color-primary-12: oklch(24.5% 0.2495 266);
+
+          /* other */
+          --color-secondary-contrast: #fff;
+          --color-secondary-surface: color(display-p3 0.8784 0.8667 0.902 / 0.8);
+          --color-secondary-indicator: oklch(52.4% 0.2822 288.9);
+          --color-secondary-track: oklch(52.4% 0.2822 288.9);
+          --color-primary-contrast: #ffffff;
+          --color-primary-surface: color(display-p3 1 1 1 / 80%);
+          --color-primary-indicator: oklch(54.5% 0.3626 266);
+          --color-primary-track: oklch(54.5% 0.3626 266);
+
+          --color-info-1: color(display-p3 0.982 0.992 0.996);
+          --color-info-2: color(display-p3 0.955 0.981 0.984);
+          --color-info-3: color(display-p3 0.888 0.965 0.975);
+          --color-info-4: color(display-p3 0.821 0.941 0.959);
+          --color-info-5: color(display-p3 0.751 0.907 0.935);
+          --color-info-6: color(display-p3 0.671 0.862 0.9);
+          --color-info-7: color(display-p3 0.564 0.8 0.854);
+          --color-info-8: color(display-p3 0.388 0.715 0.798);
+          --color-info-9: color(display-p3 0.282 0.627 0.765);
+          --color-info-10: color(display-p3 0.264 0.583 0.71);
+          --color-info-11: color(display-p3 0.08 0.48 0.63);
+          --color-info-12: color(display-p3 0.108 0.232 0.277);
+
+          --color-error-1: color(display-p3 0.998 0.989 0.992);
+          --color-error-2: color(display-p3 0.995 0.971 0.974);
+          --color-error-3: color(display-p3 0.983 0.92 0.928);
+          --color-error-4: color(display-p3 0.987 0.869 0.885);
+          --color-error-5: color(display-p3 0.968 0.817 0.839);
+          --color-error-6: color(display-p3 0.937 0.758 0.786);
+          --color-error-7: color(display-p3 0.897 0.685 0.721);
+          --color-error-8: color(display-p3 0.851 0.588 0.639);
+          --color-error-9: color(display-p3 0.83 0.323 0.408);
+          --color-error-10: color(display-p3 0.795 0.286 0.375);
+          --color-error-11: color(display-p3 0.728 0.211 0.311);
+          --color-error-12: color(display-p3 0.36 0.115 0.171);
+
+          --color-warning-1: color(display-p3 0.995 0.992 0.985);
+          --color-warning-2: color(display-p3 0.994 0.986 0.921);
+          --color-warning-3: color(display-p3 0.994 0.969 0.782);
+          --color-warning-4: color(display-p3 0.989 0.937 0.65);
+          --color-warning-5: color(display-p3 0.97 0.902 0.527);
+          --color-warning-6: color(display-p3 0.936 0.844 0.506);
+          --color-warning-7: color(display-p3 0.89 0.762 0.443);
+          --color-warning-8: color(display-p3 0.85 0.65 0.3);
+          --color-warning-9: color(display-p3 1 0.77 0.26);
+          --color-warning-10: color(display-p3 0.959 0.741 0.274);
+          --color-warning-11: color(display-p3 0.64 0.4 0);
+          --color-warning-12: color(display-p3 0.294 0.208 0.145);
+
+          --color-success-1: color(display-p3 0.986 0.996 0.985);
+          --color-success-2: color(display-p3 0.966 0.983 0.964);
+          --color-success-3: color(display-p3 0.923 0.965 0.917);
+          --color-success-4: color(display-p3 0.872 0.94 0.865);
+          --color-success-5: color(display-p3 0.811 0.908 0.802);
+          --color-success-6: color(display-p3 0.733 0.864 0.724);
+          --color-success-7: color(display-p3 0.628 0.803 0.622);
+          --color-success-8: color(display-p3 0.477 0.72 0.482);
+          --color-success-9: color(display-p3 0.38 0.647 0.378);
+          --color-success-10: color(display-p3 0.344 0.598 0.342);
+          --color-success-11: color(display-p3 0.263 0.488 0.261);
+          --color-success-12: color(display-p3 0.151 0.233 0.153);
+        }
       }
     }
 

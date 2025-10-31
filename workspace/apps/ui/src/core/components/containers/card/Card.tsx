@@ -118,7 +118,7 @@ export const Card = memo<CardProps>(function Card(
 
   if (isMaximized) {
     return (
-      <div className="rounded-sm fixed z-50 top-0 left-0 w-full h-full px-10 py-6 mx-auto backdrop-blur-sm [&>*]:h-full flex items-center justify-center">
+      <div className="rounded-sm fixed z-50 top-0 left-0 w-full h-full px-10 py-6 mx-auto backdrop-blur-sm *:h-full flex items-center justify-center">
         {content}
       </div>
     );
