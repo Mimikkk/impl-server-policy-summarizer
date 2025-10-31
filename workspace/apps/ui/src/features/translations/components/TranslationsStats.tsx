@@ -1,6 +1,6 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Text } from "@core/components/typography/Text.tsx";
-import { useTranslationsView } from "../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 import { useTableData } from "../hooks/useTableData.tsx";
 
 export const TranslationsStats = () => {
@@ -14,7 +14,7 @@ export const TranslationsStats = () => {
     query,
     keyQuery,
     scrollContainerRef,
-  } = useTranslationsView();
+  } = TranslationsViewContext.use();
 
   const { table, filteredRows } = useTableData({
     storage,

@@ -5,7 +5,7 @@ import { Text } from "@components/typography/Text.tsx";
 import { DevTools } from "@features/dx/dev-tools/DevTools.tsx";
 import { Breadcrumbs } from "@features/ux/layout/Breadcrumbs.tsx";
 import { Sidebar } from "@features/ux/layout/Sidebar.tsx";
-import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
+import { ThemeContext } from "@features/ux/theme/ThemeContext.tsx";
 import { Param } from "@hooks/useLocalStorage.ts";
 import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
 
@@ -13,7 +13,7 @@ const sidebarOpenParam = Param.boolean({ key: "sidebar-open" });
 
 export const Route = createRootRouteWithContext()({
   component: () => {
-    const { mode, theme, setMode: setMode } = useTheme();
+    const { mode, theme, setMode } = ThemeContext.use();
     const [isSidebarOpen] = sidebarOpenParam.use();
 
     return (

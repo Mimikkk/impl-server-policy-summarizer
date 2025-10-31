@@ -1,10 +1,10 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
 import { Text } from "@core/components/typography/Text.tsx";
-import { useTranslationsView } from "../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 
 export const PendingReviews = () => {
-  const { resultsQueue, selectedResultIndex, handleSelectResult } = useTranslationsView();
+  const { resultsQueue, selectedResultIndex, handleSelectResult } = TranslationsViewContext.use();
   if (resultsQueue.length === 0) return null;
 
   return (

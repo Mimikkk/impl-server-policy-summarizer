@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { memo } from "react";
-import { useTranslationsView } from "../../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 import { TranslationsTableBodyRowCell } from "./TranslationsTableBodyRowCell.tsx";
 
 export const TranslationsTableBody = memo(function TranslationsTableBody() {
-  const { tableData: { table, filteredRows, virtualizer } } = useTranslationsView();
+  const { tableData: { table, filteredRows, virtualizer } } = TranslationsViewContext.use();
 
   return (
     <tbody className="relative" style={{ height: `${virtualizer.getTotalSize()}px` }}>

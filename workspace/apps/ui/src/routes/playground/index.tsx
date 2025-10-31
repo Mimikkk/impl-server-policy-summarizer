@@ -1,15 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createContext, useContext } from "@utilities/createSelectorContext.tsx";
+import { defineContext } from "@utilities/defineContext.tsx";
 
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { useState } from "react";
 
-const context = createContext<
-  [{ count1: number; count2: number }, Dispatch<SetStateAction<{ count1: number; count2: number }>>]
->(null!);
+const Context = defineContext(() => useState<{ count1: number; count2: number }>({ count1: 0, count2: 0 }));
 
 const Counter1 = () => {
-  const count1 = useContext(context, (v) => v[0].count1);
-  const setState = useContext(context, (v) => v[1]);
+  const count1 = Context.use((v) => v[0].count1);
+  const setState = Context.use((v) => v[1]);
   const increment = () => setState((s: { count1: number; count2: number }) => ({ ...s, count1: s.count1 + 1 }));
 
   return (
@@ -24,8 +22,8 @@ const Counter1 = () => {
 };
 
 const Counter2 = () => {
-  const count2 = useContext(context, (v) => v[0].count2);
-  const setState = useContext(context, (v) => v[1]);
+  const count2 = Context.use((v) => v[0].count2);
+  const setState = Context.use((v) => v[1]);
   const increment = () => setState((s: { count1: number; count2: number }) => ({ ...s, count2: s.count2 + 1 }));
 
   return (
@@ -40,9 +38,9 @@ const Counter2 = () => {
 };
 
 const StateProvider = ({ children }: { children: React.ReactNode }) => (
-  <context.Provider value={useState<{ count1: number; count2: number }>({ count1: 0, count2: 0 })}>
+  <Context.Provider>
     {children}
-  </context.Provider>
+  </Context.Provider>
 );
 
 export const Route = createFileRoute("/playground/")({

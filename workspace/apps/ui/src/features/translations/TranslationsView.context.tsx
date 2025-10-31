@@ -1,7 +1,7 @@
 import { ServerClient } from "@clients/server/ServerClient.ts";
 import type { TranslationSample } from "@clients/server/resources/TranslationResource.ts";
 import { Param } from "@hooks/useLocalStorage.ts";
-import { createContext } from "@utilities/createContext.tsx";
+import { defineContext } from "@utilities/defineContext.tsx";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
 import { useCallback, useRef, useState } from "react";
 import type { PreviewResult } from "./TranslationPreviewModal.tsx";
@@ -29,7 +29,7 @@ const StorageParam = Param.new<Storage>({
 const QueryParam = Param.string({ key: "query" });
 const KeyQueryParam = Param.string({ key: "filters[key]" });
 
-export const [useTranslationsView, TranslationsViewProvider] = createContext(() => {
+export const TranslationsViewContext = defineContext(() => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
   const [showChangedTranslations, setShowChangedTranslations] = ShowChangedTranslationsParam.use();

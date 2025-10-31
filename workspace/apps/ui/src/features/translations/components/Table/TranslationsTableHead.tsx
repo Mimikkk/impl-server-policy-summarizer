@@ -2,7 +2,7 @@ import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import clsx from "clsx";
 import { memo } from "react";
-import { useTranslationsView } from "../../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 import { TranslationsTableHeadRowCell } from "./TranslationsTableHeadRowCell.tsx";
 
 export const TranslationsTableHead = memo(function TranslationsTableHead() {
@@ -16,7 +16,7 @@ export const TranslationsTableHead = memo(function TranslationsTableHead() {
     keyQuery,
     setKeyQuery,
     tableData: { table },
-  } = useTranslationsView();
+  } = TranslationsViewContext.use();
 
   return (
     <thead className="z-10 sticky top-0 left-0 bg-primary-6 text-left">

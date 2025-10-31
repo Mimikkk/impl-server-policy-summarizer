@@ -1,7 +1,7 @@
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import { memo, useCallback, useState } from "react";
 import type { TableColumn } from "../../createTable.tsx";
-import { useTranslationsView } from "../../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 
 const map = {
   focused: "secondary",
@@ -11,7 +11,7 @@ const map = {
 } as const;
 export const TranslationsTableHeadRowCell = memo<{ column: TableColumn<any, any> }>(
   function TranslationsTableHeadRowCell({ column }) {
-    const { isEditing, sourceLanguage, targetLanguage } = useTranslationsView();
+    const { isEditing, sourceLanguage, targetLanguage } = TranslationsViewContext.use();
     const [label, setLabel] = useState(column.label);
     const [isFocused, setIsFocused] = useState(false);
 

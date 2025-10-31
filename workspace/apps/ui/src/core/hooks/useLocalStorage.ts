@@ -35,7 +35,7 @@ export const useLocalStorage = <T>({ key, serialize, deserialize }: LocalStorage
 
 export interface ParamOptions<T> {
   key: string;
-  serialize: (value: T) => string;
+  serialize: (value: T) => string | null;
   deserialize: (value: string | null) => T;
 }
 
@@ -50,7 +50,7 @@ export class Param<T> {
 
   private constructor(
     public readonly key: string,
-    private readonly serialize: (value: T) => string,
+    private readonly serialize: (value: T) => string | null,
     private readonly deserialize: (value: string | null) => T,
   ) {}
 
@@ -67,6 +67,16 @@ export class Param<T> {
       key,
       serialize: (value) => value,
       deserialize: (value) => value ?? "",
+    });
+  }
+
+  static enum<T extends string>(
+    { key, list: values, defaultValue }: { key: string; list: readonly T[]; defaultValue: NoInfer<T> },
+  ): Param<NoInfer<T>> {
+    return Param.new({
+      key,
+      serialize: (value) => value === defaultValue ? null : value,
+      deserialize: (value) => values.find((v) => v === value) ?? defaultValue,
     });
   }
 

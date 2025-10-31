@@ -1,5 +1,5 @@
 import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
-import { useTheme } from "@features/ux/theme/ThemeProvider.tsx";
+import { ThemeContext } from "@features/ux/theme/ThemeContext.tsx";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
 import { saveToFile } from "@utilities/saveToFile.tsx";
@@ -33,7 +33,7 @@ export interface CardCodeProps {
 }
 
 export const CardCode = ({ className, content, language }: CardCodeProps) => {
-  const { theme } = useTheme();
+  const theme = ThemeContext.use((c) => c.theme);
   const asString = useMemo(() => content ?? "", [content]);
   const { data: code = "", status } = useQuery(createCodeQueryOptions(asString, theme, language));
 

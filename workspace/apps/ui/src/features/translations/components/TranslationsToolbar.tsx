@@ -4,10 +4,10 @@ import { Card } from "@core/components/containers/card/Card.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import { requestSaveFile } from "@utilities/requestFilePicker.ts";
 import { useCallback } from "react";
-import { useTranslationsView } from "../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 
 export const TranslationsToolbar = () => {
-  const { storage, query, setQuery, handleLoadCsv, handleAddLanguage, handleAddKey } = useTranslationsView();
+  const { storage, query, setQuery, handleLoadCsv, handleAddLanguage, handleAddKey } = TranslationsViewContext.use();
 
   const handleDownloadCsv = useCallback(async () => {
     if (!storage?.contents || storage.contents.length === 0) return;

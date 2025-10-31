@@ -1,11 +1,11 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { memo } from "react";
-import { useTranslationsView } from "../../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 import { TranslationsTableBody } from "./TranslationsTableBody.tsx";
 import { TranslationsTableHead } from "./TranslationsTableHead.tsx";
 
 export const TranslationsTable = memo(function TranslationsTable() {
-  const { isEditing, handleAddLanguage, scrollContainerRef } = useTranslationsView();
+  const { isEditing, handleAddLanguage, scrollContainerRef } = TranslationsViewContext.use();
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-2 grid-rows-[1fr_auto]">

@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@features/ux/theme/ThemeProvider.tsx";
+import { ThemeContext } from "@features/ux/theme/ThemeContext.tsx";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryProvider } from "./configs/react-query/ReactQuery.tsx";
@@ -9,10 +9,10 @@ const root = createRoot(document.getElementById("root")!);
 
 root.render(
   <StrictMode>
-    <ThemeProvider storage="app-theme">
+    <ThemeContext.Provider storage="app-theme">
       <QueryProvider>
         <RouteProvider />
       </QueryProvider>
-    </ThemeProvider>
+    </ThemeContext.Provider>
   </StrictMode>,
 );

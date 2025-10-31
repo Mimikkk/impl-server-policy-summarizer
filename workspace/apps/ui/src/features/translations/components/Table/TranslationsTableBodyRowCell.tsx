@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { buttonColorMap, inputColorMap } from "../../constants.ts";
 import type { TableColumn, TableRow } from "../../createTable.tsx";
-import { useTranslationsView } from "../../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 
 export const TranslationsTableBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(
   function TranslationsTableBodyRowCell({ row, column }) {
@@ -19,7 +19,7 @@ export const TranslationsTableBodyRowCell = memo<{ row: TableRow<any>; column: T
       handleCellVerify,
       isCellProcessing,
       hasPendingReview,
-    } = useTranslationsView();
+    } = TranslationsViewContext.use();
     const isKey = column.id === "key";
 
     const ref = useRef<HTMLTableCellElement>(null);

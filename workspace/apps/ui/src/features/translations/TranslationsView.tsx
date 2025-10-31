@@ -1,7 +1,7 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
 import { TranslationPreviewModal } from "./TranslationPreviewModal.tsx";
-import { TranslationsViewProvider, useTranslationsView } from "./TranslationsView.context.tsx";
+import { TranslationsViewContext } from "./TranslationsView.context.tsx";
 import { ControlPanel } from "./components/ControlPanel.tsx";
 import { LanguageSelector } from "./components/LanguageSelector.tsx";
 import { PendingReviews } from "./components/PendingReviews.tsx";
@@ -20,7 +20,7 @@ const Content = () => {
     currentResult,
     handlePreviewAccept,
     handlePreviewReject,
-  } = useTranslationsView();
+  } = TranslationsViewContext.use();
 
   return (
     <Card className="flex flex-col gap-2">
@@ -65,7 +65,7 @@ const Content = () => {
 };
 
 export const TranslationsView = () => (
-  <TranslationsViewProvider>
+  <TranslationsViewContext.Provider>
     <Content />
-  </TranslationsViewProvider>
+  </TranslationsViewContext.Provider>
 );
