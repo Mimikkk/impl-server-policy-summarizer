@@ -8,11 +8,12 @@ import { Sidebar } from "@features/ux/layout/Sidebar.tsx";
 import { ThemeContext } from "@features/ux/theme/ThemeContext.tsx";
 import { Param } from "@hooks/useLocalStorage.ts";
 import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
+import { memo } from "react";
 
 const sidebarOpenParam = Param.boolean({ key: "sidebar-open" });
 
 export const Route = createRootRouteWithContext()({
-  component: () => {
+  component: memo(function RootRoute() {
     const { mode, theme, setMode } = ThemeContext.use();
     const [isSidebarOpen] = sidebarOpenParam.use();
 
@@ -39,24 +40,26 @@ export const Route = createRootRouteWithContext()({
         </div>
       </>
     );
-  },
-  notFoundComponent: () => (
-    <div className="container mx-auto py-4">
-      <Card className="w-full flex flex-col items-center" color="info">
-        <Text className="flex items-center text-2xl gap-1">
-          <Icon name="Cat" size="lg" />
-          Oh no! 404
-        </Text>
-        <Text light>Page not found</Text>
-        <div className="flex gap-2">
-          <Link to="/eli">
-            <span className="flex items-center gap-1 underline hover:text-primary-11 active:text-primary-12 text-primary-12 hover:no-underline">
-              <Icon name="ArrowRight" size="sm" />
-              Move to eli
-            </span>
-          </Link>
-        </div>
-      </Card>
-    </div>
-  ),
+  }),
+  notFoundComponent: memo(function NotFoundComponent() {
+    return (
+      <div className="container mx-auto py-4">
+        <Card className="w-full flex flex-col items-center" color="info">
+          <Text className="flex items-center text-2xl gap-1">
+            <Icon name="Cat" size="lg" />
+            Oh no! 404
+          </Text>
+          <Text light>Page not found</Text>
+          <div className="flex gap-2">
+            <Link to="/eli">
+              <span className="flex items-center gap-1 underline hover:text-primary-11 active:text-primary-12 text-primary-12 hover:no-underline">
+                <Icon name="ArrowRight" size="sm" />
+                Move to eli
+              </span>
+            </Link>
+          </div>
+        </Card>
+      </div>
+    );
+  }),
 });

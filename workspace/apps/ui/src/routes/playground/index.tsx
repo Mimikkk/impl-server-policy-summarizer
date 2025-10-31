@@ -1,14 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { defineContext } from "@utilities/defineContext.tsx";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 
-const Context = defineContext(() => useState<{ count1: number; count2: number }>({ count1: 0, count2: 0 }));
+const Context = defineContext(() => {
+  const [count1, setCount1] = useState(0);
+  const [count2, setCount2] = useState(0);
+
+  return { count1, setCount1, count2, setCount2 };
+});
 
 const Counter1 = () => {
-  const count1 = Context.use((v) => v[0].count1);
-  const setState = Context.use((v) => v[1]);
-  const increment = () => setState((s: { count1: number; count2: number }) => ({ ...s, count1: s.count1 + 1 }));
+  const count1 = Context.use((v) => v.count1);
+  const setState = Context.use((v) => v.setCount1);
+  const increment = () => setState((s) => s + 1);
 
   return (
     <div>
@@ -22,9 +27,9 @@ const Counter1 = () => {
 };
 
 const Counter2 = () => {
-  const count2 = Context.use((v) => v[0].count2);
-  const setState = Context.use((v) => v[1]);
-  const increment = () => setState((s: { count1: number; count2: number }) => ({ ...s, count2: s.count2 + 1 }));
+  const count2 = Context.use((v) => v.count2);
+  const setState = Context.use((v) => v.setCount2);
+  const increment = () => setState((s) => s + 1);
 
   return (
     <div>
@@ -43,15 +48,23 @@ const StateProvider = ({ children }: { children: React.ReactNode }) => (
   </Context.Provider>
 );
 
+const Counters = memo(function Counters() {
+  return (
+    <>
+      <Counter1 />
+      <Counter2 />
+    </>
+  );
+});
+
+const RouteComponent = () => {
+  return (
+    <StateProvider>
+      <Counters />
+    </StateProvider>
+  );
+};
+
 export const Route = createFileRoute("/playground/")({
   component: RouteComponent,
 });
-
-function RouteComponent() {
-  return (
-    <StateProvider>
-      <Counter1 />
-      <Counter2 />
-    </StateProvider>
-  );
-}

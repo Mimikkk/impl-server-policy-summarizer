@@ -1,8 +1,12 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useMemo, type RefObject } from "react";
-import { createTable } from "../createTable.tsx";
+import { type RefObject, useMemo } from "react";
+import { KeyBodyRowCell } from "../components/Table/boyslove/KeyBodyRowCell.tsx";
+import { KeyColumnCell } from "../components/Table/boyslove/KeyColumnCell.tsx";
+import { LanguageBodyRowCell } from "../components/Table/boyslove/LanguageBodyRowCell.tsx";
+import { LanguageColumnCell } from "../components/Table/boyslove/LanguageColumnCell.tsx";
+import { defineTable } from "../defineTable.tsx";
 
-interface UseTableDataProps {
+interface useTranslationsTableProps {
   storage: { contents: Record<string, string>[] } | undefined;
   showMissingTranslations: boolean;
   query: string;
@@ -10,17 +14,30 @@ interface UseTableDataProps {
   scrollContainerRef: RefObject<HTMLDivElement | null>;
 }
 
-export const useTableData = ({
+export const useTranslationsTable = ({
   storage,
   showMissingTranslations,
   query,
   keyQuery,
   scrollContainerRef,
-}: UseTableDataProps) => {
+}: useTranslationsTableProps) => {
   const table = useMemo(() =>
-    createTable({
+    defineTable({
       data: storage?.contents ?? [],
-      columns: Object.keys(storage?.contents?.[0] ?? {}).map((key) => ({ id: key, label: key })),
+      columns: Object.keys(storage?.contents?.[0] ?? {}).map((key) => {
+        return ({
+          id: key,
+          label: key,
+          HeaderCell: key === "key" ? KeyColumnCell : LanguageColumnCell,
+          RowCell: key === "key" ? KeyBodyRowCell : LanguageBodyRowCell,
+        });
+      }),
+      classNames: {
+        tbody: `
+        hover:**:data-source:bg-success-4  **:data-source:bg-success-5 even:**:data-source:bg-success-6
+        hover:**:data-target:bg-info-4 **:data-target:bg-info-5 even:**:data-target:bg-info-6
+      `,
+      },
     }), [storage?.contents]);
 
   const visibleRows = useMemo(() => {
@@ -46,6 +63,9 @@ export const useTableData = ({
     overscan: 5,
   });
 
-  return { table, filteredRows, virtualizer };
+  return {
+    table,
+    filteredRows,
+    virtualizer,
+  };
 };
-

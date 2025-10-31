@@ -5,7 +5,7 @@ import { defineContext } from "@utilities/defineContext.tsx";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
 import { useCallback, useRef, useState } from "react";
 import type { PreviewResult } from "./TranslationPreviewModal.tsx";
-import { useTableData } from "./hooks/useTableData.tsx";
+import { useTranslationsTable } from "./hooks/useTranslationsTable.tsx";
 import type { FocusedCell } from "./types.ts";
 
 type Updater<T> = (value: T) => Partial<T> | undefined;
@@ -347,7 +347,7 @@ export const TranslationsViewContext = defineContext(() => {
     setSelectedResultIndex(null);
   }, [selectedResultIndex]);
 
-  const tableData = useTableData({
+  const tableData = useTranslationsTable({
     storage,
     showMissingTranslations,
     query,

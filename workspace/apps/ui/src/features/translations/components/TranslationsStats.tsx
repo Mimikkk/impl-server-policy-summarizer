@@ -1,28 +1,26 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Text } from "@core/components/typography/Text.tsx";
 import { TranslationsViewContext } from "../TranslationsView.context.tsx";
-import { useTableData } from "../hooks/useTableData.tsx";
 
 export const TranslationsStats = () => {
   const {
-    storage,
     showMissingTranslations,
     toggleShowMissingTranslations,
     showChangedTranslations,
     toggleShowChangedTranslations,
     isEditing,
-    query,
-    keyQuery,
-    scrollContainerRef,
-  } = TranslationsViewContext.use();
-
-  const { table, filteredRows } = useTableData({
-    storage,
-    showMissingTranslations,
-    query,
-    keyQuery,
-    scrollContainerRef,
-  });
+    counts,
+  } = TranslationsViewContext.use((s) => ({
+    showMissingTranslations: s.showMissingTranslations,
+    toggleShowMissingTranslations: s.toggleShowMissingTranslations,
+    showChangedTranslations: s.showChangedTranslations,
+    toggleShowChangedTranslations: s.toggleShowChangedTranslations,
+    isEditing: s.isEditing,
+    counts: {
+      total: s.tableData.table.rows.length,
+      filtered: s.tableData.filteredRows.length,
+    },
+  }));
 
   return (
     <div className="flex items-center gap-1 col-span-full">
@@ -32,9 +30,9 @@ export const TranslationsStats = () => {
             Filtered rows:
           </Text>
           <div className="flex items-center gap-1">
-            <span>{filteredRows.length}</span>
+            <span>{counts.filtered}</span>
             <span>/</span>
-            <span>{table.rows.length}</span>
+            <span>{counts.total}</span>
           </div>
         </div>
         <div className="grid grid-cols-[1fr_auto] gap-1">
@@ -48,7 +46,7 @@ export const TranslationsStats = () => {
             Missing rows:
           </Text>
           <div className="flex items-center gap-1">
-            <span>{filteredRows.length}</span>
+            <span>{counts.filtered}</span>
           </div>
           {isEditing && (
             <>
@@ -62,7 +60,7 @@ export const TranslationsStats = () => {
                 Changed rows:
               </Text>
               <div className="flex items-center gap-1">
-                <span>{filteredRows.length}</span>
+                <span>{counts.filtered}</span>
               </div>
             </>
           )}

@@ -47,6 +47,7 @@
     "radix-ui": "npm:radix-ui@^1.1.2",
     "@tanstack/react-router": "npm:@tanstack/react-router@^1.123.2",
     "@tanstack/router-plugin": "npm:@tanstack/router-plugin@^1.123.2",
+    "react-fast-compare": "npm:react-fast-compare@^3.2.2",
     "lucide-react": "npm:lucide-react@^0.525.0",
     "clsx": "npm:clsx@^2.1.1",
     "ky": "npm:ky@^1.8.1",

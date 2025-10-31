@@ -1,12 +1,4 @@
-import type {
-  ComponentType,
-  Context as ReactContext,
-  FC,
-  PropsWithChildren,
-  Provider,
-  ReactNode,
-  RefObject,
-} from "react";
+import type { Context as ReactContext, FC, PropsWithChildren, RefObject } from "react";
 import {
   createContext as createReactContext,
   createElement,
@@ -17,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import equals from "react-fast-compare";
 import { unstable_NormalPriority as NormalPriority, unstable_runWithPriority as runWithPriority } from "scheduler";
 
 type Version = number;
@@ -35,12 +28,8 @@ interface ContextValue<TValue> {
 }
 
 const ContentsSymbol = Symbol.for("ContextContents");
-function useContextContents<Value>(context: Context<Value>): ContextSymbolValue<Value> {
+function useContextContents<Value>(context: ReactContext<ContextValue<Value>>): ContextSymbolValue<Value> {
   return useReactContext(context as unknown as ReactContext<ContextValue<Value>>)[ContentsSymbol];
-}
-
-interface Context<TValue> {
-  Provider: ComponentType<{ value: TValue; children: ReactNode }>;
 }
 
 interface UpdateOptions {
@@ -81,38 +70,6 @@ const createContents = <TValue,>(
   return { [ContentsSymbol]: { valueRef, versionRef, listeners, update } };
 };
 
-const createProvider = <TValue,>(
-  Provider: Provider<ContextValue<TValue>>,
-): FC<{ value: TValue; children: ReactNode }> =>
-  function ContextProvider({ value, children }) {
-    const valueRef = useRef(value);
-    const versionRef = useRef(0);
-
-    const [resolve, setResolve] = useState<((v: TValue) => void) | null>(null);
-
-    if (resolve) {
-      resolve(value);
-      setResolve(null);
-    }
-
-    const contentsRef = useRef(createContents(versionRef, valueRef, setResolve));
-
-    useLayoutEffect(() => {
-      valueRef.current = value;
-      versionRef.current += 1;
-
-      runWithPriority(NormalPriority, () => {
-        const action = { version: versionRef.current, value };
-
-        for (const listener of contentsRef.current![ContentsSymbol].listeners) {
-          listener(action);
-        }
-      });
-    }, [value]);
-
-    return createElement(Provider, { value: contentsRef.current }, children);
-  };
-
 function createContext<Value>(values: Value) {
   const context = createReactContext<ContextValue<Value>>({
     [ContentsSymbol]: {
@@ -123,16 +80,20 @@ function createContext<Value>(values: Value) {
     },
   });
 
-  (context as unknown as Context<Value>).Provider = createProvider(
-    context.Provider,
-  );
+  // (context as unknown as Context<Value>).Provider = createProvider(
+  //   context.Provider,
+  // );
 
   delete (context as { Consumer: unknown }).Consumer;
 
-  return context as unknown as Context<Value>;
+  return context as unknown as ReactContext<ContextValue<Value>>;
 }
 
-function useContextSelector<TValue, TResult>(context: Context<TValue>, select: (value: TValue) => TResult): TResult {
+function useContextSelector<TValue, TResult>(
+  context: ReactContext<ContextValue<TValue>>,
+  select: (value: TValue) => TResult,
+  isEqual: (a: TResult, b: TResult) => boolean,
+): TResult {
   const {
     valueRef: { current: value },
     versionRef: { current: version },
@@ -156,7 +117,7 @@ function useContextSelector<TValue, TResult>(context: Context<TValue>, select: (
       }
 
       if (action.version === version) {
-        if (Object.is(previousResult, result)) {
+        if (isEqual(previousResult, result)) {
           return previous;
         }
 
@@ -169,7 +130,7 @@ function useContextSelector<TValue, TResult>(context: Context<TValue>, select: (
         }
 
         const nextResult = select(action.value as TValue);
-        if (Object.is(previousResult, nextResult)) {
+        if (isEqual(previousResult, nextResult)) {
           return previous;
         }
 
@@ -181,7 +142,7 @@ function useContextSelector<TValue, TResult>(context: Context<TValue>, select: (
     [value, result] as const,
   );
 
-  if (!Object.is(state[1], result)) {
+  if (!isEqual(state[1], result)) {
     dispatch();
   }
 
@@ -196,12 +157,19 @@ function useContextSelector<TValue, TResult>(context: Context<TValue>, select: (
   return state[1];
 }
 
-function useContextUpdate<Value>(context: Context<Value>, update: () => void, options?: UpdateOptions): void {
+function useContextUpdate<Value>(
+  context: ReactContext<ContextValue<Value>>,
+  update: () => void,
+  options?: UpdateOptions,
+): void {
   return useContextContents(context).update(update, options);
 }
 
 export interface CreateContextResult<TValue, TProps> {
-  use: <TResult = TValue>(select?: (value: TValue) => TResult) => TResult;
+  use: <const TResult = TValue>(
+    select?: (value: TValue) => TResult,
+    isEqual?: (a: TResult, b: TResult) => boolean,
+  ) => TResult;
   update: (fn: () => void, options?: UpdateOptions) => void;
   Provider: FC<PropsWithChildren<TProps>>;
 }
@@ -213,10 +181,36 @@ export const defineContext = <TValue, TProps>(
   const Context = createContext<TValue>(undefined!);
 
   return {
-    use: (selector = identity) => useContextSelector(Context, selector),
+    use: (selector = identity, isEqual = equals) => useContextSelector(Context, selector, isEqual),
     update: (update, options) => useContextUpdate(Context, update, options),
-    Provider: memo(function Provider({ children, ...options }) {
-      return createElement(Context.Provider, { value: provider(options as TProps), children });
+    Provider: memo(function ContextProvider({ children, ...options }) {
+      const value = provider(options as TProps);
+      const valueRef = useRef(value);
+      const versionRef = useRef(0);
+
+      const [resolve, setResolve] = useState<((v: TValue) => void) | null>(null);
+
+      if (resolve) {
+        resolve(value);
+        setResolve(null);
+      }
+
+      const contentsRef = useRef(createContents(versionRef, valueRef, setResolve));
+
+      useLayoutEffect(() => {
+        valueRef.current = value;
+        versionRef.current += 1;
+
+        runWithPriority(NormalPriority, () => {
+          const action = { version: versionRef.current, value };
+
+          for (const listener of contentsRef.current![ContentsSymbol].listeners) {
+            listener(action);
+          }
+        });
+      }, [value]);
+
+      return createElement(Context.Provider, { value: contentsRef.current }, children);
     }),
   };
 };

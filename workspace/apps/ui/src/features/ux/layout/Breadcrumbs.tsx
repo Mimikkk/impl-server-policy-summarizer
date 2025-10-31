@@ -2,9 +2,9 @@ import { Button } from "@components/actions/Button.tsx";
 import { Icon } from "@components/badges/Icon.tsx";
 import { Text } from "@components/typography/Text.tsx";
 import { useRouterState } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
-export const Breadcrumbs = () => {
+export const Breadcrumbs = memo(function Breadcrumbs() {
   const state = useRouterState();
   const parts = useMemo(() => state.location.pathname.split("/").filter(Boolean), [state.location.pathname]);
 
@@ -22,4 +22,4 @@ export const Breadcrumbs = () => {
       </span>
     </div>
   );
-};
+});

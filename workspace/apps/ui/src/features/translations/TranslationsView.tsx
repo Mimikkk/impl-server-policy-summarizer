@@ -5,7 +5,7 @@ import { TranslationsViewContext } from "./TranslationsView.context.tsx";
 import { ControlPanel } from "./components/ControlPanel.tsx";
 import { LanguageSelector } from "./components/LanguageSelector.tsx";
 import { PendingReviews } from "./components/PendingReviews.tsx";
-import { TranslationsTable } from "./components/Table/TranslationsTable.tsx";
+import { TranslationsTable } from "./components/Table/boyslove/TranslationsTable.tsx";
 import { TranslationsStats } from "./components/TranslationsStats.tsx";
 import { TranslationsToolbar } from "./components/TranslationsToolbar.tsx";
 
