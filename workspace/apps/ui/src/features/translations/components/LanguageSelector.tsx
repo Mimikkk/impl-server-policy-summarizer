@@ -2,7 +2,12 @@ import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 
 export const LanguageSelector = () => {
-  const { sourceLanguage, setSourceLanguage, targetLanguage, setTargetLanguage } = TranslationsViewContext.use();
+  const { sourceLanguage, setSourceLanguage, targetLanguage, setTargetLanguage } = TranslationsViewContext.use((s) => ({
+    sourceLanguage: s.sourceLanguage,
+    setSourceLanguage: s.setSourceLanguage,
+    targetLanguage: s.targetLanguage,
+    setTargetLanguage: s.setTargetLanguage,
+  }));
 
   return (
     <div>

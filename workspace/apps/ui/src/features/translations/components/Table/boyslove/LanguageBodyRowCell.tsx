@@ -18,7 +18,18 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
       handleCellVerify,
       isCellProcessing,
       hasPendingReview,
-    } = TranslationsViewContext.use();
+    } = TranslationsViewContext.use((s) => ({
+      isEditing: s.isEditing,
+      sourceLanguage: s.sourceLanguage,
+      targetLanguage: s.targetLanguage,
+      focusedCell: s.focusedCell,
+      setFocusedCell: s.setFocusedCell,
+      handleCellTranslate: s.handleCellTranslate,
+      handleCellRegenerate: s.handleCellRegenerate,
+      handleCellVerify: s.handleCellVerify,
+      isCellProcessing: s.isCellProcessing,
+      hasPendingReview: s.hasPendingReview,
+    }));
 
     const ref = useRef<HTMLTableCellElement>(null);
     useEffect(() => {

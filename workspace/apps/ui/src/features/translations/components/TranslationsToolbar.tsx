@@ -7,7 +7,16 @@ import { useCallback } from "react";
 import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 
 export const TranslationsToolbar = () => {
-  const { storage, query, setQuery, handleLoadCsv, handleAddLanguage, handleAddKey } = TranslationsViewContext.use();
+  const { storage, query, setQuery, handleLoadCsv, handleAddLanguage, handleAddKey } = TranslationsViewContext.use((
+    s,
+  ) => ({
+    storage: s.storage,
+    query: s.query,
+    setQuery: s.setQuery,
+    handleLoadCsv: s.handleLoadCsv,
+    handleAddLanguage: s.handleAddLanguage,
+    handleAddKey: s.handleAddKey,
+  }));
 
   const handleDownloadCsv = useCallback(async () => {
     if (!storage?.contents || storage.contents.length === 0) return;

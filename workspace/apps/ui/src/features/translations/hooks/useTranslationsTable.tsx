@@ -49,9 +49,9 @@ export const useTranslationsTable = ({
   const filteredRows = useMemo(
     () =>
       visibleRows.filter((row) =>
-        !query || table.columns.some((column) => row.original[column.id].toLowerCase().includes(query.toLowerCase()))
+        !query || table.columns.some((column) => row.original[column.id]?.toLowerCase().includes(query.toLowerCase()))
       ).filter(
-        (row) => !keyQuery || row.original.key.toLowerCase().includes(keyQuery.toLowerCase()),
+        (row) => !keyQuery || row.original.key?.toLowerCase().includes(keyQuery.toLowerCase()),
       ),
     [visibleRows, query, keyQuery, table.columns],
   );

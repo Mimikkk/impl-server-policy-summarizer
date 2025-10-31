@@ -4,7 +4,11 @@ import { Text } from "@core/components/typography/Text.tsx";
 import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 
 export const PendingReviews = () => {
-  const { resultsQueue, selectedResultIndex, handleSelectResult } = TranslationsViewContext.use();
+  const { resultsQueue, selectedResultIndex, handleSelectResult } = TranslationsViewContext.use((s) => ({
+    resultsQueue: s.resultsQueue,
+    selectedResultIndex: s.selectedResultIndex,
+    handleSelectResult: s.handleSelectResult,
+  }));
   if (resultsQueue.length === 0) return null;
 
   return (

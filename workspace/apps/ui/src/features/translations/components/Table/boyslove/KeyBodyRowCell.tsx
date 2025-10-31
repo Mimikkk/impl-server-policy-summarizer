@@ -14,7 +14,14 @@ export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any
       focusedCell,
       setFocusedCell,
       isCellProcessing,
-    } = TranslationsViewContext.use();
+    } = TranslationsViewContext.use((s) => ({
+      isEditing: s.isEditing,
+      sourceLanguage: s.sourceLanguage,
+      targetLanguage: s.targetLanguage,
+      focusedCell: s.focusedCell,
+      setFocusedCell: s.setFocusedCell,
+      isCellProcessing: s.isCellProcessing,
+    }));
 
     const ref = useRef<HTMLTableCellElement>(null);
     useEffect(() => {

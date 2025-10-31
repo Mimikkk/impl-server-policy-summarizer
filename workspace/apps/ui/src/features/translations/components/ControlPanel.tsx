@@ -7,7 +7,12 @@ export const ControlPanel = () => {
     toggleShowMissingTranslations,
     showChangedTranslations,
     toggleShowChangedTranslations,
-  } = TranslationsViewContext.use();
+  } = TranslationsViewContext.use((s) => ({
+    showMissingTranslations: s.showMissingTranslations,
+    toggleShowMissingTranslations: s.toggleShowMissingTranslations,
+    showChangedTranslations: s.showChangedTranslations,
+    toggleShowChangedTranslations: s.toggleShowChangedTranslations,
+  }));
 
   return (
     <>

@@ -13,7 +13,11 @@ const map = {
 } as const;
 const CellInput = memo<{ column: TableColumn<any, any> }>(
   function RenameLanguageField({ column }) {
-    const { isEditing, sourceLanguage, targetLanguage } = TranslationsViewContext.use();
+    const { isEditing, sourceLanguage, targetLanguage } = TranslationsViewContext.use((s) => ({
+      isEditing: s.isEditing,
+      sourceLanguage: s.sourceLanguage,
+      targetLanguage: s.targetLanguage,
+    }));
     const [label, setLabel] = useState(column.label);
     const [isFocused, setIsFocused] = useState(false);
 
