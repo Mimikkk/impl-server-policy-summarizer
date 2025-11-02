@@ -1,6 +1,7 @@
-import cx from "clsx";
+import clsx from "clsx";
 import { icons, type LucideProps } from "lucide-react";
-import { memo } from "react";
+import { createElement, memo } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 const SizeXs = "shrink-0 h-3 w-3";
 const SizeSm = "shrink-0 h-4 w-4";
@@ -22,8 +23,25 @@ export interface IconProps extends LucideProps {
   size?: Size;
 }
 
-export const Icon = memo<IconProps>(function Icon({ name, size = "md", ...props }) {
-  const IconComponent = icons[name];
+const cache = new Map<string, string>();
+function stringifyIcon(name: IconName, size: Size): string {
+  const key = `${name}-${size}`;
 
-  return <IconComponent {...props} className={cx(sizes[size], props.className)} />;
+  if (!cache.has(key)) {
+    const IconComponent = icons[name];
+    import("lucide-react");
+    const svg = renderToStaticMarkup(
+      createElement(IconComponent, { className: sizes[size] }),
+    );
+
+    cache.set(key, svg);
+  }
+
+  return cache.get(key)!;
+}
+
+export const Icon = memo<IconProps>(function Icon({ name, size = "md", ...props }) {
+  const svg = stringifyIcon(name, size);
+
+  return <span dangerouslySetInnerHTML={{ __html: svg }} className={clsx(sizes[size], props.className)} />;
 });

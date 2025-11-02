@@ -15,7 +15,6 @@ import { Icon } from "../../badges/Icon.tsx";
 import { Card } from "../../containers/card/Card.tsx";
 import { List, type ListItem } from "../../containers/List.tsx";
 import { Text } from "../../typography/Text.tsx";
-import { Show } from "../../utility/Show.tsx";
 
 export interface SelectFieldProps<T extends string> {
   color?: ColorName;
@@ -134,9 +133,7 @@ export const SelectField = memo(
                               )}
                               style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
                             >
-                              <Show when={selected === value}>
-                                <Icon name="Check" size="sm" className="flex-shrink-0" />
-                              </Show>
+                              {selected === value && <Icon name="Check" size="sm" />}
                               <Text ellipsis>
                                 {label}
                               </Text>

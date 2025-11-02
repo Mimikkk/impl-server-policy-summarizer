@@ -12,7 +12,6 @@ import {
 } from "react";
 import { IconButton } from "../../actions/IconButton.tsx";
 import { Text } from "../../typography/Text.tsx";
-import { Show } from "../../utility/Show.tsx";
 
 export interface CardProps extends PropsWithChildren<HTMLAttributes<HTMLDivElement>> {
   color?: ColorName;
@@ -86,7 +85,7 @@ export const Card = memo<CardProps>(function Card(
         className,
       )}
     >
-      <Show when={label}>
+      {label && (
         <Text
           light
           className={`
@@ -100,19 +99,19 @@ export const Card = memo<CardProps>(function Card(
         >
           {label}
         </Text>
-      </Show>
+      )}
       {children}
-      <Show when={slots?.icons?.length || maximize}>
-        <div
-          className={cx(
-            "absolute flex gap-0.5",
-            slots?.iconsPosition === "bottom-right" ? "bottom-2 right-2" : "top-2 right-2",
+      {slots?.icons?.length || maximize && (
+            <div
+              className={cx(
+                "absolute flex gap-0.5",
+                slots?.iconsPosition === "bottom-right" ? "bottom-2 right-2" : "top-2 right-2",
+              )}
+            >
+              {slots?.icons?.map((icon, index) => <div key={index}>{icon}</div>)}
+              {maximize}
+            </div>
           )}
-        >
-          {slots?.icons?.map((icon, index) => <div key={index}>{icon}</div>)}
-          {maximize}
-        </div>
-      </Show>
     </div>
   );
 

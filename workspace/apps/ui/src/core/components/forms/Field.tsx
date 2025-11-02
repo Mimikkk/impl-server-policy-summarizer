@@ -1,4 +1,3 @@
-import { Show } from "@components/utility/Show.tsx";
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import { uiElementClass } from "@utilities/uiElementClass.ts";
 import cx from "clsx";
@@ -24,14 +23,14 @@ export const Field = memo(
           className,
         )}
       >
-        <Show when={label}>
+        {label && (
           <label
             htmlFor={id}
             className={`absolute -top-2 left-2 text-xs px-1 rounded-xs bg-${color}-2 text-${color}-11`}
           >
             {label}
           </label>
-        </Show>
+        )}
         {children}
       </fieldset>
     );

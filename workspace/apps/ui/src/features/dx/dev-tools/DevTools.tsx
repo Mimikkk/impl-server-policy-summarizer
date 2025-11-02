@@ -1,4 +1,3 @@
-import { Show } from "@components/utility/Show.tsx";
 import { useEventListener } from "@hooks/useEventListener.ts";
 import { createLocalStorageOptions, useLocalStorage } from "@hooks/useLocalStorage.ts";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -91,10 +90,12 @@ export const DevTools = memo(function DevTools() {
 
   return (
     <div className="fixed bottom-0 left-0 w-full z-100">
-      <Show when={isOpen}>
-        <DevToolsNavigation height={height} items={items} value={selectedTab} onValueChange={setSelectedTab} />
-        <DevToolsResizer ref={setRef} />
-      </Show>
+      {isOpen && (
+        <>
+          <DevToolsNavigation height={height} items={items} value={selectedTab} onValueChange={setSelectedTab} />
+          <DevToolsResizer ref={setRef} />
+        </>
+      )}
       <DevToolsToggleButton height={isOpen ? height : 0} onClick={toggle} />
     </div>
   );
