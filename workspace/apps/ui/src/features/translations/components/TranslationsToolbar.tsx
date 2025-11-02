@@ -1,21 +1,16 @@
 import { ServerClient } from "@clients/server/ServerClient.ts";
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
-import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import { requestSaveFile } from "@utilities/requestFilePicker.ts";
 import { useCallback } from "react";
 import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 
 export const TranslationsToolbar = () => {
-  const { storage, query, setQuery, handleLoadCsv, handleAddLanguage, handleAddKey } = TranslationsViewContext.use((
+  const { storage, handleLoadCsv } = TranslationsViewContext.use((
     s,
   ) => ({
     storage: s.storage,
-    query: s.query,
-    setQuery: s.setQuery,
     handleLoadCsv: s.handleLoadCsv,
-    handleAddLanguage: s.handleAddLanguage,
-    handleAddKey: s.handleAddKey,
   }));
 
   const handleDownloadCsv = useCallback(async () => {
@@ -30,30 +25,10 @@ export const TranslationsToolbar = () => {
 
   return (
     <div className="flex justify-between gap-2">
-      <div className="flex gap-2 content-start self-start">
-        <IconButton name="Plus" variant="solid" className="min-w-40" onClick={handleAddLanguage}>
-          New language
+      <div className="ml-auto flex items-end gap-1">
+        <IconButton variant="solid" name="Upload" className="min-w-20 h-9.5" onClick={handleLoadCsv}>
+          Load CSV
         </IconButton>
-        <IconButton name="Plus" variant="solid" className="min-w-40" onClick={handleAddKey}>
-          New key
-        </IconButton>
-      </div>
-      <div className="flex flex-col">
-        <div className="flex w-full gap-2">
-          <IconButton variant="solid" name="Upload" className="min-w-20 shrink-0" onClick={handleLoadCsv}>
-            Load CSV
-          </IconButton>
-          <div className="flex w-full">
-            <InputField
-              compact
-              label="Search..."
-              value={query}
-              onValueChange={setQuery}
-              className="w-full"
-            />
-            <IconButton className="shrink-0" name="Search" variant="solid" />
-          </div>
-        </div>
         <Card label="csv content" compact className="pl-2 pr-1 py-1" color={storage ? "info" : "error"}>
           {storage
             ? (

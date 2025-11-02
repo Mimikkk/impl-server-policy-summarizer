@@ -1,4 +1,4 @@
-import { defineContext } from "@utilities/defineContext.tsx";
+import { defineContext } from "@utilities/defineContext.ts";
 import { useEffect, useMemo } from "react";
 import { ThemeService } from "./ThemeService.tsx";
 

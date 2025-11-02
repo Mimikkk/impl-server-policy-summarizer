@@ -17,8 +17,8 @@ export const TranslationsStats = () => {
     toggleShowChangedTranslations: s.toggleShowChangedTranslations,
     isEditing: s.isEditing,
     counts: {
-      total: s.tableData.table.rows.length,
-      filtered: s.tableData.filteredRows.length,
+      total: s.translationsTable.rows.all().length,
+      filtered: s.translationsTable.rows.filtered().length,
     },
   }));
 

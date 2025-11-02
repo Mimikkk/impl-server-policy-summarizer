@@ -1,9 +1,9 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
+import type { TableColumn } from "@core/components/tables/types.ts";
 import clsx from "clsx";
 import { memo, useCallback, useState } from "react";
-import type { TableColumn } from "../../../defineTable.tsx";
-import { TranslationsViewContext } from "../../../TranslationsView.context.tsx";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 
 const map = {
   focused: "secondary",

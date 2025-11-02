@@ -1,11 +1,11 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
+import { Table } from "@core/components/tables/components/Table.tsx";
 import { memo } from "react";
-import { TranslationsViewContext } from "../../../TranslationsView.context.tsx";
-import { TranslationsStats } from "../../TranslationsStats.tsx";
-import { Table } from "../Table.tsx";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
+import { TranslationsStats } from "../TranslationsStats.tsx";
 
 export const TranslationsTable = memo(function TranslationsTable() {
-  const { isEditing, handleAddLanguage, handleAddKey, toggleEdit, handleCancel, handleSave, tableData } =
+  const { isEditing, handleAddLanguage, handleAddKey, toggleEdit, handleCancel, handleSave, translationsTable } =
     TranslationsViewContext.use((s) => ({
       isEditing: s.isEditing,
       handleAddLanguage: s.handleAddLanguage,
@@ -13,13 +13,13 @@ export const TranslationsTable = memo(function TranslationsTable() {
       toggleEdit: s.toggleEdit,
       handleCancel: s.handleCancel,
       handleSave: s.handleSave,
-      tableData: s.tableData.table,
+      translationsTable: s.translationsTable,
     }));
 
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-[1fr_auto] gap-2 grid-rows-[1fr_auto]">
-        <Table store={tableData} />
+        <Table table={translationsTable} />
         {isEditing
           ? (
             <IconButton

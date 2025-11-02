@@ -1,4 +1,9 @@
-export const identity = <T>(value: T) => value;
+export interface IdentityFn {
+  <T>(value: T): T;
+  <T, R = T>(value: T): R;
+}
+
+export const identity: IdentityFn = <T>(value: T) => value;
 
 export type Nil<T> = T | null | undefined;
 export type Prettify<T> = { [K in keyof T]: T[K] } & {};

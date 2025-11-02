@@ -1,6 +1,6 @@
 import { Show } from "@components/utility/Show.tsx";
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
-import { uiElementClass } from "@utilities/uiElementClass.tsx";
+import { uiElementClass } from "@utilities/uiElementClass.ts";
 import cx from "clsx";
 import { type HTMLAttributes, memo } from "react";
 

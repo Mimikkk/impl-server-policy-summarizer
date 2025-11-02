@@ -1,5 +1,5 @@
 import type { Nil } from "@utilities/common.ts";
-import { saveToFile } from "@utilities/saveToFile.tsx";
+import { saveToFile } from "@utilities/saveToFile.ts";
 import clsx from "clsx";
 import { type MouseEvent, useCallback, useMemo } from "react";
 import { IconButton } from "../../../actions/IconButton.tsx";

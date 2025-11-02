@@ -1,9 +1,9 @@
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
+import type { TableColumn, TableRow } from "@core/components/tables/types.ts";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { buttonColorMap, inputColorMap } from "../../../constants.ts";
-import type { TableColumn, TableRow } from "../../../defineTable.tsx";
-import { TranslationsViewContext } from "../../../TranslationsView.context.tsx";
+import { buttonColorMap, inputColorMap } from "../../constants.ts";
+import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 
 export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(
   function LanguageBodyRowCell({ row, column }) {
@@ -44,11 +44,11 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
 
     const isSourceLanguage = sourceLanguage === column.id;
     const isTargetLanguage = targetLanguage === column.id;
-    const [value, setValue] = useState(row.original[column.id]);
+    const [value, setValue] = useState(row.values[column.id]);
 
     useEffect(() => {
-      setValue(row.original[column.id]);
-    }, [row.original[column.id]]);
+      setValue(row.values[column.id]);
+    }, [row.values[column.id]]);
 
     const isFocusedCell = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
     const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";

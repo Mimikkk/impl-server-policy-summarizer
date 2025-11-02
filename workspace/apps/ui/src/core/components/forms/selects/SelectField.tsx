@@ -7,7 +7,7 @@ import type { Option } from "./Option.tsx";
 
 import { useDebounceState } from "@hooks/useDebounceState.tsx";
 import { useResizeObserver } from "@hooks/useResizeObserver.tsx";
-import { uiElementClass } from "@utilities/uiElementClass.tsx";
+import { uiElementClass } from "@utilities/uiElementClass.ts";
 import { Command as CMDK } from "cmdk";
 import { Button } from "../../actions/Button.tsx";
 import { IconButton } from "../../actions/IconButton.tsx";

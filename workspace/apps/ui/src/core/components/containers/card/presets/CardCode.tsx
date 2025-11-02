@@ -2,7 +2,7 @@ import { StatusBarrier } from "@components/utility/StatusBarrier.tsx";
 import { ThemeContext } from "@features/ux/theme/ThemeContext.tsx";
 import { useQuery } from "@tanstack/react-query";
 import type { Nil } from "@utilities/common.ts";
-import { saveToFile } from "@utilities/saveToFile.tsx";
+import { saveToFile } from "@utilities/saveToFile.ts";
 import clsx from "clsx";
 import prettier from "prettier";
 import html from "prettier/plugins/html";

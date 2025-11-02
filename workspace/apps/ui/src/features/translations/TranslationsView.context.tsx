@@ -1,7 +1,7 @@
 import { ServerClient } from "@clients/server/ServerClient.ts";
 import type { TranslationSample } from "@clients/server/resources/TranslationResource.ts";
 import { Param } from "@hooks/useLocalStorage.ts";
-import { defineContext } from "@utilities/defineContext.tsx";
+import { defineContext } from "@utilities/defineContext.ts";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
 import { useCallback, useRef, useState } from "react";
 import type { PreviewResult } from "./ReviewModal.tsx";
@@ -9,7 +9,8 @@ import { useTranslationsTable } from "./hooks/useTranslationsTable.tsx";
 import type { FocusedCell } from "./types.ts";
 
 type Updater<T> = (value: T) => Partial<T> | undefined;
-interface Storage {
+
+export interface Storage {
   version: number;
   filename: string;
   contents: Record<string, string>[];
@@ -25,9 +26,6 @@ const StorageParam = Param.new<Storage>({
   serialize: (value) => JSON.stringify(value),
   deserialize: (value) => value ? JSON.parse(value) : undefined,
 });
-
-const QueryParam = Param.string({ key: "query" });
-const KeyQueryParam = Param.string({ key: "filters[key]" });
 
 export const TranslationsViewContext = defineContext(() => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -77,9 +75,6 @@ export const TranslationsViewContext = defineContext(() => {
     const contents = await ServerClient.importCsv(file);
     setStorage({ version: Date.now(), filename: file.name, contents });
   }, []);
-
-  const [query, setQuery] = QueryParam.use();
-  const [keyQuery, setKeyQuery] = KeyQueryParam.use();
 
   const updateStorage = useCallback((updater: Updater<Storage>) => {
     setStorage((s) => {
@@ -131,6 +126,7 @@ export const TranslationsViewContext = defineContext(() => {
     updateStorage((s) => ({
       contents: s.contents?.map((item) => ({ ...item, ["..."]: "" })) ?? [],
     }));
+
     requestAnimationFrame(() => {
       const theadCellLastElement = scrollContainerRef.current?.querySelector<HTMLElement>(
         "thead th:last-child input",
@@ -347,20 +343,10 @@ export const TranslationsViewContext = defineContext(() => {
     setSelectedResultIndex(null);
   }, [selectedResultIndex]);
 
-  const tableData = useTranslationsTable({
-    storage,
-    showMissingTranslations,
-    query,
-    keyQuery,
-    scrollContainerRef,
-  });
+  const translationsTable = useTranslationsTable({ storage });
 
   return {
-    tableData,
-    query,
-    setQuery,
-    keyQuery,
-    setKeyQuery,
+    translationsTable,
     storage,
     handleLoadCsv,
     sourceLanguage,

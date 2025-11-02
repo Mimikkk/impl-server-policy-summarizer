@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { defineContext } from "@utilities/defineContext.tsx";
+import { defineContext } from "@utilities/defineContext.ts";
 
 import { memo, useState } from "react";
 
