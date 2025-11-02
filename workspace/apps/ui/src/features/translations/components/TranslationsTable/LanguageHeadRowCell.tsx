@@ -43,6 +43,7 @@ const CellInput = memo<{ column: TableColumn<any, any> }>(
       : <span>{column.label}</span>;
   },
 );
+
 export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
   function LanguageColumnCell({ column }) {
     const {
@@ -85,7 +86,7 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
                 />
               </>
             )
-            : <span className="px-3">{column.label}</span>}
+            : <span className="px-3 first-letter:capitalize">language - {column.label}</span>}
         </div>
         <div className="flex w-full bg-primary-4">
           <IconButton
@@ -98,7 +99,7 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
               return setSourceLanguage(column.id);
             }}
           >
-            source language
+            {isEditing ? "source" : "source language"}
           </IconButton>
           <IconButton
             className="flex-1 justify-start"
@@ -110,8 +111,15 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
               return setTargetLanguage(column.id);
             }}
           >
-            target language
+            {isEditing ? "target" : "target language"}
           </IconButton>
+          {isEditing && (
+            <>
+              <IconButton name="RotateCcw" variant="solid" color="info" />
+              <IconButton name="RotateCcw" variant="solid" color="info" />
+              <IconButton name="RotateCcw" variant="solid" color="info" />
+            </>
+          )}
         </div>
       </div>
     );

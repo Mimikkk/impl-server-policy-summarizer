@@ -1,9 +1,9 @@
 import { defineTable } from "@core/components/tables/defineTable.ts";
 import { useMemo } from "react";
 import { KeyBodyRowCell } from "../components/TranslationsTable/KeyBodyRowCell.tsx";
-import { KeyHeadRowCell } from "../components/TranslationsTable/KeyColumnCell.tsx";
+import { KeyHeadRowCell } from "../components/TranslationsTable/KeyHeadRowCell.tsx";
 import { LanguageBodyRowCell } from "../components/TranslationsTable/LanguageBodyRowCell.tsx";
-import { LanguageHeadRowCell } from "../components/TranslationsTable/LanguageColumnCell.tsx";
+import { LanguageHeadRowCell } from "../components/TranslationsTable/LanguageHeadRowCell.tsx";
 import type { Storage } from "../TranslationsView.context.tsx";
 
 interface useTranslationsTableProps {

@@ -16,7 +16,7 @@ export const KeyHeadRowCell = memo<{ column: TableColumn<any, any> }>(function K
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-between w-full items-center h-7">
-        <span className="px-3">{column.label}</span>
+        <span className="px-3 first-letter:capitalize">{column.label}</span>
       </div>
       <div className="flex justify-between w-full items-center h-7">
         <InputField
