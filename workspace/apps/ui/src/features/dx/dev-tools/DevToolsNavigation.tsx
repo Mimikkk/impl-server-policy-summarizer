@@ -59,7 +59,7 @@ export const DevToolsNavigation = memo(
         defaultValue={value}
         onValueChange={onValueChange}
       >
-        <Tabs.List className="flex border-y bg-primary-1 divide-x-1 divide-primary-6 border-primary-6">
+        <Tabs.List className="flex border-y bg-primary-1 divide-x divide-primary-6 border-primary-6">
           <For each={items}>
             {useCallback(
               ({ value, label, icon }: DevToolsItem) => <Header key={value} value={value} icon={icon}>{label}</Header>,

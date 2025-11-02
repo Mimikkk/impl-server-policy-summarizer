@@ -46,7 +46,7 @@ export const TranslationsStats = () => {
             Missing rows:
           </Text>
           <div className="flex items-center gap-1">
-            <span>{counts.filtered}</span>
+            <span>{counts.total}</span>
           </div>
           {isEditing && (
             <>

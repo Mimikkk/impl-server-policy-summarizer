@@ -17,21 +17,19 @@ export const TableContext = defineContext(({ table }: { table: Table<any, TableC
     getItemKey: (index) => filtered[index].id,
   });
 
-  const virtualItems = virtualizer.getVirtualItems();
-
   return {
     features: {
       searchFilter: table.features.searchFilter,
       columnFilters: table.features.columnFilters,
       virtual: {
         ref: virtualizerScrollRef,
+        items: () => virtualizer.getVirtualItems(),
         totalRowHeight: () => virtualizer.getTotalSize(),
       },
     },
     rows: {
       all: rows.all,
       filtered: rows.filtered,
-      visible: () => virtualItems.map(({ size, start, index }) => ({ size, start, row: filtered[index] })),
     },
     columns: table.columns,
     props: table.props,

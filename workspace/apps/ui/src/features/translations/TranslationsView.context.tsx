@@ -3,7 +3,7 @@ import type { TranslationSample } from "@clients/server/resources/TranslationRes
 import { Param } from "@hooks/useLocalStorage.ts";
 import { defineContext } from "@utilities/defineContext.ts";
 import { requestFilePicker } from "@utilities/requestFilePicker.ts";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import type { PreviewResult } from "./ReviewModal.tsx";
 import { useTranslationsTable } from "./hooks/useTranslationsTable.tsx";
 import type { FocusedCell } from "./types.ts";
@@ -28,7 +28,6 @@ const StorageParam = Param.new<Storage>({
 });
 
 export const TranslationsViewContext = defineContext(() => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
   const [showChangedTranslations, setShowChangedTranslations] = ShowChangedTranslationsParam.use();
   const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
@@ -105,7 +104,9 @@ export const TranslationsViewContext = defineContext(() => {
     });
 
     requestAnimationFrame(() => {
-      scrollContainerRef.current?.scrollTo({ top: scrollContainerRef.current?.scrollHeight ?? 0 });
+      translationsTableScrollContainerRef.current?.scrollTo({
+        top: translationsTableScrollContainerRef.current?.scrollHeight ?? 0,
+      });
     });
   }, []);
 
@@ -128,7 +129,7 @@ export const TranslationsViewContext = defineContext(() => {
     }));
 
     requestAnimationFrame(() => {
-      const theadCellLastElement = scrollContainerRef.current?.querySelector<HTMLElement>(
+      const theadCellLastElement = translationsTableScrollContainerRef.current?.querySelector<HTMLElement>(
         "thead th:last-child input",
       );
 
@@ -344,41 +345,65 @@ export const TranslationsViewContext = defineContext(() => {
   }, [selectedResultIndex]);
 
   const translationsTable = useTranslationsTable({ storage });
+  const translationsTableScrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    const table = document.querySelector("table");
+    if (!table) return;
+
+    translationsTableScrollContainerRef.current = table.parentElement as HTMLDivElement;
+  }, []);
 
   return {
     translationsTable,
+
+    // Storage
     storage,
     handleLoadCsv,
+
+    // Language selectors
     sourceLanguage,
     setSourceLanguage,
     targetLanguage,
     setTargetLanguage,
+
+    // Form elements
     isEditing,
     setIsEditing,
     toggleEdit,
+    handleCancel,
+    handleSave,
+
+    // Table filters
     showMissingTranslations,
     toggleShowMissingTranslations,
     showChangedTranslations,
     toggleShowChangedTranslations,
+
+    // Table actions
     handleAddKey,
     handleRemoveKey,
     handleAddLanguage,
     handleRemoveLanguage,
+
+    // focus handler
     focusedCell,
     setFocusedCell,
-    scrollContainerRef,
-    handleCancel,
-    handleSave,
+
+    // Review module
     currentResult,
     resultsQueue,
     selectedResultIndex,
+    hasPendingReview,
+
     handleSelectResult,
     handleCellTranslate,
     handleCellRegenerate,
     handleCellVerify,
+
     handlePreviewAccept,
     handlePreviewReject,
+
     isCellProcessing,
-    hasPendingReview,
   };
 });

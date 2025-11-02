@@ -17,7 +17,7 @@ export interface TableOptions<TData, TColumns extends TableColumn<TData, ColumnI
     columnFilters: FeatureOptionsOf<ColumnFiltersFeature<TData>>;
   };
   props?: {
-    tbody: Nil<HTMLAttributes<HTMLTableSectionElement>>;
+    bodyRow: Nil<HTMLAttributes<HTMLTableSectionElement>>;
   };
 }
 
@@ -45,7 +45,7 @@ export const defineTable = <TData, TColumns extends TableColumn<TData, ColumnId<
       features: structuredClone(defaultState.features),
     }),
     defaultState,
-    props: props ?? { tbody: undefined },
+    props: props ?? { bodyRow: undefined },
   } as Table<TData, TColumns>;
   self.features = createFeatures(self, options);
   self.columns = createColumns(self);

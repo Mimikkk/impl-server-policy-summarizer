@@ -9,14 +9,18 @@ export const PendingReviews = () => {
     selectedResultIndex: s.selectedResultIndex,
     handleSelectResult: s.handleSelectResult,
   }));
-  if (resultsQueue.length === 0) return null;
-
   return (
-    <Card className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <Text light className="font-bold">Pending Reviews:</Text>
-        <Text>{resultsQueue.length} {resultsQueue.length === 1 ? "result" : "results"}</Text>
-      </div>
+    <Card
+      color="secondary"
+      className="flex flex-col gap-2"
+      label={
+        <div className="flex items-center gap-2">
+          <Text light className="font-bold">Pending Reviews:</Text>
+          <Text>{resultsQueue.length} {resultsQueue.length === 1 ? "result" : "results"}</Text>
+        </div>
+      }
+    >
+      {resultsQueue.length === 0 && <div>Add some tasks to get started.</div>}
       <div className="flex flex-wrap gap-2">
         {resultsQueue.slice(0, 6).map((result, idx) => {
           const icon = result.type === "translate"
