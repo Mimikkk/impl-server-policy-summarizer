@@ -13,7 +13,7 @@ export const TableContext = defineContext(({ table }: { table: Table<any, TableC
     count: filtered.length,
     getScrollElement: () => virtualizerScrollRef.current,
     estimateSize: () => 30,
-    overscan: 5,
+    overscan: 30,
     getItemKey: (index) => filtered[index].id,
   });
 
