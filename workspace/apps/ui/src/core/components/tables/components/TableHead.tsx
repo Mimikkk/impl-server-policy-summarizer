@@ -9,7 +9,7 @@ export const TableHead = memo(function TableHead() {
       <tr className="flex w-full divide-x divide-primary-6 border-b border-primary-5 shadow shadow-primary-5">
         {columns.map((column) => (
           <TableHeadRowCell key={column.id}>
-            <column.HeaderCell column={column} />
+            <column.HeadRowCell column={column} />
           </TableHeadRowCell>
         ))}
       </tr>

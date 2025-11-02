@@ -4,7 +4,10 @@ import { memo } from "react";
 import { TableContext } from "./TableContext.tsx";
 
 export const TableSearchField = memo(function TableSearchField() {
-  const { value, set } = TableContext.use((s) => ({ value: s.features.search.get(), set: s.features.search.set }));
+  const { value, set } = TableContext.use((s) => ({
+    value: s.features.searchFilter.get(),
+    set: s.features.searchFilter.set,
+  }));
 
   return (
     <div className="flex">

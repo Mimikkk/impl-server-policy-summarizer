@@ -4,7 +4,7 @@ import { TableContext } from "@core/components/tables/components/TableContext.ts
 import type { TableColumn } from "@core/components/tables/types.ts";
 import { memo } from "react";
 
-export const KeyColumnCell = memo<{ column: TableColumn<any, any> }>(function KeyColumnCellContent({ column }) {
+export const KeyHeadRowCell = memo<{ column: TableColumn<any, any> }>(function KeyColumnCellContent({ column }) {
   const { value, set } = TableContext.use(
     (s) => {
       const { get, set } = s.features.columnFilters.of("key");

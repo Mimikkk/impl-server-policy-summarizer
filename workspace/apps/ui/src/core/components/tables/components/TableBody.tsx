@@ -38,7 +38,7 @@ export const TableBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<a
   function TableBodyRowCell({ row, column }) {
     return (
       <td className="flex items-center grow w-full flex-1 overflow-auto">
-        <column.RowCell row={row} column={column} />
+        <column.BodyRowCell column={column} row={row} />
       </td>
     );
   },

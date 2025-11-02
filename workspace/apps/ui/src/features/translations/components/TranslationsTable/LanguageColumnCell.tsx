@@ -43,7 +43,7 @@ const CellInput = memo<{ column: TableColumn<any, any> }>(
       : <span>{column.label}</span>;
   },
 );
-export const LanguageColumnCell = memo<{ column: TableColumn<any, any> }>(
+export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
   function LanguageColumnCell({ column }) {
     const {
       isSourceLanguage,

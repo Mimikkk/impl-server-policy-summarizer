@@ -11,25 +11,26 @@ export const TableContext = defineContext(({ table }: { table: Table<any, TableC
     set(structuredClone(defaultState));
   }, [defaultState]);
 
+  const filtered = rows.filtered();
   const virtualizerScrollRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
-    count: rows.all().length,
+    count: filtered.length,
     getScrollElement: () => virtualizerScrollRef.current,
     estimateSize: () => 30,
     overscan: 5,
+    getItemKey: (index) => filtered[index].id,
   });
 
   const virtualItems = virtualizer.getVirtualItems();
-
   const visibleRows = useMemo(
-    () => virtualItems.map(({ size, start, index }) => ({ size, start, row: rows.filtered()[index] })),
-    [rows.filtered(), virtualItems],
+    () => virtualItems.map(({ size, start, index }) => ({ size, start, row: filtered[index] })),
+    [filtered, virtualItems],
   );
 
   return {
     reset,
     features: {
-      search: table.features.search,
+      searchFilter: table.features.searchFilter,
       columnFilters: table.features.columnFilters,
       virtual: {
         ref: virtualizerScrollRef,

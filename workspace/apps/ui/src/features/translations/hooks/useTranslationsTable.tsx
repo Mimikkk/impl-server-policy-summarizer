@@ -1,9 +1,9 @@
 import { defineTable } from "@core/components/tables/defineTable.ts";
 import { useMemo } from "react";
 import { KeyBodyRowCell } from "../components/TranslationsTable/KeyBodyRowCell.tsx";
-import { KeyColumnCell } from "../components/TranslationsTable/KeyColumnCell.tsx";
+import { KeyHeadRowCell } from "../components/TranslationsTable/KeyColumnCell.tsx";
 import { LanguageBodyRowCell } from "../components/TranslationsTable/LanguageBodyRowCell.tsx";
-import { LanguageColumnCell } from "../components/TranslationsTable/LanguageColumnCell.tsx";
+import { LanguageHeadRowCell } from "../components/TranslationsTable/LanguageColumnCell.tsx";
 import type { Storage } from "../TranslationsView.context.tsx";
 
 interface useTranslationsTableProps {
@@ -17,8 +17,10 @@ export const useTranslationsTable = ({ storage }: useTranslationsTableProps) =>
       columns: Object.keys(storage?.contents?.[0] ?? {}).map((key) => ({
         id: key,
         label: key,
-        HeaderCell: key === "key" ? KeyColumnCell : LanguageColumnCell,
-        RowCell: key === "key" ? KeyBodyRowCell : LanguageBodyRowCell,
+        HeadRowCell: key === "key" ? KeyHeadRowCell : LanguageHeadRowCell,
+        BodyRowCell: key === "key" ? KeyBodyRowCell : LanguageBodyRowCell,
+        searchFilter: (value: string, query) => value.toLowerCase().includes(query),
+        columnFilter: (value: string, query) => value.toLowerCase().includes(query),
       })),
       props: {
         tbody: {
@@ -30,6 +32,6 @@ export const useTranslationsTable = ({ storage }: useTranslationsTableProps) =>
       },
       options: {
         columnFilters: { record: {} },
-        search: { value: "" },
+        searchFilter: { value: "" },
       },
     }), [storage?.contents]);
