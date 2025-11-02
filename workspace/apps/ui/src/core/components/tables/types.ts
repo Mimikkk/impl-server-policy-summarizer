@@ -12,7 +12,6 @@ export interface TableColumn<TData, TColumnId extends ColumnId<TData> = ColumnId
   label: string;
   HeadRowCell: FC<{ column: TableColumn<TData, TColumnId> }>;
   BodyRowCell: FC<{ column: TableColumn<TData, TColumnId>; row: TableRow<TData> }>;
-  FootRowCell: FC<{ column: TableColumn<TData, TColumnId>; data: TData[TColumnId][] }>;
   searchFilter: (value: TData[TColumnId], query: string) => boolean;
   columnFilter: (value: TData[TColumnId], query: string) => boolean;
 }

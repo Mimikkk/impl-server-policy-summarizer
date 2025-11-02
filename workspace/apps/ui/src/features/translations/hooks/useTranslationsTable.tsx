@@ -1,6 +1,5 @@
 import { defineTable } from "@core/components/tables/defineTable.ts";
-import { Text } from "@core/components/typography/Text.tsx";
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { KeyBodyRowCell } from "../components/TranslationsTable/KeyBodyRowCell.tsx";
 import { KeyHeadRowCell } from "../components/TranslationsTable/KeyColumnCell.tsx";
 import { LanguageBodyRowCell } from "../components/TranslationsTable/LanguageBodyRowCell.tsx";
@@ -11,26 +10,6 @@ interface useTranslationsTableProps {
   storage: Storage | undefined;
 }
 
-export const KeyFootRowCell = memo(function KeyFootRowCell() {
-  return (
-    <td>
-      <Text>
-        Footer
-      </Text>
-    </td>
-  );
-});
-
-export const LanguageFootRowCell = memo(function LanguageFootRowCell() {
-  return (
-    <td>
-      <Text>
-        Footer
-      </Text>
-    </td>
-  );
-});
-
 export const useTranslationsTable = ({ storage }: useTranslationsTableProps) =>
   useMemo(() =>
     defineTable({
@@ -40,7 +19,6 @@ export const useTranslationsTable = ({ storage }: useTranslationsTableProps) =>
         label: key,
         HeadRowCell: key === "key" ? KeyHeadRowCell : LanguageHeadRowCell,
         BodyRowCell: key === "key" ? KeyBodyRowCell : LanguageBodyRowCell,
-        FootRowCell: key === "key" ? KeyFootRowCell : LanguageFootRowCell,
         searchFilter: (value: string, query) => value.toLowerCase().includes(query),
         columnFilter: (value: string, query) => value.toLowerCase().includes(query),
       })),
