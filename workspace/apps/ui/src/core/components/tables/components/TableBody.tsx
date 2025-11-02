@@ -3,10 +3,10 @@ import { memo } from "react";
 import type { TableColumn, TableRow } from "../types.ts";
 import { TableContext } from "./TableContext.tsx";
 
-export const TableBody = memo(function TranslationsTableBody() {
+export const TableBody = memo(function TableBody() {
   const { rows, totalRowHeight, columns, className } = TableContext.use((s) => ({
     rows: s.rows.visible,
-    totalRowHeight: s.features.virtual.totalRowHeight,
+    totalRowHeight: s.features.virtual.totalRowHeight(),
     columns: s.columns.visible,
     className: s.props.tbody?.className,
   }));

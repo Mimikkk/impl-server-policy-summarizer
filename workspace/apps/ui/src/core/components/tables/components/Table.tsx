@@ -1,9 +1,9 @@
 import { memo } from "react";
-import { TableBody } from "../components/TableBody.tsx";
 import { TableContext } from "../components/TableContext.tsx";
-import { TableHead } from "../components/TableHead.tsx";
 import { TableSearchField } from "../components/TableSearchField.tsx";
 import type { Table as TableType } from "../types.ts";
+import { TableBody } from "./TableBody.tsx";
+import { TableHead } from "./TableHead.tsx";
 
 export const Table = memo(function Table({ table }: { table: TableType<any, any> }) {
   return (

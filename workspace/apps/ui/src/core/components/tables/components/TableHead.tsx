@@ -1,7 +1,7 @@
 import { memo, type PropsWithChildren } from "react";
 import { TableContext } from "./TableContext.tsx";
 
-export const TableHead = memo(function TranslationsTableHead() {
+export const TableHead = memo(function TableHead() {
   const columns = TableContext.use((s) => s.columns.visible);
 
   return (
