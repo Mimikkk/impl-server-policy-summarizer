@@ -1,4 +1,4 @@
-import type { ColumnId, TableColumn, TableStore } from "../types.ts";
+import type { ColumnId, Table, TableColumn } from "../types.ts";
 import type { FeatureContentOf, FeatureOptionsOf, TableFeature } from "./tableFeature.ts";
 
 export interface SearchFilterFeature extends
@@ -12,15 +12,15 @@ export interface SearchFilterFeature extends
   > {}
 
 export const createSearchFeature = <TData, TColumns extends TableColumn<TData, ColumnId<TData>>[]>(
-  store: TableStore<TData, TColumns>,
+  api: Table<TData, TColumns>,
   options: FeatureOptionsOf<SearchFilterFeature>,
 ): FeatureContentOf<SearchFilterFeature> => {
-  store.get().features.searchFilter.value = options.value;
+  api.store.get().features.searchFilter.value = options.value;
 
   return {
-    get: () => store.get().features.searchFilter.value,
+    get: () => api.store.get().features.searchFilter.value,
     set: (value) =>
-      store.set((previous) => ({
+      api.store.set((previous) => ({
         ...previous,
         features: {
           ...previous.features,

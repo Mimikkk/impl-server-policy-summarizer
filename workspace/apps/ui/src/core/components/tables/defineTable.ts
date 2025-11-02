@@ -1,9 +1,11 @@
 import type { Nil } from "@utilities/common.ts";
 import { createStore } from "@utilities/defineStore.ts";
-import { memo } from "@utilities/memo.ts";
 import type { HTMLAttributes } from "react";
-import { type ColumnFiltersFeature, createColumnFiltersFeature } from "./features/columnFiltersFeature.ts";
-import { createSearchFeature, type SearchFilterFeature } from "./features/searchFilterFeature.ts";
+import { createColumns } from "./composites/columns.ts";
+import { createFeatures } from "./composites/features.ts";
+import { createRows } from "./composites/rows.ts";
+import type { ColumnFiltersFeature } from "./features/columnFiltersFeature.ts";
+import type { SearchFilterFeature } from "./features/searchFilterFeature.ts";
 import type { FeatureOptionsOf } from "./features/tableFeature.ts";
 import type { ColumnId, Table, TableColumn, TableState } from "./types.ts";
 
@@ -36,61 +38,18 @@ export const defineTable = <TData, TColumns extends TableColumn<TData, ColumnId<
     features: { searchFilter: { value: "" }, columnFilters: { record: {} } },
   } as TableState<TData, TColumns>;
 
-  const store = createStore({
-    data: structuredClone(defaultState.data),
-    columns,
-    features: structuredClone(defaultState.features),
-  });
-
-  const self: Table<TData, TColumns> = {
-    store,
+  const self = {
+    store: createStore({
+      data: structuredClone(defaultState.data),
+      columns,
+      features: structuredClone(defaultState.features),
+    }),
     defaultState,
-    features: {
-      searchFilter: createSearchFeature(store, options.searchFilter),
-      columnFilters: createColumnFiltersFeature(store, options.columnFilters),
-    },
-    rows: {
-      all: memo(
-        () => [store.get().data],
-        (data) => data.map((data, index) => ({ values: data, id: `${index}`, index })),
-      ),
-      filtered: memo(
-        () => [
-          self.rows.all(),
-          self.store.get().columns,
-          self.features.searchFilter.get(),
-          self.features.columnFilters.get(),
-        ],
-        (rows, columns, searchFilter, columnFilters) => {
-          const result = [];
-          filter_it: for (let i = 0; i < rows.length; ++i) {
-            const row = rows[i];
-            const values = row.values;
-            console.log(values);
-
-            for (const columnId in columnFilters) {
-              const query = columnFilters[columnId]?.toLowerCase().trim() ?? "";
-              const column = columns.find(({ id }) => id === columnId);
-              if (!column) continue;
-
-              if (column.columnFilter(values[columnId]!, query)) continue;
-              continue filter_it;
-            }
-
-            if (searchFilter) {
-              const query = searchFilter.toLowerCase().trim();
-              if (!columns.some(({ searchFilter: filter, id }) => filter(values[id]!, query))) continue filter_it;
-            }
-
-            result.push(row);
-          }
-
-          return result;
-        },
-      ),
-    },
     props: props ?? { tbody: undefined },
-  };
+  } as Table<TData, TColumns>;
+  self.features = createFeatures(self, options);
+  self.columns = createColumns(self);
+  self.rows = createRows(self);
 
   return self;
 };

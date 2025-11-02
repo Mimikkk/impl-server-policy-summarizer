@@ -1,3 +1,5 @@
+import type { Table } from "../types.ts";
+
 const ContentSymbol = Symbol("FeatureContent");
 const OptionsSymbol = Symbol("FeatureOptions");
 const StateSymbol = Symbol("FeatureState");
@@ -16,3 +18,13 @@ export type FeatureOptionsOf<TFeature extends TableFeature<any, any, any>> = TFe
 
 export type FeatureStateOf<TFeature extends TableFeature<any, any, any>> = TFeature extends
   TableFeature<any, infer TState, any> ? TState : never;
+
+export interface FeatureBuilder<
+  TFeature extends TableFeature<any, any, any>,
+> {
+  <TTable extends Table<any, any>>(api: TTable, options: FeatureOptionsOf<TFeature>): FeatureContentOf<TFeature>;
+}
+
+export const defineFeature = <TFeature extends TableFeature<any, any, any>>(
+  define: FeatureBuilder<TFeature>,
+): FeatureBuilder<TFeature> => define;

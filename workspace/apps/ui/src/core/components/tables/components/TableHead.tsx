@@ -2,7 +2,7 @@ import { memo, type PropsWithChildren } from "react";
 import { TableContext } from "./TableContext.tsx";
 
 export const TableHead = memo(function TableHead() {
-  const columns = TableContext.use((s) => s.columns.visible);
+  const columns = TableContext.use((s) => s.columns.all());
 
   return (
     <thead className="z-10 sticky top-0 left-0 bg-primary-6 text-left">

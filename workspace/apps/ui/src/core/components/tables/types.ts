@@ -42,6 +42,9 @@ export interface Table<TData, TColumns extends TableColumn<TData, ColumnId<TData
     searchFilter: FeatureContentOf<SearchFilterFeature>;
     columnFilters: FeatureContentOf<ColumnFiltersFeature<TData>>;
   };
+  columns: {
+    all: () => TColumns;
+  };
   rows: {
     all: () => TableRow<TData>[];
     filtered: () => TableRow<TData>[];

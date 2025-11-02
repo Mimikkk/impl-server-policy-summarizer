@@ -5,9 +5,9 @@ import { TableContext } from "./TableContext.tsx";
 
 export const TableBody = memo(function TableBody() {
   const { rows, totalRowHeight, columns, className } = TableContext.use((s) => ({
-    rows: s.rows.visible,
+    rows: s.rows.visible(),
     totalRowHeight: s.features.virtual.totalRowHeight(),
-    columns: s.columns.visible,
+    columns: s.columns.all(),
     className: s.props.tbody?.className,
   }));
 
