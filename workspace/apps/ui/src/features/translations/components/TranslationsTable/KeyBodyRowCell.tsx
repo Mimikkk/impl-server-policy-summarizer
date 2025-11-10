@@ -10,17 +10,17 @@ export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any
     const {
       isEditing,
       sourceLanguage,
-      targetLanguage,
       focusedCell,
       setFocusedCell,
       isCellProcessing,
+      handleRemoveKey,
     } = TranslationsViewContext.use((s) => ({
       isEditing: s.isEditing,
       sourceLanguage: s.sourceLanguage,
-      targetLanguage: s.targetLanguage,
       focusedCell: s.focusedCell,
       setFocusedCell: s.setFocusedCell,
       isCellProcessing: s.isCellProcessing,
+      handleRemoveKey: s.handleRemoveKey,
     }));
 
     const ref = useRef<HTMLTableCellElement>(null);
@@ -35,7 +35,6 @@ export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any
     }, [focusedCell?.columnId, focusedCell?.rowId, ref]);
 
     const isSourceLanguage = sourceLanguage === column.id;
-    const isTargetLanguage = targetLanguage === column.id;
     const [value, setValue] = useState(row.values[column.id]);
 
     useEffect(() => {
@@ -43,11 +42,11 @@ export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any
     }, [row.values[column.id]]);
 
     const isFocusedCell = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
-    const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";
+    const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : "none";
 
     const handleRowRemove = useCallback(() => {
-      console.log("remove row", row.id);
-    }, [row.id]);
+      handleRemoveKey(row.id);
+    }, [row.id, handleRemoveKey]);
 
     const isProcessing = isCellProcessing(row.id, column.id);
 
@@ -56,7 +55,6 @@ export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any
       <div
         ref={ref}
         data-source={isSourceLanguage ? "" : undefined}
-        data-target={isTargetLanguage ? "" : undefined}
         className="flex justify-between h-full w-full"
       >
         {isEditing

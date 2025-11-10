@@ -8,22 +8,19 @@ import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 const map = {
   focused: "secondary",
   source: "success",
-  target: "info",
   none: undefined,
 } as const;
 const CellInput = memo<{ column: TableColumn<any, any> }>(
   function RenameLanguageField({ column }) {
-    const { isEditing, sourceLanguage, targetLanguage } = TranslationsViewContext.use((s) => ({
+    const { isEditing, sourceLanguage } = TranslationsViewContext.use((s) => ({
       isEditing: s.isEditing,
       sourceLanguage: s.sourceLanguage,
-      targetLanguage: s.targetLanguage,
     }));
     const [label, setLabel] = useState(column.label);
     const [isFocused, setIsFocused] = useState(false);
 
     const isSourceLanguage = sourceLanguage === column.id;
-    const isTargetLanguage = targetLanguage === column.id;
-    const type = isFocused ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";
+    const type = isFocused ? "focused" : isSourceLanguage ? "source" : "none";
 
     const handleFocus = useCallback(() => setIsFocused(true), []);
     const handleBlur = useCallback(() => setIsFocused(false), []);
@@ -48,29 +45,48 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
   function LanguageColumnCell({ column }) {
     const {
       isSourceLanguage,
-      isTargetLanguage,
       isEditing,
-      handleRemoveLanguage,
+      isColumnProcessing,
+      handleRemoveLanguage: removeLanguage,
       setSourceLanguage,
-      setTargetLanguage,
+      handleColumnFillInMissingTranslations,
+      handleColumnCheckGrammarSyntax,
     } = TranslationsViewContext.use(
       (s) => ({
         isSourceLanguage: s.sourceLanguage === column.id,
-        isTargetLanguage: s.targetLanguage === column.id,
         isEditing: s.isEditing,
+        isColumnProcessing: s.isColumnProcessing(column.id),
         handleRemoveLanguage: s.handleRemoveLanguage,
         setSourceLanguage: s.setSourceLanguage,
-        setTargetLanguage: s.setTargetLanguage,
+        handleColumnCheckGrammarSyntax: s.handleColumnCheckGrammarSyntax,
+        handleColumnFillInMissingTranslations: s.handleColumnFillInMissingTranslations,
       }),
     );
+
+    const languageId = column.id;
+
+    const handleFillInMissingTranslations = useCallback(() => {
+      return handleColumnFillInMissingTranslations(languageId);
+    }, [languageId, handleColumnFillInMissingTranslations]);
+
+    const handleCheckGrammarSyntax = useCallback(() => {
+      return handleColumnCheckGrammarSyntax(languageId);
+    }, [languageId, handleColumnCheckGrammarSyntax]);
+
+    const handleRemoveLanguage = useCallback(() => {
+      removeLanguage(languageId);
+    }, [languageId, removeLanguage]);
+
+    const handleSetSourceLanguage = useCallback(() => {
+      setSourceLanguage(languageId);
+    }, [languageId, setSourceLanguage]);
 
     return (
       <div
         className={clsx(
           "flex flex-col items-center",
           isSourceLanguage && "bg-success-7",
-          isTargetLanguage && "bg-info-7",
-          !isSourceLanguage && !isTargetLanguage && "bg-primary-7",
+          !isSourceLanguage && "bg-primary-7",
         )}
       >
         <div className="flex justify-between w-full items-center h-7">
@@ -82,7 +98,7 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
                   color="error"
                   name="Trash"
                   variant="solid"
-                  onClick={() => handleRemoveLanguage(column.id)}
+                  onClick={handleRemoveLanguage}
                 />
               </>
             )
@@ -94,30 +110,28 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
             name={isSourceLanguage ? "BadgeCheck" : "Badge"}
             color={isSourceLanguage ? "success" : "primary"}
             active={isSourceLanguage}
-            onClick={() => {
-              if (isTargetLanguage) setTargetLanguage("");
-              return setSourceLanguage(column.id);
-            }}
+            onClick={handleSetSourceLanguage}
           >
             {isEditing ? "source" : "source language"}
           </IconButton>
-          <IconButton
-            className="flex-1 justify-start"
-            name={isTargetLanguage ? "BadgeCheck" : "Badge"}
-            color={isTargetLanguage ? "info" : "primary"}
-            active={isTargetLanguage}
-            onClick={() => {
-              if (isSourceLanguage) setSourceLanguage("");
-              return setTargetLanguage(column.id);
-            }}
-          >
-            {isEditing ? "target" : "target language"}
-          </IconButton>
           {isEditing && (
             <>
-              <IconButton name="RotateCcw" variant="solid" color="info" />
-              <IconButton name="RotateCcw" variant="solid" color="info" />
-              <IconButton name="RotateCcw" variant="solid" color="info" />
+              <IconButton
+                name={isColumnProcessing ? "Loader" : "WandSparkles"}
+                title="Fill in missing translations"
+                variant="solid"
+                color="info"
+                onClick={handleFillInMissingTranslations}
+                disabled={isColumnProcessing}
+              />
+              <IconButton
+                name={isColumnProcessing ? "Loader" : "BrainCircuit"}
+                title="Check grammar & syntax"
+                variant="solid"
+                color="info"
+                onClick={handleCheckGrammarSyntax}
+                disabled={isColumnProcessing}
+              />
             </>
           )}
         </div>

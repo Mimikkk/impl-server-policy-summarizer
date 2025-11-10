@@ -1,9 +1,10 @@
 import { ServerClient } from "@clients/server/ServerClient.ts";
 import type { TranslationSample } from "@clients/server/resources/TranslationResource.ts";
 import { Param } from "@hooks/useLocalStorage.ts";
+import { sleep } from "@utilities/common.ts";
 import { defineContext } from "@utilities/defineContext.ts";
 import { requestFilePicker, requestSaveFile } from "@utilities/requestFilePicker.ts";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type { PreviewResult } from "./ReviewModal.tsx";
 import { useTranslationsTable } from "./hooks/useTranslationsTable.tsx";
 import type { FocusedCell } from "./types.ts";
@@ -19,7 +20,6 @@ export interface Storage {
 const ShowMissingTranslationsParam = Param.boolean({ key: "show-missing-translations" });
 const ShowChangedTranslationsParam = Param.boolean({ key: "show-changed-translations" });
 const sourceLanguageParam = Param.string({ key: "source-language" });
-const targetLanguageParam = Param.string({ key: "target-language" });
 
 const StorageParam = Param.new<Storage>({
   key: "translations-storage",
@@ -48,7 +48,7 @@ const useStorage = () => {
     requestSaveFile(file);
   }, [storage?.contents]);
 
-  const update = useCallback((updater: Updater<Storage>) => {
+  const updateStorage = useCallback((updater: Updater<Storage>) => {
     setStorage((s) => {
       const result = updater(s);
       if (result === undefined) return s;
@@ -57,27 +57,18 @@ const useStorage = () => {
     });
   }, []);
 
-  return { storage, update, loadCsv, downloadCsv };
+  return { storage, updateStorage, loadCsv, downloadCsv };
 };
 
 export const TranslationsViewContext = defineContext(() => {
   // storage module
-
-  const { storage, update: updateStorage, loadCsv, downloadCsv } = useStorage();
+  const { storage, updateStorage, loadCsv, downloadCsv } = useStorage();
 
   // table module
   const translationsTable = useTranslationsTable({ storage });
-  const translationsTableScrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const getCellKey = useCallback((rowId: string, columnId: string) => `${rowId}:${columnId}`, []);
   const [focusedCell, setFocusedCell] = useState<FocusedCell | null>(null);
-
-  useLayoutEffect(() => {
-    const table = document.querySelector("table");
-    if (!table) return;
-
-    translationsTableScrollContainerRef.current = table.parentElement as HTMLDivElement;
-  }, []);
 
   const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
   const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
@@ -86,6 +77,7 @@ export const TranslationsViewContext = defineContext(() => {
 
   // form module
   const [isEditing, setIsEditing] = useState(false);
+
   const toggleEdit = useCallback(() => setIsEditing((x) => !x), []);
 
   const handleCancel = useCallback(() => {
@@ -107,9 +99,14 @@ export const TranslationsViewContext = defineContext(() => {
       return ({ contents: [...s?.contents ?? [], { key: "", value: "" }] });
     });
 
+    const element = translationsTable.refs.table?.parentElement;
+    if (!element) return;
+
     requestAnimationFrame(() => {
-      translationsTableScrollContainerRef.current?.scrollTo({
-        top: translationsTableScrollContainerRef.current?.scrollHeight ?? 0,
+      element.scrollTo(0, element.scrollHeight);
+
+      requestAnimationFrame(() => {
+        element.scrollTo(0, element.scrollHeight);
       });
     });
   }, []);
@@ -133,7 +130,7 @@ export const TranslationsViewContext = defineContext(() => {
     }));
 
     requestAnimationFrame(() => {
-      const theadCellLastElement = translationsTableScrollContainerRef.current?.querySelector<HTMLElement>(
+      const theadCellLastElement = translationsTable.refs.table?.querySelector<HTMLElement>(
         "thead th:last-child input",
       );
 
@@ -164,10 +161,27 @@ export const TranslationsViewContext = defineContext(() => {
 
   // AI actions
   const [processingCells, setProcessingCells] = useState<Set<string>>(new Set());
+  const [processingColumns, setProcessingColumns] = useState<Set<string>>(new Set());
 
   const isCellProcessing = useCallback((rowId: string, columnId: string) => {
     return processingCells.has(getCellKey(rowId, columnId));
   }, [processingCells, getCellKey]);
+
+  const isColumnProcessing = useCallback((columnId: string) => {
+    return processingColumns.has(columnId);
+  }, [processingColumns]);
+
+  const addProcessingColumn = useCallback((columnId: string) => {
+    setProcessingColumns((prev) => new Set(prev).add(columnId));
+  }, []);
+
+  const removeProcessingColumn = useCallback((columnId: string) => {
+    setProcessingColumns((prev) => {
+      const next = new Set(prev);
+      next.delete(columnId);
+      return next;
+    });
+  }, []);
 
   const addProcessingCell = useCallback((rowId: string, columnId: string) => {
     setProcessingCells((prev) => new Set(prev).add(getCellKey(rowId, columnId)));
@@ -182,25 +196,24 @@ export const TranslationsViewContext = defineContext(() => {
   }, [getCellKey]);
 
   const [sourceLanguage, setSourceLanguage] = sourceLanguageParam.use();
-  const [targetLanguage, setTargetLanguage] = targetLanguageParam.use();
 
   const [resultsQueue, setResultsQueue] = useState<PreviewResult[]>([]);
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(null);
 
-  const buildSamples = useCallback((rowId?: string): TranslationSample[] => {
-    if (!storage?.contents || !sourceLanguage || !targetLanguage) return [];
+  const buildSamples = useCallback((columnId: string, rowId?: string): TranslationSample[] => {
+    if (!storage?.contents || !sourceLanguage) return [];
     return storage.contents
       .filter((_, index) => rowId === undefined || index.toString() !== rowId)
       .map((row) => ({
         original: row[sourceLanguage] || "",
-        translation: row[targetLanguage] || "",
+        translation: row[columnId] || "",
       }))
       .filter((sample) => sample.original && sample.translation)
       .slice(0, 20);
-  }, [storage?.contents, sourceLanguage, targetLanguage]);
+  }, [storage?.contents, sourceLanguage]);
 
   const handleCellTranslate = useCallback(async (rowId: string, columnId: string) => {
-    if (!sourceLanguage || !targetLanguage || !storage?.contents) {
+    if (!sourceLanguage || !storage?.contents) {
       alert("Please select both source and target languages.");
       return;
     }
@@ -221,7 +234,7 @@ export const TranslationsViewContext = defineContext(() => {
       const result = await ServerClient.translate({
         samples,
         sourceLanguage,
-        targetLanguage,
+        targetLanguage: columnId,
         original,
         alternativesCount: 3,
       });
@@ -240,10 +253,10 @@ export const TranslationsViewContext = defineContext(() => {
     } finally {
       removeProcessingCell(rowId, columnId);
     }
-  }, [sourceLanguage, targetLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
+  }, [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
 
   const handleCellRegenerate = useCallback(async (rowId: string, columnId: string) => {
-    if (!sourceLanguage || !targetLanguage || !storage?.contents) {
+    if (!sourceLanguage || !storage?.contents) {
       alert("Please select both source and target languages.");
       return;
     }
@@ -271,7 +284,7 @@ export const TranslationsViewContext = defineContext(() => {
       const result = await ServerClient.regenerate({
         samples,
         sourceLanguage,
-        targetLanguage,
+        targetLanguage: columnId,
         original,
         translation,
         alternativesCount: 3,
@@ -291,10 +304,10 @@ export const TranslationsViewContext = defineContext(() => {
     } finally {
       removeProcessingCell(rowId, columnId);
     }
-  }, [sourceLanguage, targetLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
+  }, [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
 
   const handleCellVerify = useCallback(async (rowId: string, columnId: string) => {
-    if (!sourceLanguage || !targetLanguage || !storage?.contents) {
+    if (!sourceLanguage || !storage?.contents) {
       alert("Please select both source and target languages.");
       return;
     }
@@ -317,7 +330,7 @@ export const TranslationsViewContext = defineContext(() => {
       const verification = await ServerClient.verify({
         samples,
         sourceLanguage,
-        targetLanguage,
+        targetLanguage: columnId,
         original,
         translation,
       });
@@ -336,7 +349,33 @@ export const TranslationsViewContext = defineContext(() => {
     } finally {
       removeProcessingCell(rowId, columnId);
     }
-  }, [sourceLanguage, targetLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
+  }, [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
+
+  const handleColumnFillInMissingTranslations = useCallback(async (language: string) => {
+    addProcessingColumn(language);
+
+    try {
+      await sleep(1000);
+    } catch (error) {
+      console.error("Fill in missing translations failed:", error);
+      alert("Fill in missing translations failed. Please try again.");
+    } finally {
+      removeProcessingColumn(language);
+    }
+  }, []);
+
+  const handleColumnCheckGrammarSyntax = useCallback(async (language: string) => {
+    addProcessingColumn(language);
+
+    try {
+      await sleep(1000);
+    } catch (error) {
+      console.error("Check grammar syntax failed:", error);
+      alert("Check grammar syntax failed. Please try again.");
+    } finally {
+      removeProcessingColumn(language);
+    }
+  }, []);
 
   const currentResult = selectedResultIndex !== null ? resultsQueue[selectedResultIndex] ?? null : null;
 
@@ -393,6 +432,7 @@ export const TranslationsViewContext = defineContext(() => {
     showChangedTranslations,
     toggleShowChangedTranslations,
     isCellProcessing,
+    isColumnProcessing,
     focusedCell,
     setFocusedCell,
     /// Table actions
@@ -411,12 +451,13 @@ export const TranslationsViewContext = defineContext(() => {
     // AI Actions
     sourceLanguage,
     setSourceLanguage,
-    targetLanguage,
-    setTargetLanguage,
 
     handleCellTranslate,
     handleCellRegenerate,
     handleCellVerify,
+
+    handleColumnFillInMissingTranslations,
+    handleColumnCheckGrammarSyntax,
 
     // Review module
     currentResult,

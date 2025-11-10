@@ -10,7 +10,6 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
     const {
       isEditing,
       sourceLanguage,
-      targetLanguage,
       focusedCell,
       setFocusedCell,
       handleCellTranslate,
@@ -21,13 +20,12 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
     } = TranslationsViewContext.use((s) => ({
       isEditing: s.isEditing,
       sourceLanguage: s.sourceLanguage,
-      targetLanguage: s.targetLanguage,
       focusedCell: s.focusedCell,
       setFocusedCell: s.setFocusedCell,
       handleCellTranslate: s.handleCellTranslate,
       handleCellRegenerate: s.handleCellRegenerate,
       handleCellVerify: s.handleCellVerify,
-      isCellProcessing: s.isCellProcessing,
+      isCellProcessing: s.isCellProcessing(row.id, column.id),
       hasPendingReview: s.hasPendingReview,
     }));
 
@@ -43,7 +41,6 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
     }, [focusedCell?.columnId, focusedCell?.rowId, ref]);
 
     const isSourceLanguage = sourceLanguage === column.id;
-    const isTargetLanguage = targetLanguage === column.id;
     const [value, setValue] = useState(row.values[column.id]);
 
     useEffect(() => {
@@ -51,7 +48,7 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
     }, [row.values[column.id]]);
 
     const isFocusedCell = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
-    const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : isTargetLanguage ? "target" : "none";
+    const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : "none";
 
     const handleTranslate = useCallback(() => {
       handleCellTranslate(row.id, column.id);
@@ -65,7 +62,7 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
       handleCellVerify(row.id, column.id);
     }, [row.id, column.id, handleCellVerify]);
 
-    const isProcessing = isCellProcessing(row.id, column.id);
+    const isProcessing = isCellProcessing;
     const isPendingReview = hasPendingReview(row.id, column.id);
 
     const opacity = type !== "focused" ? "opacity-80" : undefined;
@@ -75,7 +72,6 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
       <div
         ref={ref}
         data-source={isSourceLanguage ? "" : undefined}
-        data-target={isTargetLanguage ? "" : undefined}
         className="flex justify-between h-full w-full"
       >
         {isEditing

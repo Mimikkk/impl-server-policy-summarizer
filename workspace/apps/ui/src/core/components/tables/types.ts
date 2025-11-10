@@ -49,6 +49,9 @@ export interface Table<TData, TColumns extends TableColumn<TData, ColumnId<TData
     all: () => TableRow<TData>[];
     filtered: () => TableRow<TData>[];
   };
+  refs: {
+    table: HTMLTableElement | null;
+  };
   props: {
     bodyRow: Nil<HTMLAttributes<HTMLTableSectionElement>>;
   };

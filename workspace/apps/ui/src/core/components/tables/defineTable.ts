@@ -3,6 +3,7 @@ import { createStore } from "@utilities/defineStore.ts";
 import type { HTMLAttributes } from "react";
 import { createColumns } from "./composites/columns.ts";
 import { createFeatures } from "./composites/features.ts";
+import { createRefs } from "./composites/refs.ts";
 import { createRows } from "./composites/rows.ts";
 import type { ColumnFiltersFeature } from "./features/columnFiltersFeature.ts";
 import type { SearchFilterFeature } from "./features/searchFilterFeature.ts";
@@ -50,6 +51,7 @@ export const defineTable = <TData, TColumns extends TableColumn<TData, ColumnId<
   self.features = createFeatures(self, options);
   self.columns = createColumns(self);
   self.rows = createRows(self);
+  self.refs = createRefs(self);
 
   return self;
 };
