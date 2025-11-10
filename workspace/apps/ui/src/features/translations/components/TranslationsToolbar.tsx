@@ -1,27 +1,16 @@
-import { ServerClient } from "@clients/server/ServerClient.ts";
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
-import { requestSaveFile } from "@utilities/requestFilePicker.ts";
-import { useCallback } from "react";
 import { TranslationsViewContext } from "../TranslationsView.context.tsx";
 
 export const TranslationsToolbar = () => {
-  const { storage, handleLoadCsv } = TranslationsViewContext.use((
+  const { isEditing, storage, handleLoadCsv, handleDownloadCsv } = TranslationsViewContext.use((
     s,
   ) => ({
+    isEditing: s.isEditing,
     storage: s.storage,
-    handleLoadCsv: s.handleLoadCsv,
+    handleLoadCsv: s.loadCsv,
+    handleDownloadCsv: s.downloadCsv,
   }));
-
-  const handleDownloadCsv = useCallback(async () => {
-    if (!storage?.contents || storage.contents.length === 0) return;
-
-    const headers = Object.fromEntries(Object.keys(storage.contents[0]).map((key) => [key, key]));
-    const data = storage.contents;
-
-    const file = await ServerClient.exportCsv({ headers, data });
-    requestSaveFile(file);
-  }, [storage?.contents]);
 
   return (
     <div className="flex justify-between gap-2">
@@ -35,7 +24,14 @@ export const TranslationsToolbar = () => {
               <div className="flex items-center gap-2">
                 <span>Version:</span>
                 <span>{storage?.version && new Date(storage.version).toLocaleString()} - {storage?.filename}</span>
-                <IconButton color="success" name="Download" variant="solid" onClick={handleDownloadCsv} />
+                <IconButton
+                  color="success"
+                  name="Download"
+                  variant="solid"
+                  onClick={handleDownloadCsv}
+                  disabled={isEditing}
+                  title={isEditing ? "Save changes first" : "Download CSV"}
+                />
               </div>
             )
             : <div className="text-center text-primary-10">No selected file.</div>}

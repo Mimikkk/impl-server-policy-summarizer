@@ -4,7 +4,6 @@ import {
   type HTMLAttributes,
   memo,
   type PropsWithChildren,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useEffect,
@@ -17,7 +16,7 @@ import { Text } from "../../typography/Text.tsx";
 export interface CardProps extends PropsWithChildren<HTMLAttributes<HTMLDivElement>> {
   color?: ColorName;
   className?: string;
-  label?: ReactElement;
+  label?: ReactNode;
   compact?: boolean;
   slots?: {
     icons?: ReactNode[];
