@@ -1,6 +1,6 @@
-import { IconButton } from "@components/actions/IconButton.tsx";
-import { Text } from "@components/typography/Text.tsx";
+import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Icon, type IconName } from "@core/components/badges/Icon.tsx";
+import { Text } from "@core/components/typography/Text.tsx";
 import { Param } from "@hooks/useLocalStorage.ts";
 import { Link, useRouterState } from "@tanstack/react-router";
 import cx from "clsx";
@@ -17,7 +17,6 @@ interface NavLink {
 const links: NavLink[] = [
   { to: "/eli", label: "ELI", icon: "BookOpen" },
   { to: "/translations", label: "Translations", icon: "Languages" },
-  { to: "/playground", label: "Playground", icon: "Wrench" },
 ];
 
 export const Sidebar = memo(function Sidebar() {
