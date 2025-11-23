@@ -6,6 +6,7 @@ import { createFeatures } from "./composites/features.ts";
 import { createRefs } from "./composites/refs.ts";
 import { createRows } from "./composites/rows.ts";
 import type { ColumnFiltersFeature } from "./features/columnFiltersFeature.ts";
+import type { ExternFiltersFeature } from "./features/externFiltersFeature.ts";
 import type { SearchFilterFeature } from "./features/searchFilterFeature.ts";
 import type { FeatureOptionsOf } from "./features/tableFeature.ts";
 import type { ColumnId, Table, TableColumn, TableState } from "./types.ts";
@@ -14,8 +15,9 @@ export interface TableOptions<TData, TColumns extends TableColumn<TData, ColumnI
   data: TData[];
   columns: TColumns;
   options: {
-    searchFilter: FeatureOptionsOf<SearchFilterFeature>;
+    externFilters: FeatureOptionsOf<ExternFiltersFeature<TData>>;
     columnFilters: FeatureOptionsOf<ColumnFiltersFeature<TData>>;
+    searchFilter: FeatureOptionsOf<SearchFilterFeature>;
   };
   props?: {
     bodyRow: Nil<HTMLAttributes<HTMLTableSectionElement>>;
@@ -36,7 +38,11 @@ export const defineTable = <TData, TColumns extends TableColumn<TData, ColumnId<
   const defaultState = {
     data: initialData,
     columns,
-    features: { searchFilter: { value: "" }, columnFilters: { record: {} } },
+    features: {
+      searchFilter: { value: "" },
+      columnFilters: { record: {} },
+      externFilters: { list: [] },
+    },
   } as TableState<TData, TColumns>;
 
   const self = {

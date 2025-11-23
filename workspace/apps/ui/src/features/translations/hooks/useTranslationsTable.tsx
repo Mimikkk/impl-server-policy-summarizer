@@ -31,6 +31,7 @@ export const useTranslationsTable = ({ storage }: useTranslationsTableProps) =>
         },
       },
       options: {
+        externFilters: { list: [] },
         columnFilters: { record: {} },
         searchFilter: { value: "" },
       },

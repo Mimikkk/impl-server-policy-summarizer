@@ -1,13 +1,13 @@
-import { ThemeButton } from "@components/actions/ThemeButton.tsx";
-import { Icon } from "@components/badges/Icon.tsx";
-import { Card } from "@components/containers/card/Card.tsx";
-import { Text } from "@components/typography/Text.tsx";
+import { ThemeButton } from "@core/components/actions/ThemeButton.tsx";
+import { Icon } from "@core/components/badges/Icon.tsx";
+import { Card } from "@core/components/containers/card/Card.tsx";
+import { Text } from "@core/components/typography/Text.tsx";
 import { DevTools } from "@features/dx/dev-tools/DevTools.tsx";
 import { Breadcrumbs } from "@features/ux/layout/Breadcrumbs.tsx";
 import { Sidebar } from "@features/ux/layout/Sidebar.tsx";
 import { ThemeContext } from "@features/ux/theme/ThemeContext.tsx";
 import { Param } from "@hooks/useLocalStorage.ts";
-import { createRootRouteWithContext, Link, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { memo } from "react";
 
 const sidebarOpenParam = Param.boolean({ key: "sidebar-open" });
@@ -49,15 +49,7 @@ export const Route = createRootRouteWithContext()({
             <Icon name="Cat" size="lg" />
             Oh no! 404
           </Text>
-          <Text light>Page not found</Text>
-          <div className="flex gap-2">
-            <Link to="/eli">
-              <span className="flex items-center gap-1 underline hover:text-primary-11 active:text-primary-12 text-primary-12 hover:no-underline">
-                <Icon name="ArrowRight" size="sm" />
-                Move to eli
-              </span>
-            </Link>
-          </div>
+          <Text light>Page not found!</Text>
         </Card>
       </div>
     );

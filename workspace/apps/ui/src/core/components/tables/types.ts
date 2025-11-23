@@ -2,6 +2,7 @@ import type { Nil } from "@utilities/common.ts";
 import type { Store } from "@utilities/defineStore.ts";
 import type { FC, HTMLAttributes } from "react";
 import type { ColumnFiltersFeature } from "./features/columnFiltersFeature.ts";
+import type { ExternFiltersFeature } from "./features/externFiltersFeature.ts";
 import type { SearchFilterFeature } from "./features/searchFilterFeature.ts";
 import type { FeatureContentOf, FeatureStateOf } from "./features/tableFeature.ts";
 
@@ -26,8 +27,9 @@ export type TableState<TData, TColumns extends TableColumn<TData, ColumnId<TData
   data: TData[];
   columns: TColumns;
   features: {
-    searchFilter: FeatureStateOf<SearchFilterFeature>;
     columnFilters: FeatureStateOf<ColumnFiltersFeature<TData>>;
+    externFilters: FeatureStateOf<ExternFiltersFeature<TData>>;
+    searchFilter: FeatureStateOf<SearchFilterFeature>;
   };
 };
 
@@ -39,8 +41,9 @@ export interface Table<TData, TColumns extends TableColumn<TData, ColumnId<TData
   store: TableStore<TData, TColumns>;
   defaultState: TableState<TData, TColumns>;
   features: {
-    searchFilter: FeatureContentOf<SearchFilterFeature>;
     columnFilters: FeatureContentOf<ColumnFiltersFeature<TData>>;
+    externFilters: FeatureContentOf<ExternFiltersFeature<TData>>;
+    searchFilter: FeatureContentOf<SearchFilterFeature>;
   };
   columns: {
     all: () => TColumns;

@@ -2,7 +2,7 @@ import { memoize } from "@utilities/memoize.ts";
 import type { ColumnId, Table, TableColumn } from "../types.ts";
 import type { FeatureContentOf, FeatureOptionsOf, TableFeature } from "./tableFeature.ts";
 
-export type FiltersRecord<TData> = Partial<Record<ColumnId<TData>, string>>;
+export type ColumnFilterRecord<TData> = Partial<Record<ColumnId<TData>, string>>;
 export interface ColumnFiltersFeature<TData> extends
   TableFeature<
     {
@@ -10,11 +10,11 @@ export interface ColumnFiltersFeature<TData> extends
         get: () => string;
         set: (value: string) => void;
       };
-      get: () => FiltersRecord<TData>;
-      set: (value: FiltersRecord<TData>) => void;
+      get: () => ColumnFilterRecord<TData>;
+      set: (value: ColumnFilterRecord<TData>) => void;
     },
-    { record: FiltersRecord<TData> },
-    { record: FiltersRecord<TData> }
+    { record: ColumnFilterRecord<TData> },
+    { record: ColumnFilterRecord<TData> }
   > {}
 
 export const createColumnFiltersFeature = <TData, TColumns extends TableColumn<TData, ColumnId<TData>>[]>(

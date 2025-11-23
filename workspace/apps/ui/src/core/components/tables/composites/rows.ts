@@ -14,8 +14,9 @@ export const createRows = <TData, TColumns extends TableColumn<TData, ColumnId<T
       api.columns.all(),
       api.features.searchFilter.get(),
       api.features.columnFilters.get(),
+      api.features.externFilters.get(),
     ],
-    (rows, columns, searchFilter, columnFilters) => {
+    (rows, columns, searchFilter, columnFilters, externFilters) => {
       const result = [];
 
       filter_it: for (let i = 0; i < rows.length; ++i) {
@@ -29,6 +30,10 @@ export const createRows = <TData, TColumns extends TableColumn<TData, ColumnId<T
           if (column.columnFilter(values[columnId]!, query)) continue;
 
           continue filter_it;
+        }
+
+        for (const filter of externFilters) {
+          if (!filter(row, searchFilter)) continue filter_it;
         }
 
         if (searchFilter) {

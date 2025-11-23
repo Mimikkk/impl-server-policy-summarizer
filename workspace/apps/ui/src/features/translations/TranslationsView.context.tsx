@@ -4,7 +4,7 @@ import { Param } from "@hooks/useLocalStorage.ts";
 import { sleep } from "@utilities/common.ts";
 import { defineContext } from "@utilities/defineContext.ts";
 import { requestFilePicker, requestSaveFile } from "@utilities/requestFilePicker.ts";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { PreviewResult } from "./ReviewModal.tsx";
 import { useTranslationsTable } from "./hooks/useTranslationsTable.tsx";
 import type { FocusedCell } from "./types.ts";
@@ -64,16 +64,29 @@ export const TranslationsViewContext = defineContext(() => {
   // storage module
   const { storage, updateStorage, loadCsv, downloadCsv } = useStorage();
 
+  const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
+  const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
+
+  const [showChangedTranslations, setShowChangedTranslations] = ShowChangedTranslationsParam.use();
+  const toggleShowChangedTranslations = useCallback(() => setShowChangedTranslations((x) => !x), []);
+
   // table module
-  const translationsTable = useTranslationsTable({ storage });
+  const translationsTable = useTranslationsTable({
+    storage,
+  });
+
+  useEffect(() => {
+    translationsTable.features.externFilters.set([
+      ({ values }) =>
+        !showMissingTranslations || Object.entries(values).some(([id, value]) => {
+          if (id === "key") return false;
+          return value === "";
+        }),
+    ]);
+  }, [showMissingTranslations, showChangedTranslations]);
 
   const getCellKey = useCallback((rowId: string, columnId: string) => `${rowId}:${columnId}`, []);
   const [focusedCell, setFocusedCell] = useState<FocusedCell | null>(null);
-
-  const [showMissingTranslations, setShowMissingTranslations] = ShowMissingTranslationsParam.use();
-  const toggleShowMissingTranslations = useCallback(() => setShowMissingTranslations((x) => !x), []);
-  const [showChangedTranslations, setShowChangedTranslations] = ShowChangedTranslationsParam.use();
-  const toggleShowChangedTranslations = useCallback(() => setShowChangedTranslations((x) => !x), []);
 
   // form module
   const [isEditing, setIsEditing] = useState(false);
@@ -90,7 +103,7 @@ export const TranslationsViewContext = defineContext(() => {
 
   const handleAddKey = useCallback(() => {
     updateStorage((s) => {
-      if (s?.contents?.some((item) => item.key === "")) {
+      if (s?.contents?.some(({ key }) => key === "")) {
         setFocusedCell({ rowId: ((s?.contents?.length ?? 0) - 1).toString(), columnId: "key" });
         return;
       }
@@ -202,6 +215,7 @@ export const TranslationsViewContext = defineContext(() => {
 
   const buildSamples = useCallback((columnId: string, rowId?: string): TranslationSample[] => {
     if (!storage?.contents || !sourceLanguage) return [];
+
     return storage.contents
       .filter((_, index) => rowId === undefined || index.toString() !== rowId)
       .map((row) => ({
@@ -377,8 +391,6 @@ export const TranslationsViewContext = defineContext(() => {
     }
   }, []);
 
-  const currentResult = selectedResultIndex !== null ? resultsQueue[selectedResultIndex] ?? null : null;
-
   // review module
 
   const hasPendingReview = useCallback((rowId: string, columnId: string) => {
@@ -389,6 +401,7 @@ export const TranslationsViewContext = defineContext(() => {
     setSelectedResultIndex(index);
   }, []);
 
+  const currentResult = selectedResultIndex !== null ? resultsQueue[selectedResultIndex] ?? null : null;
   const handlePreviewAccept = useCallback((selectedTranslation?: string) => {
     if (selectedResultIndex === null || !currentResult) {
       return;
