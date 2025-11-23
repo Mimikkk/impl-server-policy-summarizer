@@ -108,14 +108,16 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
                 )}
                 {!isProcessing && (
                   <>
-                    <IconButton
-                      title="Translate"
-                      name="WandSparkles"
-                      variant="solid"
-                      color={buttonColor}
-                      onClick={handleTranslate}
-                      className={opacity}
-                    />
+                    {!isSourceLanguage && (
+                      <IconButton
+                        title="Translate"
+                        name="WandSparkles"
+                        variant="solid"
+                        color={buttonColor}
+                        onClick={handleTranslate}
+                        className={opacity}
+                      />
+                    )}
                     <IconButton
                       title="Verify translation"
                       name="BrainCircuit"

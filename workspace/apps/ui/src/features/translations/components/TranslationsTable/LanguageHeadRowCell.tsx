@@ -117,14 +117,16 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
           </IconButton>
           {isEditing && (
             <>
-              <IconButton
-                name={isColumnProcessing ? "Loader" : "WandSparkles"}
-                title="Fill in missing translations"
-                variant="solid"
-                color="info"
-                onClick={handleFillInMissingTranslations}
-                disabled={isColumnProcessing}
-              />
+              {!isSourceLanguage && (
+                <IconButton
+                  name={isColumnProcessing ? "Loader" : "WandSparkles"}
+                  title="Fill in missing translations"
+                  variant="solid"
+                  color="info"
+                  onClick={handleFillInMissingTranslations}
+                  disabled={isColumnProcessing}
+                />
+              )}
               <IconButton
                 name={isColumnProcessing ? "Loader" : "BrainCircuit"}
                 title="Check grammar & syntax"
