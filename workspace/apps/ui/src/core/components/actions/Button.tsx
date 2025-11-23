@@ -2,6 +2,7 @@ import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 import { uiElementClass } from "@utilities/uiElementClass.ts";
 import cx from "clsx";
 import { type ButtonHTMLAttributes, memo, type Ref } from "react";
+import { ButtonGroupContext } from "./ButtonGroup.tsx";
 
 type Variant = "text" | "solid";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -27,15 +28,24 @@ export const Button = memo<ButtonProps>(function Button(
     ...props
   },
 ) {
+  const isInButtonGroup = ButtonGroupContext.use();
+
   return (
     <As
       type="button"
       {...props}
       className={cx(
         compact ? "min-h-5" : "min-h-7",
-        "flex items-center justify-center gap-1 w-fit min-w-0",
+        "flex items-center justify-center gap-1 min-w-0 w-auto",
         square ? "aspect-square shrink-0" : compact ? "px-1" : "px-2 py-1",
-        uiElementClass({ variant, color, disabled: props.disabled, usesDisabled: true, active }),
+        uiElementClass({
+          variant,
+          color,
+          disabled: props.disabled,
+          usesDisabled: true,
+          active,
+          group: isInButtonGroup ? true : undefined,
+        }),
         className,
       )}
     >

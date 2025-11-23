@@ -1,3 +1,4 @@
+import { ButtonGroup } from "@core/components/actions/ButtonGroup.tsx";
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import type { TableColumn, TableRow } from "@core/components/tables/types.ts";
@@ -86,52 +87,54 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
                 onValueChange={setValue}
                 disabled={isProcessing}
               />
-              {isProcessing && (
-                <IconButton
-                  title="Processing..."
-                  name="Loader"
-                  variant="solid"
-                  color="warning"
-                  iconClassName="animate-spin"
-                />
-              )}
-              {isPendingReview && !isProcessing && (
-                <IconButton
-                  title="Pending review"
-                  name="MessageSquare"
-                  variant="solid"
-                  color="warning"
-                  iconClassName="animate-pulse"
-                />
-              )}
-              {!isProcessing && (
-                <>
+              <ButtonGroup>
+                {isProcessing && (
                   <IconButton
-                    title="Translate"
-                    name="WandSparkles"
+                    title="Processing..."
+                    name="Loader"
                     variant="solid"
-                    color={buttonColor}
-                    onClick={handleTranslate}
-                    className={opacity}
+                    color="warning"
+                    iconClassName="animate-spin"
                   />
+                )}
+                {isPendingReview && !isProcessing && (
                   <IconButton
-                    title="Verify translation"
-                    name="BrainCircuit"
+                    title="Pending review"
+                    name="MessageSquare"
                     variant="solid"
-                    color={buttonColor}
-                    onClick={handleVerify}
-                    className={opacity}
+                    color="warning"
+                    iconClassName="animate-pulse"
                   />
-                  <IconButton
-                    title="Regenerate translation"
-                    name="RotateCcw"
-                    variant="solid"
-                    color={buttonColor}
-                    onClick={handleRegenerate}
-                    className={opacity}
-                  />
-                </>
-              )}
+                )}
+                {!isProcessing && (
+                  <>
+                    <IconButton
+                      title="Translate"
+                      name="WandSparkles"
+                      variant="solid"
+                      color={buttonColor}
+                      onClick={handleTranslate}
+                      className={opacity}
+                    />
+                    <IconButton
+                      title="Verify translation"
+                      name="BrainCircuit"
+                      variant="solid"
+                      color={buttonColor}
+                      onClick={handleVerify}
+                      className={opacity}
+                    />
+                    <IconButton
+                      title="Regenerate translation"
+                      name="RotateCcw"
+                      variant="solid"
+                      color={buttonColor}
+                      onClick={handleRegenerate}
+                      className={opacity}
+                    />
+                  </>
+                )}
+              </ButtonGroup>
             </div>
           )
           : <span className="truncate text-ellipsis self-center px-[13px]">{value}</span>}

@@ -20,6 +20,7 @@ export interface Storage {
 const ShowMissingTranslationsParam = Param.boolean({ key: "show-missing-translations" });
 const ShowChangedTranslationsParam = Param.boolean({ key: "show-changed-translations" });
 const sourceLanguageParam = Param.string({ key: "source-language" });
+const isEditingParam = Param.boolean({ key: "is-editing" });
 
 const StorageParam = Param.new<Storage>({
   key: "translations-storage",
@@ -89,7 +90,7 @@ export const TranslationsViewContext = defineContext(() => {
   const [focusedCell, setFocusedCell] = useState<FocusedCell | null>(null);
 
   // form module
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = isEditingParam.use();
 
   const toggleEdit = useCallback(() => setIsEditing((x) => !x), []);
 

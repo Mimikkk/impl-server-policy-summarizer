@@ -1,6 +1,6 @@
 import type { ColorName } from "@features/ux/theme/ColorPalette.ts";
 
-export interface UiElementParameters {
+export interface UIOptions {
   color: ColorName;
   light?: boolean;
   variant?: "solid" | "text";
@@ -8,6 +8,8 @@ export interface UiElementParameters {
   usesDisabled?: boolean;
   disabled?: boolean;
   active?: boolean;
+  square?: boolean;
+  group?: boolean;
 }
 
 const interactiveVariants = {
@@ -26,14 +28,12 @@ const interactiveVariants = {
 
 const variants = {
   solid: `
-        rounded-sm
         text-{{color}}-{{is-light}}
         transition-colors duration-100
         bg-{{color}}-3
         border border-{{color}}-6
         `,
   text: `
-        rounded-sm
         text-{{color}}-{{is-light}}
         transition-colors duration-100
         `,
@@ -47,11 +47,19 @@ export const uiElementClass = (
     variant = "solid",
     interactive = true,
     active = false,
-  }: UiElementParameters,
+    square = false,
+    group = false,
+  }: UIOptions,
 ) => {
   let template = variants[variant];
 
-  const lightStr = light ? "11" : "12";
+  if (group) {
+    template += " not-last:rounded-r-none not-first:rounded-l-none ";
+  }
+
+  if (!square) {
+    template += " rounded-sm ";
+  }
 
   if (usesDisabled) {
     template += disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer";
@@ -67,6 +75,7 @@ export const uiElementClass = (
     template += " bg-{{color}}-4";
   }
 
+  const lightStr = light ? "11" : "12";
   return template
     .replaceAll("{{color}}", color)
     .replaceAll("{{is-light}}", lightStr);

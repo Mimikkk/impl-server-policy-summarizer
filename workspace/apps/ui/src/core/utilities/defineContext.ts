@@ -35,7 +35,7 @@ function useContextContents<Value>(context: ReactContext<ContextValue<Value>>): 
 interface UpdateOptions {
   suspense?: boolean;
 }
-const createContents = <TValue,>(
+const createContents = <TValue>(
   versionRef: RefObject<number>,
   valueRef: RefObject<TValue>,
   setResolve: React.Dispatch<React.SetStateAction<((v: TValue) => void) | null>>,
@@ -80,10 +80,6 @@ function createContext<Value>(values: Value) {
     },
   });
 
-  // (context as unknown as Context<Value>).Provider = createProvider(
-  //   context.Provider,
-  // );
-
   delete (context as { Consumer: unknown }).Consumer;
 
   return context as unknown as ReactContext<ContextValue<Value>>;
@@ -107,7 +103,6 @@ function useContextSelector<TValue, TResult>(
       action?: ListenerAction<TValue>,
     ) => {
       if (!action) {
-        // case for `dispatch()` below
         return [value, result] as const;
       }
 

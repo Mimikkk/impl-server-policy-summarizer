@@ -1,3 +1,4 @@
+import { ButtonGroup } from "@core/components/actions/ButtonGroup.tsx";
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { InputField } from "@core/components/forms/inputs/InputField.tsx";
 import type { TableColumn } from "@core/components/tables/types.ts";
@@ -104,7 +105,7 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
             )
             : <span className="px-3 first-letter:capitalize">language - {column.label}</span>}
         </div>
-        <div className="flex w-full bg-primary-4">
+        <ButtonGroup className="bg-primary-4 w-full">
           <IconButton
             className="flex-1 justify-start"
             name={isSourceLanguage ? "BadgeCheck" : "Badge"}
@@ -134,7 +135,7 @@ export const LanguageHeadRowCell = memo<{ column: TableColumn<any, any> }>(
               />
             </>
           )}
-        </div>
+        </ButtonGroup>
       </div>
     );
   },
