@@ -68,7 +68,10 @@ export const CardText = ({ className, content, status }: CardTextProps) => {
         <div className="absolute h-full w-full">
           <div className="relative h-full w-full overflow-auto px-2 py-1 bg-primary-3">
             {lines.map((line, index) => (
-              <Text key={index} className="block whitespace-pre-wrap break-words">
+              <Text
+                key={index}
+                className="block whitespace-pre-wrap break-words"
+              >
                 {line}
               </Text>
             ))}

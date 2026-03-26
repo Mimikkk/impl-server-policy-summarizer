@@ -13,7 +13,8 @@ import {
 import { IconButton } from "../../actions/IconButton.tsx";
 import { Text } from "../../typography/Text.tsx";
 
-export interface CardProps extends PropsWithChildren<HTMLAttributes<HTMLDivElement>> {
+export interface CardProps
+  extends PropsWithChildren<HTMLAttributes<HTMLDivElement>> {
   color?: ColorName;
   className?: string;
   label?: ReactNode;
@@ -61,7 +62,11 @@ export const Card = memo<CardProps>(function Card(
   }, [isMaximized]);
 
   const maximize = maxizable && (
-    <IconButton key="maximize" name={isMaximized ? "Minimize" : "Maximize"} onClick={handleMaximize} />
+    <IconButton
+      key="maximize"
+      name={isMaximized ? "Minimize" : "Maximize"}
+      onClick={handleMaximize}
+    />
   );
 
   const content = (
@@ -101,14 +106,18 @@ export const Card = memo<CardProps>(function Card(
         </Text>
       )}
       {children}
-      {slots?.icons?.length || maximize && (
+      {!!slots?.icons?.length || maximize && (
             <div
               className={cx(
                 "absolute flex gap-0.5",
-                slots?.iconsPosition === "bottom-right" ? "bottom-2 right-2" : "top-2 right-2",
+                slots?.iconsPosition === "bottom-right"
+                  ? "bottom-2 right-2"
+                  : "top-2 right-2",
               )}
             >
-              {slots?.icons?.map((icon, index) => <div key={index}>{icon}</div>)}
+              {slots?.icons?.map((icon, index) => (
+                <div key={index}>{icon}</div>
+              ))}
               {maximize}
             </div>
           )}

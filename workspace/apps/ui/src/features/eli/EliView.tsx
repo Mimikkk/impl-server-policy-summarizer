@@ -45,9 +45,14 @@ export const EliView = memo(() => {
   }, [actParams]);
 
   const { data: actDetails } = useEliAct(actParams);
-  const pdfUrl = useMemo(() => actParams ? EliClient.pdfUrl(actParams) : null, [actParams]);
+  const pdfUrl = useMemo(() => actParams ? EliClient.pdfUrl(actParams) : null, [
+    actParams,
+  ]);
 
-  const references = useMemo(() => Object.entries(actDetails?.references ?? {}), [actDetails?.references]);
+  const references = useMemo(
+    () => Object.entries(actDetails?.references ?? {}),
+    [actDetails?.references],
+  );
 
   const { data: summary, status: summaryStatus } = useQuery({
     queryKey: ["pdf", actParams],
@@ -59,12 +64,19 @@ export const EliView = memo(() => {
     <div className="flex flex-col gap-2 items-center h-full">
       <div className="flex flex-col gap-0.5 w-full">
         <Card className="w-full flex items-center gap-1">
-          <IconButton name="History" className="w-fit" disabled={history.length === 0}>
+          <IconButton
+            name="History"
+            className="w-fit"
+            disabled={history.length === 0}
+          >
             <span className="not-md:hidden">
               {history.length > 0 ? "history" : "No history"}
             </span>
           </IconButton>
-          <For each={history.slice(0, 10)} className="flex flex-wrap items-center gap-1 overflow-hidden">
+          <For
+            each={history.slice(0, 10)}
+            className="flex flex-wrap items-center gap-1 overflow-hidden"
+          >
             {(v) => (
               <Button
                 color="primary"
@@ -82,7 +94,8 @@ export const EliView = memo(() => {
                   onClick={() =>
                     setHistory(
                       history.filter((h) =>
-                        v.publisher !== h.publisher || v.year !== h.year || v.position !== h.position
+                        v.publisher !== h.publisher || v.year !== h.year ||
+                        v.position !== h.position
                       ),
                     )}
                 />
@@ -99,7 +112,9 @@ export const EliView = memo(() => {
             <Button className="ml-auto">
               <Text ellipsis className="gap-1">
                 <Text className="font-semibold not-md:hidden">Selected:</Text>
-                <Text>{actParams?.publisher}/{actParams?.year}/{actParams?.position}</Text>
+                <Text>
+                  {actParams?.publisher}/{actParams?.year}/{actParams?.position}
+                </Text>
               </Text>
               <IconButton color="primary" compact name="Pin" as="span" />
             </Button>
@@ -150,8 +165,14 @@ export const EliView = memo(() => {
                           {reference.slice(0, 3).map((v) => (
                             <Button
                               onClick={() => {
-                                const [publisher, year, position] = v.id.split("/");
-                                const actParams = { publisher, year: +year, position: +position };
+                                const [publisher, year, position] = v.id.split(
+                                  "/",
+                                );
+                                const actParams = {
+                                  publisher,
+                                  year: +year,
+                                  position: +position,
+                                };
                                 setActParams(actParams);
                               }}
                               color="primary"
@@ -182,7 +203,10 @@ export const EliView = memo(() => {
         </Card>
       </div>
       <div className="h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 container items-center w-full">
-        <CardPDF url={pdfUrl} className="col-span-1 md:col-span-2 lg:col-span-3 row-span-2" />
+        <CardPDF
+          url={pdfUrl}
+          className="col-span-1 md:col-span-2 lg:col-span-3 row-span-2"
+        />
         <CardJSON content={actDetails} />
         <CardText content={summary?.content} status={summaryStatus} />
         <CardText content={summary?.summary} status={summaryStatus} />
