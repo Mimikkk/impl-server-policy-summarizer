@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../../tsconfig.web.json",
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["./src/core/components/*"],
+      "@clients/*": ["./src/clients/*"],
+      "@core/*": ["./src/core/*"],
+      "@hooks/*": ["./src/core/hooks/*"],
+      "@utilities/*": ["./src/core/utilities/*"],
+      "@services/*": ["./src/core/services/*"],
+      "@features/*": ["./src/features/*"],
+      "@configs/*": ["./src/configs/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "rsbuild.config.ts",
+    "postcss.config.ts"
+  ]
+}

@@ -1,5 +1,10 @@
-import { loadSync } from "@std/dotenv";
+import { config } from "dotenv";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import z from "zod";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+config({ path: join(__dirname, "../../.env") });
 
 const environmentSchema = z.object({
   Server: z.object({
@@ -21,11 +26,11 @@ const environmentSchema = z.object({
 
 export interface Environment extends z.infer<typeof environmentSchema> {}
 
-const env = loadSync();
+const env = process.env;
 export const Environment = environmentSchema.parse({
   Server: {
     Host: env.HOST,
-    Port: +env.PORT,
+    Port: env.PORT != null && env.PORT !== "" ? Number(env.PORT) : undefined,
   },
   Logging: {
     Level: env.LOG_LEVEL,

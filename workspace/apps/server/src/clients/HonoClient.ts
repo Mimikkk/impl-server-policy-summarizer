@@ -18,7 +18,9 @@ import {
   withValidationErrors,
 } from "../core/middlewares.ts";
 
-export const HonoClient = new OpenAPIHono<{ Variables: Container }>({ defaultHook: withValidationErrors });
+export const HonoClient = new OpenAPIHono<{ Variables: Container }>({
+  defaultHook: withValidationErrors,
+});
 
 HonoClient
   .use(

@@ -1,0 +1,23 @@
+{
+  "name": "impl-server-policy-summarizer",
+  "private": true,
+  "workspaces": ["workspace/apps/*"],
+  "scripts": {
+    "typecheck": "bun run typecheck:server && bun run typecheck:ui",
+    "typecheck:server": "tsc -p workspace/apps/server/tsconfig.json --noEmit",
+    "typecheck:ui": "tsc -p workspace/apps/ui/tsconfig.json --noEmit",
+    "build:ui": "bun run --cwd workspace/apps/ui build",
+    "dev:ui": "bun run --cwd workspace/apps/ui dev",
+    "preview:server": "bun run --cwd workspace/apps/server preview",
+    "test:server": "bun run --cwd workspace/apps/server test",
+    "dev:server": "bun run --cwd workspace/apps/server dev",
+    "start:server": "bun run --cwd workspace/apps/server start",
+    "dev:all": "concurrently -n ui,server -c blue,green \"bun run --cwd workspace/apps/ui dev\" \"bun run --cwd workspace/apps/server dev\""
+  },
+  "devDependencies": {
+    "@rsbuild/core": "1.7.4",
+    "@rsbuild/plugin-react": "^1.4.6",
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.2"
+  }
+}

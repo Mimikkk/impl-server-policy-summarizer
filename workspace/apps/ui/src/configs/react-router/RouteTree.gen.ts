@@ -45,8 +45,8 @@ export interface FileRoutesByFullPath {
   '/dx/color-palette': typeof DxColorPaletteRoute
   '/dx/components': typeof DxComponentsRoute
   '/dx/routes': typeof DxRoutesRoute
-  '/eli': typeof EliIndexRoute
-  '/translations': typeof TranslationsIndexRoute
+  '/eli/': typeof EliIndexRoute
+  '/translations/': typeof TranslationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/dx/color-palette': typeof DxColorPaletteRoute
@@ -69,8 +69,8 @@ export interface FileRouteTypes {
     | '/dx/color-palette'
     | '/dx/components'
     | '/dx/routes'
-    | '/eli'
-    | '/translations'
+    | '/eli/'
+    | '/translations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dx/color-palette'
@@ -100,14 +100,14 @@ declare module '@tanstack/react-router' {
     '/translations/': {
       id: '/translations/'
       path: '/translations'
-      fullPath: '/translations'
+      fullPath: '/translations/'
       preLoaderRoute: typeof TranslationsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/eli/': {
       id: '/eli/'
       path: '/eli'
-      fullPath: '/eli'
+      fullPath: '/eli/'
       preLoaderRoute: typeof EliIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

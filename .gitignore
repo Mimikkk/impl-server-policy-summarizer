@@ -8,3 +8,4 @@ apps/server/storage/database.db
 .cursor
 workspace/apps/server/node_modules
 workspace/apps/server/drizzle
+tsconfig.tsbuildinfo
