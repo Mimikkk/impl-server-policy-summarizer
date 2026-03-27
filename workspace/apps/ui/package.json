@@ -11,13 +11,9 @@
     "generate:all": "concurrently -n api,eli -c green,blue \"bun run generate:api-server\" \"bun run generate:api-eli\""
   },
   "dependencies": {
-    "@rsbuild/core": "1.7.4",
-    "@rsbuild/plugin-react": "^1.4.6",
-    "@tailwindcss/postcss": "^4.2.2",
     "@tanstack/react-query": "5.95.2",
     "@tanstack/react-router": "^1.168.5",
     "@tanstack/react-virtual": "^3.13.23",
-    "@tanstack/router-plugin": "^1.167.7",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "ky": "^1.14.3",
@@ -30,14 +26,18 @@
     "react-fast-compare": "^3.2.2",
     "scheduler": "^0.27.0",
     "shiki": "^4.0.2",
-    "tailwindcss": "^4.2.2",
-    "tslib": "^2.8.1",
     "usehooks-ts": "^3.1.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@rsbuild/core": "1.7.4",
+    "@rsbuild/plugin-react": "^1.4.6",
+    "@tailwindcss/postcss": "^4.2.2",
+    "@tanstack/router-plugin": "^1.167.7",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "openapi-typescript": "^7.13.0"
+    "openapi-typescript": "^7.13.0",
+    "tailwindcss": "^4.2.2",
+    "tslib": "^2.8.1"
   }
 }
