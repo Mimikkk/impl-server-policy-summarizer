@@ -60,13 +60,13 @@ const adaptToMutation = <
       ...options,
       ...mutationOptions,
       mutationFn: (variables) => method(...variables),
-      async onSuccess(data, variables, successContext) {
+      async onSuccess(data, variables, result, mutationContext) {
         const toInvalidate = await options.toInvalidate({ data, variables, client, context });
         await Promise.all(toInvalidate.map((key) => client.invalidateQueries({ queryKey: key })));
 
         return await Promise.all([
-          options.onSuccess?.(data, variables, successContext),
-          mutationOptions?.onSuccess?.(data, variables, successContext),
+          options.onSuccess?.(data, variables, result, mutationContext),
+          mutationOptions?.onSuccess?.(data, variables, result, mutationContext),
         ]);
       },
     });
