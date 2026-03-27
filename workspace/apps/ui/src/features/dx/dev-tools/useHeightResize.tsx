@@ -7,9 +7,7 @@ export interface UseHeightResizeOptions {
   min?: number;
 }
 
-export const useHeightResize = (
-  { ref, initial = 300, max = 600, min = 100 }: UseHeightResizeOptions,
-) => {
+export const useHeightResize = ({ ref, initial = 300, max = 600, min = 100 }: UseHeightResizeOptions) => {
   const [isDragging, setIsDragging] = useState(false);
   const [height, setHeight] = useState(initial);
 
@@ -18,12 +16,15 @@ export const useHeightResize = (
     setIsDragging(true);
   }, []);
 
-  const handleMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const newHeight = globalThis.innerHeight - e.clientY;
-    setHeight(Math.max(min, Math.min(max, newHeight)));
-  }, [isDragging, min, max]);
+  const handleMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const newHeight = globalThis.innerHeight - e.clientY;
+      setHeight(Math.max(min, Math.min(max, newHeight)));
+    },
+    [isDragging, min, max],
+  );
 
   const handleStop = useCallback(() => {
     setIsDragging(false);

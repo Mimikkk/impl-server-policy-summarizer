@@ -7,10 +7,12 @@ HonoClient.get("/docs/openapi.json", (context) => {
     openapi: "3.1.0",
     info: { version: "1.0.0", title: "Documentation" },
     security: [],
-    servers: [{
-      url: `http://localhost:${Environment.Server.Port}`,
-      description: "Local server",
-    }],
+    servers: [
+      {
+        url: `http://localhost:${Environment.Server.Port}`,
+        description: "Local server",
+      },
+    ],
   });
 
   if (document.components?.schemas) {

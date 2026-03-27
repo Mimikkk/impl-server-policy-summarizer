@@ -5,16 +5,12 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { inputColorMap } from "../../constants.ts";
 import { TranslationsViewContext } from "../../TranslationsView.context.tsx";
 
-export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(
-  function KeyBodyRowCell({ row, column }) {
-    const {
-      isEditing,
-      sourceLanguage,
-      focusedCell,
-      setFocusedCell,
-      isCellProcessing,
-      handleRemoveKey,
-    } = TranslationsViewContext.use((s) => ({
+export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(function KeyBodyRowCell({
+  row,
+  column,
+}) {
+  const { isEditing, sourceLanguage, focusedCell, setFocusedCell, isCellProcessing, handleRemoveKey } =
+    TranslationsViewContext.use((s) => ({
       isEditing: s.isEditing,
       sourceLanguage: s.sourceLanguage,
       focusedCell: s.focusedCell,
@@ -23,64 +19,54 @@ export const KeyBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any
       handleRemoveKey: s.handleRemoveKey,
     }));
 
-    const ref = useRef<HTMLTableCellElement>(null);
-    useEffect(() => {
-      if (focusedCell?.columnId === column.id && focusedCell?.rowId === row.id) {
-        const input = ref.current?.querySelector("input");
+  const ref = useRef<HTMLTableCellElement>(null);
+  useEffect(() => {
+    if (focusedCell?.columnId === column.id && focusedCell?.rowId === row.id) {
+      const input = ref.current?.querySelector("input");
 
-        if (input) {
-          input.focus();
-        }
+      if (input) {
+        input.focus();
       }
-    }, [focusedCell?.columnId, focusedCell?.rowId, ref]);
+    }
+  }, [focusedCell?.columnId, focusedCell?.rowId, ref]);
 
-    const isSourceLanguage = sourceLanguage === column.id;
-    const [value, setValue] = useState(row.values[column.id]);
+  const isSourceLanguage = sourceLanguage === column.id;
+  const [value, setValue] = useState(row.values[column.id]);
 
-    useEffect(() => {
-      setValue(row.values[column.id]);
-    }, [row.values[column.id]]);
+  useEffect(() => {
+    setValue(row.values[column.id]);
+  }, [row.values[column.id]]);
 
-    const isFocusedCell = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
-    const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : "none";
+  const isFocusedCell = focusedCell?.rowId === row.id && focusedCell?.columnId === column.id;
+  const type = isFocusedCell ? "focused" : isSourceLanguage ? "source" : "none";
 
-    const handleRowRemove = useCallback(() => {
-      handleRemoveKey(row.id);
-    }, [row.id, handleRemoveKey]);
+  const handleRowRemove = useCallback(() => {
+    handleRemoveKey(row.id);
+  }, [row.id, handleRemoveKey]);
 
-    const isProcessing = isCellProcessing(row.id, column.id);
+  const isProcessing = isCellProcessing(row.id, column.id);
 
-    const inputColor = inputColorMap[type];
-    return (
-      <div
-        ref={ref}
-        data-source={isSourceLanguage ? "" : undefined}
-        className="flex justify-between h-full w-full"
-      >
-        {isEditing
-          ? (
-            <>
-              <IconButton
-                name="Trash"
-                variant="solid"
-                color="error"
-                onClick={handleRowRemove}
-              />
-              <div className="flex w-full min-w-0">
-                <InputField
-                  onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
-                  onBlur={() => setFocusedCell(null)}
-                  className="w-full"
-                  color={inputColor}
-                  value={value}
-                  onValueChange={setValue}
-                  disabled={isProcessing}
-                />
-              </div>
-            </>
-          )
-          : <span className="truncate text-ellipsis self-center pl-[41px] pr-[13px]">{value}</span>}
-      </div>
-    );
-  },
-);
+  const inputColor = inputColorMap[type];
+  return (
+    <div ref={ref} data-source={isSourceLanguage ? "" : undefined} className="flex h-full w-full justify-between">
+      {isEditing ? (
+        <>
+          <IconButton name="Trash" variant="solid" color="error" onClick={handleRowRemove} />
+          <div className="flex w-full min-w-0">
+            <InputField
+              onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
+              onBlur={() => setFocusedCell(null)}
+              className="w-full"
+              color={inputColor}
+              value={value}
+              onValueChange={setValue}
+              disabled={isProcessing}
+            />
+          </div>
+        </>
+      ) : (
+        <span className="self-center truncate pr-[13px] pl-[41px] text-ellipsis">{value}</span>
+      )}
+    </div>
+  );
+});

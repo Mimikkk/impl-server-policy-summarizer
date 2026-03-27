@@ -13,7 +13,7 @@ import { DevToolsResizer } from "./DevToolsResizer.tsx";
 export const DevToolsHeightOptions = createLocalStorageOptions<number>({
   key: "dev-tools-height",
   serialize: (value) => value.toString(),
-  deserialize: (value) => value === null ? 300 : Number(value),
+  deserialize: (value) => (value === null ? 300 : Number(value)),
 });
 
 const useHeight = (ref: HTMLDivElement | null) => {
@@ -44,33 +44,41 @@ const useIsOpen = () => {
 const DevToolsTabIndexOptions = createLocalStorageOptions<string>({
   key: "dev-tools-selected-tab",
   serialize: (value) => value.toString(),
-  deserialize: (value) => value === null ? "routes" : value,
+  deserialize: (value) => (value === null ? "routes" : value),
 });
 
 const useSelectedTab = () => useLocalStorage(DevToolsTabIndexOptions);
 
 const useItems = () => {
-  return useMemo((): DevToolsItem[] => [{
-    value: "routes",
-    label: "Routes",
-    icon: "Route",
-    component: <RoutesView />,
-  }, {
-    value: "colors",
-    label: "Colors",
-    icon: "Palette",
-    component: <ColorPaletteView />,
-  }, {
-    value: "components",
-    label: "Components",
-    icon: "Component",
-    component: <ComponentsView />,
-  }, {
-    value: "icons",
-    label: "Icons",
-    icon: "IceCreamCone",
-    component: <IconPalleteView />,
-  }], []);
+  return useMemo(
+    (): DevToolsItem[] => [
+      {
+        value: "routes",
+        label: "Routes",
+        icon: "Route",
+        component: <RoutesView />,
+      },
+      {
+        value: "colors",
+        label: "Colors",
+        icon: "Palette",
+        component: <ColorPaletteView />,
+      },
+      {
+        value: "components",
+        label: "Components",
+        icon: "Component",
+        component: <ComponentsView />,
+      },
+      {
+        value: "icons",
+        label: "Icons",
+        icon: "IceCreamCone",
+        component: <IconPalleteView />,
+      },
+    ],
+    [],
+  );
 };
 
 export const DevTools = memo(function DevTools() {
@@ -89,7 +97,7 @@ export const DevTools = memo(function DevTools() {
   });
 
   return (
-    <div className="fixed bottom-0 left-0 w-full z-100">
+    <div className="fixed bottom-0 left-0 z-100 w-full">
       {isOpen && (
         <>
           <DevToolsNavigation height={height} items={items} value={selectedTab} onValueChange={setSelectedTab} />

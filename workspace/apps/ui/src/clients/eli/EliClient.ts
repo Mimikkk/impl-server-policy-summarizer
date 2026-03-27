@@ -43,17 +43,14 @@ export namespace EliClient {
   export const htmlUrl = ({ publisher, year, position }: ActParams): string =>
     client.urlOf(`${publisher}/${year}/${position}/text.html`);
 
-  export const html = async (
-    { publisher, year, position }: ActParams,
-  ): Promise<HtmlFile> => {
+  export const html = async ({ publisher, year, position }: ActParams): Promise<HtmlFile> => {
     const response = await client.api.get(`${publisher}/${year}/${position}/text.html`).blob();
 
     return new File([response], `${publisher}-${year}-${position}.html`, { type: "text/html" });
   };
 
-  export const htmlText = async (
-    { publisher, year, position }: ActParams,
-  ): Promise<string> => await client.api.get(`${publisher}/${year}/${position}/text.html`).text();
+  export const htmlText = async ({ publisher, year, position }: ActParams): Promise<string> =>
+    await client.api.get(`${publisher}/${year}/${position}/text.html`).text();
 
   /** content-type: text/html; charset=utf-8 */
   export type TextFile = File;

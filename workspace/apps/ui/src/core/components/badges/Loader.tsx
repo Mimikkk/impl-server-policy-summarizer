@@ -16,10 +16,7 @@ export const Loader = memo(function Loader({ size = "md", className }: LoaderPro
   return (
     <div className={cx("flex items-center justify-center", className)}>
       <div
-        className={cx(
-          "animate-spin rounded-full border-2 border-primary-3 border-t-primary-6",
-          sizes[size],
-        )}
+        className={cx("animate-spin rounded-full border-2 border-primary-3 border-t-primary-6", sizes[size])}
         role="status"
         aria-label="Loading"
       />

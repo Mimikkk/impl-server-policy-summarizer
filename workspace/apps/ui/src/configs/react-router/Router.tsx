@@ -4,11 +4,7 @@ import { routeTree } from "./RouteTree.gen.ts";
 
 const router = createRouter({
   routeTree,
-  defaultPendingComponent: () => (
-    <div className={`p-2 text-2xl`}>
-      Loading...
-    </div>
-  ),
+  defaultPendingComponent: () => <div className={`p-2 text-2xl`}>Loading...</div>,
   defaultErrorComponent: ErrorComponent,
   defaultPreload: "intent",
   scrollRestoration: true,

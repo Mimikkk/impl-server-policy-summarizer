@@ -18,27 +18,27 @@ export const TranslationsTable = memo(function TranslationsTable() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-[1fr_auto] gap-2 grid-rows-[1fr_auto]">
+      <div className="grid grid-cols-[1fr_auto] grid-rows-[1fr_auto] gap-2">
         <Table table={translationsTable} />
-        {isEditing
-          ? (
-            <IconButton
-              name="Plus"
-              variant="solid"
-              className="h-full  max-w-7"
-              title="Add language"
-              onClick={handleAddLanguage}
-            />
-          )
-          : <div className="w-7" />}
+        {isEditing ? (
+          <IconButton
+            name="Plus"
+            variant="solid"
+            className="h-full max-w-7"
+            title="Add language"
+            onClick={handleAddLanguage}
+          />
+        ) : (
+          <div className="w-7" />
+        )}
       </div>
 
-      <div className="col-span-full flex items-center gap-2 w-full justify-end">
+      <div className="col-span-full flex w-full items-center justify-end gap-2">
         {isEditing && (
           <IconButton
             name="Plus"
             variant="solid"
-            className="w-full max-h-7"
+            className="max-h-7 w-full"
             title="Add key"
             square={false}
             onClick={handleAddKey}

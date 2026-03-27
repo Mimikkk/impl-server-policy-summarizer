@@ -3,17 +3,16 @@ import type { FeatureContentOf, FeatureOptionsOf, TableFeature } from "./tableFe
 
 export type ExternFilter<TData> = (row: TableRow<TData>, value: string) => boolean;
 export type ExternFilterList<TData> = ExternFilter<TData>[];
-export interface ExternFiltersFeature<TData> extends
-  TableFeature<
-    {
-      get: () => ExternFilterList<TData>;
-      set: (value: ExternFilterList<TData>) => void;
-      add: (value: ExternFilter<TData>) => void;
-      remove: (value: ExternFilter<TData>) => void;
-    },
-    { list: ExternFilterList<TData> },
-    { list: ExternFilterList<TData> }
-  > {}
+export interface ExternFiltersFeature<TData> extends TableFeature<
+  {
+    get: () => ExternFilterList<TData>;
+    set: (value: ExternFilterList<TData>) => void;
+    add: (value: ExternFilter<TData>) => void;
+    remove: (value: ExternFilter<TData>) => void;
+  },
+  { list: ExternFilterList<TData> },
+  { list: ExternFilterList<TData> }
+> {}
 
 export const createExternFiltersFeature = <TData, TColumns extends TableColumn<TData, ColumnId<TData>>[]>(
   api: Table<TData, TColumns>,
@@ -21,7 +20,7 @@ export const createExternFiltersFeature = <TData, TColumns extends TableColumn<T
 ): FeatureContentOf<ExternFiltersFeature<TData>> => {
   api.store.get().features.externFilters.list = options.list;
 
-  return ({
+  return {
     get: () => api.store.get().features.externFilters.list,
     set: (value) =>
       api.store.set((previous) => ({
@@ -53,5 +52,5 @@ export const createExternFiltersFeature = <TData, TColumns extends TableColumn<T
           },
         },
       })),
-  });
+  };
 };

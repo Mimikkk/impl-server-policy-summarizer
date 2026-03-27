@@ -13,10 +13,5 @@
       "@configs/*": ["./src/configs/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "rsbuild.config.ts",
-    "postcss.config.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "rsbuild.config.ts", "postcss.config.ts"]
 }

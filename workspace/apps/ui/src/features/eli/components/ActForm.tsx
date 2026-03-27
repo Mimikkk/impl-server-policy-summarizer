@@ -41,16 +41,20 @@ const useYearOptions = defineUseOptions<number>({
   sortBy: (a, b) => b - a,
 });
 
-const YearSelect = (
-  { publisherId, value, onValueChange }: {
-    publisherId: Nil<string>;
-    value: string | null;
-    onValueChange: (value: string | null) => void;
-  },
-) => {
-  const { data: publisher, isSuccess: isPublisherSuccess, isLoading: isPublisherLoading } = useEliPublisher(
-    publisherId,
-  );
+const YearSelect = ({
+  publisherId,
+  value,
+  onValueChange,
+}: {
+  publisherId: Nil<string>;
+  value: string | null;
+  onValueChange: (value: string | null) => void;
+}) => {
+  const {
+    data: publisher,
+    isSuccess: isPublisherSuccess,
+    isLoading: isPublisherLoading,
+  } = useEliPublisher(publisherId);
   const yearOptions = useYearOptions(publisher?.years);
 
   const nextYear = useMemo(() => {
@@ -86,7 +90,7 @@ const YearSelect = (
         disabled={!isPublisherSuccess || isPublisherLoading || !previousYear}
       />
       <SelectField
-        className="flex-1 h-7"
+        className="h-7 flex-1"
         id="year"
         label="Year"
         options={yearOptions}
@@ -123,10 +127,11 @@ const ActSelect = ({
   value: string | null;
   onValueChange: (value: string | null) => void;
 }) => {
-  const { data: year, isSuccess: isYearSuccess, isLoading: isYearLoading } = useEliYear(
-    publisherId,
-    yearId ? +yearId : null,
-  );
+  const {
+    data: year,
+    isSuccess: isYearSuccess,
+    isLoading: isYearLoading,
+  } = useEliYear(publisherId, yearId ? +yearId : null);
   const positionOptions = useActOptions(year?.items);
 
   const nextPosition = useMemo(() => {
@@ -162,7 +167,7 @@ const ActSelect = ({
         disabled={!isYearSuccess || isYearLoading || !previousPosition}
       />
       <SelectField
-        className="flex-1 h-7"
+        className="h-7 flex-1"
         id="position"
         label="Position"
         options={positionOptions}
@@ -182,9 +187,13 @@ const ActSelect = ({
   );
 };
 
-export function ActForm(
-  { values, onSubmit }: { values: Nil<EliClient.ActParams>; onSubmit: (params: EliClient.ActParams) => void },
-) {
+export function ActForm({
+  values,
+  onSubmit,
+}: {
+  values: Nil<EliClient.ActParams>;
+  onSubmit: (params: EliClient.ActParams) => void;
+}) {
   const [publisherId, setPublisherId] = useState<string | null>(values?.publisher ?? null);
   const [yearId, setYearId] = useState<string | null>(values?.year.toString() ?? null);
   const [positionId, setPositionId] = useState<string | null>(values?.position.toString() ?? null);
@@ -216,13 +225,16 @@ export function ActForm(
     }
   }, [values]);
 
-  const handleSubmit = useCallback((event: FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: FormEvent) => {
+      event.preventDefault();
 
-    if (!publisherId || !yearId || !positionId) return;
+      if (!publisherId || !yearId || !positionId) return;
 
-    onSubmit({ publisher: publisherId, year: +yearId, position: +positionId });
-  }, [publisherId, yearId, positionId, onSubmit]);
+      onSubmit({ publisher: publisherId, year: +yearId, position: +positionId });
+    },
+    [publisherId, yearId, positionId, onSubmit],
+  );
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">

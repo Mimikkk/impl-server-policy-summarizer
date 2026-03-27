@@ -18,10 +18,14 @@ export const regenerateSchema = z.object({
   sourceLanguage: z.string().openapi({ example: "en", description: "The source language" }),
   targetLanguage: z.string().openapi({ example: "pl", description: "The target language" }),
   original: z.string().openapi({ example: "Hello, how are you?", description: "The original text" }),
-  alternativesCount: z.number().optional().openapi({
-    example: 1,
-    description: "The number of alternatives to generate",
-  }).default(1),
+  alternativesCount: z
+    .number()
+    .optional()
+    .openapi({
+      example: 1,
+      description: "The number of alternatives to generate",
+    })
+    .default(1),
   translation: z.string().openapi({ example: "Cześć, jak się masz?", description: "The translation" }),
 });
 export type RegeneratePayload = z.infer<typeof regenerateSchema>;
@@ -45,9 +49,15 @@ export class TranslationRegenerator {
     "Focus on creativity - find a unique way to express the same idea.",
   ];
 
-  async regenerate(
-    { samples, context, sourceLanguage, targetLanguage, original, translation, alternativesCount }: RegeneratePayload,
-  ): Promise<Translation[]> {
+  async regenerate({
+    samples,
+    context,
+    sourceLanguage,
+    targetLanguage,
+    original,
+    translation,
+    alternativesCount,
+  }: RegeneratePayload): Promise<Translation[]> {
     const systemPrompt = this.#buildSystemPrompt({ context, sourceLanguage, targetLanguage });
     const previousTranslations: string[] = [translation];
     const results: Translation[] = [];
@@ -84,9 +94,15 @@ export class TranslationRegenerator {
     return results;
   }
 
-  #buildSystemPrompt(
-    { context, sourceLanguage, targetLanguage }: { context?: string; sourceLanguage: string; targetLanguage: string },
-  ): string {
+  #buildSystemPrompt({
+    context,
+    sourceLanguage,
+    targetLanguage,
+  }: {
+    context?: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+  }): string {
     return compactMessage(`
       You are a professional translation engine. You translate text from ${sourceLanguage} to ${targetLanguage}.
       ${context ? `Context: ${context}` : ""}
@@ -99,23 +115,28 @@ export class TranslationRegenerator {
     `);
   }
 
-  #buildUserPrompt(
-    { samples, original, sourceLanguage, targetLanguage, alternativeIndex, previousTranslations }: {
-      samples?: TranslationSample[];
-      original: string;
-      sourceLanguage: string;
-      targetLanguage: string;
-      alternativeIndex: number;
-      previousTranslations: string[];
-    },
-  ): string {
+  #buildUserPrompt({
+    samples,
+    original,
+    sourceLanguage,
+    targetLanguage,
+    alternativeIndex,
+    previousTranslations,
+  }: {
+    samples?: TranslationSample[];
+    original: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+    alternativeIndex: number;
+    previousTranslations: string[];
+  }): string {
     const chunks: string[] = [];
 
     if (samples && samples.length > 0) {
       chunks.push(
         "Here are some example translations:\n",
-        ...samples.map((sample) =>
-          `${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`
+        ...samples.map(
+          (sample) => `${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`,
         ),
       );
     }

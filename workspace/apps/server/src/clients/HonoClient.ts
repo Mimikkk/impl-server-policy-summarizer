@@ -22,21 +22,20 @@ export const HonoClient = new OpenAPIHono<{ Variables: Container }>({
   defaultHook: withValidationErrors,
 });
 
-HonoClient
-  .use(
-    cors({
-      origin: "*",
-      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowHeaders: ["Content-Type", "Authorization"],
-      exposeHeaders: ["ETag"],
-      credentials: false,
-      maxAge: 600,
-    }),
-    logger(),
-    etag(),
-    except(["api/v1/translations/*"], timeout(TimeMs.s30)),
-    prettyJSON(),
-  )
+HonoClient.use(
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    exposeHeaders: ["ETag"],
+    credentials: false,
+    maxAge: 600,
+  }),
+  logger(),
+  etag(),
+  except(["api/v1/translations/*"], timeout(TimeMs.s30)),
+  prettyJSON(),
+)
   .use(withContainer)
   .use(withRequestMonitor)
   .get(

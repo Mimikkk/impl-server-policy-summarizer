@@ -38,12 +38,15 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
   const { data: code = "", status } = useQuery(createCodeQueryOptions(asString, theme, language));
 
   let timeoutId: Nil<number> = null;
-  const handleCopy = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleCopy = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    navigator.clipboard.writeText(asString);
-  }, [asString]);
+      navigator.clipboard.writeText(asString);
+    },
+    [asString],
+  );
 
   useEffect(() => {
     return () => {
@@ -54,42 +57,48 @@ export const CardCode = ({ className, content, language }: CardCodeProps) => {
     };
   }, [timeoutId]);
 
-  const handleSave = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleSave = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    saveToFile(asString, language.toLowerCase());
-  }, [asString, language]);
+      saveToFile(asString, language.toLowerCase());
+    },
+    [asString, language],
+  );
 
   return (
     <Card
       compact
       className={clsx(className, "h-full")}
       maxizable
-      slots={useMemo(() => ({
-        icons: [
-          <IconButton
-            key="save"
-            onClick={handleSave}
-            title="Save to file"
-            aria-label="Save to file"
-            name="Download"
-          />,
-          <IconButton
-            key="copy"
-            onClick={handleCopy}
-            title="Copy to clipboard"
-            aria-label="Copy to clipboard"
-            name="Clipboard"
-          />,
-        ],
-      }), [handleSave, handleCopy])}
+      slots={useMemo(
+        () => ({
+          icons: [
+            <IconButton
+              key="save"
+              onClick={handleSave}
+              title="Save to file"
+              aria-label="Save to file"
+              name="Download"
+            />,
+            <IconButton
+              key="copy"
+              onClick={handleCopy}
+              title="Copy to clipboard"
+              aria-label="Copy to clipboard"
+              name="Clipboard"
+            />,
+          ],
+        }),
+        [handleSave, handleCopy],
+      )}
     >
       <StatusBarrier status={status} error={<Text color="error">Failed to display code</Text>}>
         <div className="absolute h-full w-full">
           <div className="relative h-full w-full">
             <div
-              className="contents [&>.shiki]:whitespace-pre-wrap [&>.shiki]:px-2 [&>.shiki]:py-1 [&>.shiki]:rounded-sm [&>.shiki]:wrap-break-word [&>.shiki]:h-full [&>.shiki]:overflow-auto"
+              className="contents [&>.shiki]:h-full [&>.shiki]:overflow-auto [&>.shiki]:rounded-sm [&>.shiki]:px-2 [&>.shiki]:py-1 [&>.shiki]:wrap-break-word [&>.shiki]:whitespace-pre-wrap"
               dangerouslySetInnerHTML={{ __html: code ?? "" }}
             />
           </div>

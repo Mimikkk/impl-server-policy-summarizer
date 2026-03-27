@@ -39,18 +39,19 @@ export const ReviewModal = ({ result, onAccept, onReject }: Props) => {
 
   if (result.type === "verify") {
     const { original, translation, verification } = result;
-    const scoreColor = verification.score >= 90
-      ? "success"
-      : verification.score >= 70
-      ? "info"
-      : verification.score >= 50
-      ? "warning"
-      : "error";
+    const scoreColor =
+      verification.score >= 90
+        ? "success"
+        : verification.score >= 70
+          ? "info"
+          : verification.score >= 50
+            ? "warning"
+            : "error";
 
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50">
-        <Card className="max-w-2xl w-full max-h-[80vh] overflow-auto flex flex-col gap-4">
-          <div className="flex justify-between items-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur">
+        <Card className="flex max-h-[80vh] w-full max-w-2xl flex-col gap-4 overflow-auto">
+          <div className="flex items-center justify-between">
             <Text className="text-xl font-bold">Translation Verification</Text>
             <IconButton name="X" variant="solid" onClick={onReject} />
           </div>
@@ -80,7 +81,9 @@ export const ReviewModal = ({ result, onAccept, onReject }: Props) => {
 
               {verification.issues.length > 0 && (
                 <div className="flex flex-col gap-1">
-                  <Text light className="font-bold">Issues:</Text>
+                  <Text light className="font-bold">
+                    Issues:
+                  </Text>
                   {verification.issues.map((issue, idx) => (
                     <Card key={idx} color="error" className="pl-2">
                       <Text>{issue}</Text>
@@ -91,7 +94,9 @@ export const ReviewModal = ({ result, onAccept, onReject }: Props) => {
 
               {verification.suggestions.length > 0 && (
                 <div className="flex flex-col gap-1">
-                  <Text light className="font-bold">Suggestions:</Text>
+                  <Text light className="font-bold">
+                    Suggestions:
+                  </Text>
                   {verification.suggestions.map((suggestion, idx) => (
                     <Card key={idx} color="info" className="pl-2">
                       <Text>{suggestion}</Text>
@@ -102,7 +107,7 @@ export const ReviewModal = ({ result, onAccept, onReject }: Props) => {
             </div>
           </Card>
 
-          <div className="flex gap-2 justify-end">
+          <div className="flex justify-end gap-2">
             <IconButton name="X" variant="solid" color="error" onClick={onReject}>
               Close
             </IconButton>
@@ -115,9 +120,9 @@ export const ReviewModal = ({ result, onAccept, onReject }: Props) => {
   const { original, currentTranslation, translations } = result;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50">
-      <Card className="max-w-2xl w-full max-h-[80vh] overflow-auto flex flex-col gap-4">
-        <div className="flex justify-between items-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur">
+      <Card className="flex max-h-[80vh] w-full max-w-2xl flex-col gap-4 overflow-auto">
+        <div className="flex items-center justify-between">
           <Text className="text-xl font-bold">
             {result.type === "translate" ? "Translation Preview" : "Regeneration Preview"}
           </Text>
@@ -134,38 +139,36 @@ export const ReviewModal = ({ result, onAccept, onReject }: Props) => {
           </Card>
         )}
 
-        {translations.length === 0
-          ? (
-            <Card label="Error" color="error">
-              <Text>No translations were generated. Please try again.</Text>
-            </Card>
-          )
-          : (
-            <div className="flex flex-col gap-2">
-              <Text light className="font-bold">
-                {translations.length === 1 ? "Translation:" : "Select a translation:"}
-              </Text>
-              {translations.map((trans, idx) => (
-                <Card
-                  key={idx}
-                  color={selectedIndex === idx ? "info" : "secondary"}
-                  className="cursor-pointer hover:border-info-7 transition-colors"
-                  onClick={() => setSelectedIndex(idx)}
-                >
-                  <div className="flex items-center gap-2">
-                    <IconButton
-                      name={selectedIndex === idx ? "CheckCheck" : "Circle"}
-                      color={selectedIndex === idx ? "info" : "secondary"}
-                      variant="solid"
-                    />
-                    <Text>{trans.translation}</Text>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
+        {translations.length === 0 ? (
+          <Card label="Error" color="error">
+            <Text>No translations were generated. Please try again.</Text>
+          </Card>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <Text light className="font-bold">
+              {translations.length === 1 ? "Translation:" : "Select a translation:"}
+            </Text>
+            {translations.map((trans, idx) => (
+              <Card
+                key={idx}
+                color={selectedIndex === idx ? "info" : "secondary"}
+                className="cursor-pointer transition-colors hover:border-info-7"
+                onClick={() => setSelectedIndex(idx)}
+              >
+                <div className="flex items-center gap-2">
+                  <IconButton
+                    name={selectedIndex === idx ? "CheckCheck" : "Circle"}
+                    color={selectedIndex === idx ? "info" : "secondary"}
+                    variant="solid"
+                  />
+                  <Text>{trans.translation}</Text>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
-        <div className="flex gap-2 justify-end">
+        <div className="flex justify-end gap-2">
           <IconButton name="X" variant="solid" color="error" onClick={onReject}>
             Cancel
           </IconButton>

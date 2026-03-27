@@ -51,11 +51,13 @@ export const stringifyPdfBuffer = async (buffer: ArrayBuffer): Promise<string | 
   const document = await readPdfDocument(buffer);
   if (!document) return undefined;
 
-  const contents = await Promise.all(Array.from({ length: document.numPages }, async (_, i) => {
-    const page = await document.getPage(i + 1);
+  const contents = await Promise.all(
+    Array.from({ length: document.numPages }, async (_, i) => {
+      const page = await document.getPage(i + 1);
 
-    return await page.getTextContent();
-  }));
+      return await page.getTextContent();
+    }),
+  );
 
   const strs: string[] = [];
   for (const content of contents) {
@@ -75,7 +77,9 @@ export const stringifyPdfBuffer = async (buffer: ArrayBuffer): Promise<string | 
       line.push(item);
     }
 
-    const lines = linesGroups.entries().toArray()
+    const lines = linesGroups
+      .entries()
+      .toArray()
       .sort((a, b) => b[0] - a[0])
       .map(([, items]) => items.sort((a, b) => a.transform[4] - b.transform[4]));
 
@@ -105,7 +109,8 @@ export const stringifyPdfBuffer = async (buffer: ArrayBuffer): Promise<string | 
     }
   }
 
-  return strs.join("\n")
+  return strs
+    .join("\n")
     .replace(/(\w+)-\n(\w+)/g, "$1$2")
     .replace(/  +/g, " ")
     .replace(/\n{3,}/g, "\n\n")

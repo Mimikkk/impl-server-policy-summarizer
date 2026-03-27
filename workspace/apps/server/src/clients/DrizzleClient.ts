@@ -5,9 +5,7 @@ import { schema } from "@persistence/schema.ts";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
 import { createRequire } from "node:module";
-const { pushSQLiteSchema } = createRequire(import.meta.url)(
-  "drizzle-kit/api",
-) as typeof import("drizzle-kit/api");
+const { pushSQLiteSchema } = createRequire(import.meta.url)("drizzle-kit/api") as typeof import("drizzle-kit/api");
 
 const db = createClient({ url: Environment.Database.Url });
 
@@ -26,15 +24,16 @@ if (hasDataLoss) {
   Logger.warn(warnings, "[DrizzleClient] warnings detected.");
 }
 
-const { version } = await DrizzleClient.get<{ version: string }>(
-  sql`select sqlite_version() as version`,
-);
+const { version } = await DrizzleClient.get<{ version: string }>(sql`select sqlite_version() as version`);
 const { tablesCount } = await DrizzleClient.get<{ tablesCount: number }>(
   sql`select count(*) as tablesCount from sqlite_master where type = 'table'`,
 );
 
-Logger.info({
-  "LibSQL Version": version,
-  "Tables Count": tablesCount,
-  "Database URL": Environment.Database.Url,
-}, "[DrizzleClient] initialized.");
+Logger.info(
+  {
+    "LibSQL Version": version,
+    "Tables Count": tablesCount,
+    "Database URL": Environment.Database.Url,
+  },
+  "[DrizzleClient] initialized.",
+);

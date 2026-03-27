@@ -11,4 +11,3 @@ export const buttonColorMap = {
   target: "success",
   none: undefined,
 } as const;
-

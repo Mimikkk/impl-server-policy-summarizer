@@ -14,23 +14,30 @@ export class PdfService {
   ) {}
 
   async extract({ type, ref }: TextSource): Promise<TextExtraction | undefined> {
-    let entity = await this.database.select()
+    let entity = await this.database
+      .select()
       .from(TextExtractionResource.table)
       .where(and(eq(TextExtractionResource.table.sourceType, type), eq(TextExtractionResource.table.sourceRef, ref)))
       .get();
     if (entity) return entity;
 
-    const buffer = await fetch(ref).then((response) => response.arrayBuffer()).catch(() => undefined);
+    const buffer = await fetch(ref)
+      .then((response) => response.arrayBuffer())
+      .catch(() => undefined);
     if (!buffer) return undefined;
 
     const content = await stringifyPdfBuffer(buffer);
     if (!content) return undefined;
 
-    entity = await this.database.insert(TextExtractionResource.table).values({
-      sourceType: type,
-      sourceRef: ref,
-      content,
-    }).returning().get();
+    entity = await this.database
+      .insert(TextExtractionResource.table)
+      .values({
+        sourceType: type,
+        sourceRef: ref,
+        content,
+      })
+      .returning()
+      .get();
 
     return entity;
   }
@@ -47,7 +54,8 @@ export class PdfService {
   async summarize(extraction: TextExtraction): Promise<TextSummary | undefined> {
     if (!extraction) return undefined;
 
-    const entity = await this.database.select()
+    const entity = await this.database
+      .select()
       .from(TextSummaryResource.table)
       .where(eq(TextSummaryResource.table.textExtractionId, extraction.id))
       .get();
@@ -88,26 +96,32 @@ export class PdfService {
       const { success, data } = PdfService.#summarySchema.safeParse(JSON.parse(response));
       if (!success) continue;
 
-      return await this.database.insert(TextSummaryResource.table).values({
-        textExtractionId: extraction.id,
-        details: data.details,
-        summary: data.summary,
-        takeaways: data.takeaways,
-      }).returning().get();
+      return await this.database
+        .insert(TextSummaryResource.table)
+        .values({
+          textExtractionId: extraction.id,
+          details: data.details,
+          summary: data.summary,
+          takeaways: data.takeaways,
+        })
+        .returning()
+        .get();
     }
 
     return undefined;
   }
 
   async extraction(id: string): Promise<TextExtraction | undefined> {
-    return await this.database.select()
+    return await this.database
+      .select()
       .from(TextExtractionResource.table)
       .where(eq(TextExtractionResource.table.id, id))
       .get();
   }
 
   async summary(id: string): Promise<TextSummary | undefined> {
-    return await this.database.select()
+    return await this.database
+      .select()
       .from(TextSummaryResource.table)
       .where(eq(TextSummaryResource.table.textExtractionId, id))
       .get();

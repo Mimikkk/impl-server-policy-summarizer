@@ -98,10 +98,7 @@ function useContextSelector<TValue, TResult>(
 
   const result = select(value);
   const [state, dispatch] = useReducer(
-    (
-      previous: readonly [TValue | undefined, TResult],
-      action?: ListenerAction<TValue>,
-    ) => {
+    (previous: readonly [TValue | undefined, TResult], action?: ListenerAction<TValue>) => {
       if (!action) {
         return [value, result] as const;
       }

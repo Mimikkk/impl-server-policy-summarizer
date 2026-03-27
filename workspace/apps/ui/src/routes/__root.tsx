@@ -21,7 +21,7 @@ export const Route = createRootRouteWithContext()({
       <>
         <Sidebar />
         <div
-          className="relative flex flex-col py-4 gap-2 h-full transition-all duration-300 md:pl-16"
+          className="relative flex h-full flex-col gap-2 py-4 transition-all duration-300 md:pl-16"
           style={{ paddingLeft: isSidebarOpen ? "12rem" : undefined }}
         >
           <div className="container mx-auto">
@@ -31,12 +31,7 @@ export const Route = createRootRouteWithContext()({
             <Outlet />
           </div>
           <DevTools />
-          <ThemeButton
-            className="fixed bottom-4 right-4"
-            mode={mode}
-            theme={theme}
-            onChangeMode={setMode}
-          />
+          <ThemeButton className="fixed right-4 bottom-4" mode={mode} theme={theme} onChangeMode={setMode} />
         </div>
       </>
     );
@@ -44,8 +39,8 @@ export const Route = createRootRouteWithContext()({
   notFoundComponent: memo(function NotFoundComponent() {
     return (
       <div className="container mx-auto py-4">
-        <Card className="w-full flex flex-col items-center" color="info">
-          <Text className="flex items-center text-2xl gap-1">
+        <Card className="flex w-full flex-col items-center" color="info">
+          <Text className="flex items-center gap-1 text-2xl">
             <Icon name="Cat" size="lg" />
             Oh no! 404
           </Text>

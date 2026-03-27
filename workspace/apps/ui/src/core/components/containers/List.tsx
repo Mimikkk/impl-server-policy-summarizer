@@ -17,9 +17,15 @@ export interface ListProps<T> {
   count?: number;
 }
 
-export const List = <T,>(
-  { children, className, maxHeight = 400, items, estimateSize, overscan = 4, count }: ListProps<T>,
-) => {
+export const List = <T,>({
+  children,
+  className,
+  maxHeight = 400,
+  items,
+  estimateSize,
+  overscan = 4,
+  count,
+}: ListProps<T>) => {
   const listRef = useRef<HTMLDivElement | null>(null);
   const contentsRef = useRef<HTMLDivElement>(null);
 
@@ -45,9 +51,11 @@ export const List = <T,>(
   return (
     <div ref={listRef} className={clsx("overflow-auto", className)}>
       <For ref={contentsRef} each={rows} as="div" className="relative">
-        {useCallback(({ index, start, size, end, key, lane }: VirtualItem, i: number) => (
-          children({ item: items[index], end, key, lane, size, start, index }, i)
-        ), [items, children])}
+        {useCallback(
+          ({ index, start, size, end, key, lane }: VirtualItem, i: number) =>
+            children({ item: items[index], end, key, lane, size, start, index }, i),
+          [items, children],
+        )}
       </For>
     </div>
   );

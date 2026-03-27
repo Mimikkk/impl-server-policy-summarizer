@@ -9,7 +9,9 @@ export const EliResource = defineEntity({
   resourceName: "eli",
   columns: {
     eli: text("eli").notNull().unique(),
-    summaryId: text("summary_id").references(() => TextSummaryResource.table.id).unique(),
+    summaryId: text("summary_id")
+      .references(() => TextSummaryResource.table.id)
+      .unique(),
   },
   refine: {
     eli: (z) =>

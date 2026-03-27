@@ -2,12 +2,14 @@ import { z } from "@hono/zod-openapi";
 import { EndpointMetricsExample, EndpointMetricsSchema } from "../resources/EndpointMetrics.ts";
 import { GlobalMetricsExample, GlobalMetricsSchema } from "../resources/GlobalMetrics.ts";
 
-export const MetricsSchema = z.object({
-  startTs: z.number().describe("Start timestamp"),
-  uptimeMs: z.number().describe("Uptime in milliseconds"),
-  global: GlobalMetricsSchema,
-  endpoints: z.record(z.string(), EndpointMetricsSchema).describe("Metrics per endpoint"),
-}).openapi("Metrics - Results - Metrics", { description: "Comprehensive metrics metrics" });
+export const MetricsSchema = z
+  .object({
+    startTs: z.number().describe("Start timestamp"),
+    uptimeMs: z.number().describe("Uptime in milliseconds"),
+    global: GlobalMetricsSchema,
+    endpoints: z.record(z.string(), EndpointMetricsSchema).describe("Metrics per endpoint"),
+  })
+  .openapi("Metrics - Results - Metrics", { description: "Comprehensive metrics metrics" });
 
 export type Metrics = z.infer<typeof MetricsSchema>;
 

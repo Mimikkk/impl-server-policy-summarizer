@@ -15,19 +15,17 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;
 }
 
-export const Button = memo<ButtonProps>(function Button(
-  {
-    children,
-    variant = "solid",
-    color = "secondary",
-    className,
-    compact,
-    as: As = "button",
-    square = false,
-    active,
-    ...props
-  },
-) {
+export const Button = memo<ButtonProps>(function Button({
+  children,
+  variant = "solid",
+  color = "secondary",
+  className,
+  compact,
+  as: As = "button",
+  square = false,
+  active,
+  ...props
+}) {
   const isInButtonGroup = ButtonGroupContext.use();
 
   return (

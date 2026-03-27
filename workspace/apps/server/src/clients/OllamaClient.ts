@@ -24,7 +24,7 @@ export class OllamaClient {
   }
 
   async #prepare(model: string): Promise<this> {
-    Logger.info({ "Model": model }, "[OllamaClient] [prepare] model preparing...");
+    Logger.info({ Model: model }, "[OllamaClient] [prepare] model preparing...");
 
     const stream = await this.api.pull({ model, stream: true });
     for await (const response of stream) {
@@ -32,12 +32,15 @@ export class OllamaClient {
         Logger.info("[OllamaClient] [prepare:success] model prepared.");
       } else {
         if (response.status === "pulling manifest" || !response.status.startsWith("pulling")) {
-          Logger.info({ "Status": response.status }, "[OllamaClient] [prepare:progress]");
+          Logger.info({ Status: response.status }, "[OllamaClient] [prepare:progress]");
         } else {
-          Logger.info({
-            "Status": response.status,
-            "Progress": `${Math.round(response.completed / response.total * 100)}%`,
-          }, "[OllamaClient] [prepare:progress]");
+          Logger.info(
+            {
+              Status: response.status,
+              Progress: `${Math.round((response.completed / response.total) * 100)}%`,
+            },
+            "[OllamaClient] [prepare:progress]",
+          );
         }
       }
     }

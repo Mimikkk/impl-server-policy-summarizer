@@ -30,15 +30,11 @@ const Tree = memo<RouteTreeItemProps>(({ route, path, depth = 1, onPathChange })
     <Card className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-2">
-          <Text color="info">
-            {depth}
-          </Text>
+          <Text color="info">{depth}</Text>
           <span>-</span>
-          <Text light={!isActive}>
-            {route.path}
-          </Text>
+          <Text light={!isActive}>{route.path}</Text>
         </span>
-        <Button variant="text" onClick={handleClick} disabled={isActive} className="text-xs px-2 w-16">
+        <Button variant="text" onClick={handleClick} disabled={isActive} className="w-16 px-2 text-xs">
           {isActive ? "Current" : "Navigate"}
         </Button>
       </div>
@@ -94,10 +90,13 @@ const useCurrentRouterPath = () => {
   const router = useRouter();
   const [current, setCurrent] = useState(router.state.location.pathname);
 
-  useEffect(() =>
-    router.subscribe("onBeforeNavigate", (state) => {
-      setCurrent(state.toLocation.pathname);
-    }), []);
+  useEffect(
+    () =>
+      router.subscribe("onBeforeNavigate", (state) => {
+        setCurrent(state.toLocation.pathname);
+      }),
+    [],
+  );
 
   return current;
 };

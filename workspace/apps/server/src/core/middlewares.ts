@@ -20,7 +20,7 @@ export const withContainer: MiddlewareHandler<{ Variables: Container }> = async 
 };
 
 export const withRequestMonitor: MiddlewareHandler<{ Variables: Container }> = async (context, next) => {
-  const { metrics: metrics } = context.var;
+  const { metrics } = context.var;
   const key = `${context.req.method}:${context.req.url.split("?")[0]}`;
 
   const startTimeMs = Date.now();

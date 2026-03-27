@@ -31,10 +31,7 @@ const GlobalResponses = {
   },
 } satisfies Record<number, ResponseOpenApiSchema>;
 
-interface ResponseOptions<
-  TShape extends ResponseShape,
-  TType extends ResponseType,
-> {
+interface ResponseOptions<TShape extends ResponseShape, TType extends ResponseType> {
   schema: TShape;
   description: string;
   example?: z.infer<TShape>;
@@ -69,18 +66,22 @@ const ResponsesContext = {
         description: `The ${upperFirst(entity.options.resourceName)} resource`,
       }),
     notfound: defineResponse({
-      schema: z.object({
-        status: z.number().describe("The error code."),
-        message: z.string().describe("The error message."),
-      }).openapi("Core - Errors - NotFoundErrorResponse"),
+      schema: z
+        .object({
+          status: z.number().describe("The error code."),
+          message: z.string().describe("The error message."),
+        })
+        .openapi("Core - Errors - NotFoundErrorResponse"),
       example: { status: 404, message: "Resource not found." },
       description: "Resource not found",
     }),
     unprocessable: defineResponse({
-      schema: z.object({
-        status: z.number().describe("The error code."),
-        message: z.string().describe("The error message."),
-      }).openapi("Core - Errors - UnprocessableEntityErrorResponse"),
+      schema: z
+        .object({
+          status: z.number().describe("The error code."),
+          message: z.string().describe("The error message."),
+        })
+        .openapi("Core - Errors - UnprocessableEntityErrorResponse"),
       example: { status: 422, message: "Failed to process the entity." },
       description: "Failed to process the entity",
     }),

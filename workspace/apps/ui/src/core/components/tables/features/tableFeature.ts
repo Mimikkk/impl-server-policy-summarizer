@@ -10,18 +10,16 @@ export interface TableFeature<TContent, TState, TOptions> {
   [StateSymbol]: TState;
 }
 
-export type FeatureContentOf<TFeature extends TableFeature<any, any, any>> = TFeature extends
-  TableFeature<infer TContent, any, any> ? TContent : never;
+export type FeatureContentOf<TFeature extends TableFeature<any, any, any>> =
+  TFeature extends TableFeature<infer TContent, any, any> ? TContent : never;
 
-export type FeatureOptionsOf<TFeature extends TableFeature<any, any, any>> = TFeature extends
-  TableFeature<any, any, infer TOptions> ? TOptions : never;
+export type FeatureOptionsOf<TFeature extends TableFeature<any, any, any>> =
+  TFeature extends TableFeature<any, any, infer TOptions> ? TOptions : never;
 
-export type FeatureStateOf<TFeature extends TableFeature<any, any, any>> = TFeature extends
-  TableFeature<any, infer TState, any> ? TState : never;
+export type FeatureStateOf<TFeature extends TableFeature<any, any, any>> =
+  TFeature extends TableFeature<any, infer TState, any> ? TState : never;
 
-export interface FeatureBuilder<
-  TFeature extends TableFeature<any, any, any>,
-> {
+export interface FeatureBuilder<TFeature extends TableFeature<any, any, any>> {
   <TTable extends Table<any, any>>(api: TTable, options: FeatureOptionsOf<TFeature>): FeatureContentOf<TFeature>;
 }
 

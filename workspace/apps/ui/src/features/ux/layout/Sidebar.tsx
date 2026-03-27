@@ -43,12 +43,7 @@ export const Sidebar = memo(function Sidebar() {
 
   return (
     <div className="contents">
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
-          onClick={toggleSidebar}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden" onClick={toggleSidebar} />}
       <aside
         className={cx(
           "@container fixed left-0 top-0 h-full bg-primary-2 border-r border-primary-6 shadow-lg z-50",
@@ -65,9 +60,7 @@ export const Sidebar = memo(function Sidebar() {
           )}
         >
           {internalIsOpen && (
-            <Text className="font-semibold text-primary-12 text-sm truncate @max-[65px]:hidden">
-              Navigation
-            </Text>
+            <Text className="truncate text-sm font-semibold text-primary-12 @max-[65px]:hidden">Navigation</Text>
           )}
           <IconButton
             name={isOpen ? "PanelLeftClose" : "PanelLeftOpen"}
@@ -77,7 +70,7 @@ export const Sidebar = memo(function Sidebar() {
             className="shrink-0"
           />
         </div>
-        <nav className="flex flex-col gap-1 px-2 flex-1">
+        <nav className="flex flex-1 flex-col gap-1 px-2">
           {links.map((item) => {
             const isActive = currentPath.startsWith(item.to);
 
@@ -96,11 +89,9 @@ export const Sidebar = memo(function Sidebar() {
                 )}
                 title={!isOpen ? item.label : undefined}
               >
-                <Icon name={item.icon} className="text-secondary-12 shrink-0" />
+                <Icon name={item.icon} className="shrink-0 text-secondary-12" />
                 {internalIsOpen && (
-                  <span className="truncate font-medium text-sm @max-[65px]:hidden">
-                    {item.label}
-                  </span>
+                  <span className="truncate text-sm font-medium @max-[65px]:hidden">{item.label}</span>
                 )}
               </Link>
             );

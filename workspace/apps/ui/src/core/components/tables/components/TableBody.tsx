@@ -52,26 +52,25 @@ export const TableBodyRow = memo<{ columns: TableColumn<any, any>[]; row: TableR
     return (
       <tr
         className={clsx(
-          `
-              flex w-full absolute top-0 left-0
-              divide-x divide-primary-6
-              hover:bg-primary-4 bg-primary-5 data-even:bg-primary-6
-            `,
+          `absolute top-0 left-0 flex w-full divide-x divide-primary-6 bg-primary-5 hover:bg-primary-4 data-even:bg-primary-6`,
           className,
         )}
       >
-        {columns.map((column) => <TableBodyRowCell key={column.id} row={row} column={column} />)}
+        {columns.map((column) => (
+          <TableBodyRowCell key={column.id} row={row} column={column} />
+        ))}
       </tr>
     );
   },
 );
 
-export const TableBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(
-  function TableBodyRowCell({ row, column }) {
-    return (
-      <td className="flex items-center grow w-full flex-1 overflow-auto">
-        <column.BodyRowCell column={column} row={row} />
-      </td>
-    );
-  },
-);
+export const TableBodyRowCell = memo<{ row: TableRow<any>; column: TableColumn<any, any> }>(function TableBodyRowCell({
+  row,
+  column,
+}) {
+  return (
+    <td className="flex w-full flex-1 grow items-center overflow-auto">
+      <column.BodyRowCell column={column} row={row} />
+    </td>
+  );
+});

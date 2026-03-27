@@ -10,29 +10,31 @@ export interface FieldProps extends HTMLAttributes<HTMLFieldSetElement> {
   disabled?: boolean;
 }
 
-export const Field = memo(
-  function Field(
-    { id, label, children, color = "primary", variant = "solid", className, disabled, ...props }: FieldProps,
-  ) {
-    return (
-      <fieldset
-        {...props}
-        className={cx(
-          "min-w-0 relative rounded-xs",
-          uiElementClass({ color, variant, disabled, usesDisabled: true }),
-          className,
-        )}
-      >
-        {label && (
-          <label
-            htmlFor={id}
-            className={`absolute -top-2 left-2 text-xs px-1 rounded-xs bg-${color}-2 text-${color}-11`}
-          >
-            {label}
-          </label>
-        )}
-        {children}
-      </fieldset>
-    );
-  },
-);
+export const Field = memo(function Field({
+  id,
+  label,
+  children,
+  color = "primary",
+  variant = "solid",
+  className,
+  disabled,
+  ...props
+}: FieldProps) {
+  return (
+    <fieldset
+      {...props}
+      className={cx(
+        "min-w-0 relative rounded-xs",
+        uiElementClass({ color, variant, disabled, usesDisabled: true }),
+        className,
+      )}
+    >
+      {label && (
+        <label htmlFor={id} className={`absolute -top-2 left-2 rounded-xs px-1 text-xs bg-${color}-2 text-${color}-11`}>
+          {label}
+        </label>
+      )}
+      {children}
+    </fieldset>
+  );
+});

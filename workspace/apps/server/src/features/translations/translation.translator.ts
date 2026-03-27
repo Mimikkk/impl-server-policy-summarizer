@@ -18,10 +18,14 @@ export const translateSchema = z.object({
   sourceLanguage: z.string().openapi({ example: "en", description: "The source language" }),
   targetLanguage: z.string().openapi({ example: "pl", description: "The target language" }),
   original: z.string().openapi({ example: "Hello, how are you?", description: "The original text" }),
-  alternativesCount: z.number().optional().openapi({
-    example: 1,
-    description: "The number of alternatives to generate",
-  }).default(1),
+  alternativesCount: z
+    .number()
+    .optional()
+    .openapi({
+      example: 1,
+      description: "The number of alternatives to generate",
+    })
+    .default(1),
 });
 
 export type TranslatePayload = z.infer<typeof translateSchema>;
@@ -45,9 +49,14 @@ export class TranslationTranslator {
     "Use simple, clear language suitable for all audiences.",
   ];
 
-  async translate(
-    { samples, context, sourceLanguage, targetLanguage, original, alternativesCount }: TranslatePayload,
-  ): Promise<Translation[]> {
+  async translate({
+    samples,
+    context,
+    sourceLanguage,
+    targetLanguage,
+    original,
+    alternativesCount,
+  }: TranslatePayload): Promise<Translation[]> {
     const systemPrompt = this.#buildSystemPrompt({ context, sourceLanguage, targetLanguage });
     const previousTranslations: string[] = [];
     const results: Translation[] = [];
@@ -84,9 +93,15 @@ export class TranslationTranslator {
     return results;
   }
 
-  #buildSystemPrompt(
-    { context, sourceLanguage, targetLanguage }: { context?: string; sourceLanguage: string; targetLanguage: string },
-  ): string {
+  #buildSystemPrompt({
+    context,
+    sourceLanguage,
+    targetLanguage,
+  }: {
+    context?: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+  }): string {
     return compactMessage(`
       You are a professional translation engine. You translate text from ${sourceLanguage} to ${targetLanguage}.
       ${context ? `Context: ${context}` : ""}
@@ -99,30 +114,33 @@ export class TranslationTranslator {
     `);
   }
 
-  #buildUserPrompt(
-    { samples, original, sourceLanguage, targetLanguage, alternativeIndex, previousTranslations }: {
-      samples?: TranslationSample[];
-      original: string;
-      sourceLanguage: string;
-      targetLanguage: string;
-      alternativeIndex: number;
-      previousTranslations: string[];
-    },
-  ): string {
+  #buildUserPrompt({
+    samples,
+    original,
+    sourceLanguage,
+    targetLanguage,
+    alternativeIndex,
+    previousTranslations,
+  }: {
+    samples?: TranslationSample[];
+    original: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+    alternativeIndex: number;
+    previousTranslations: string[];
+  }): string {
     const chunks: string[] = [];
 
     if (samples && samples.length > 0) {
       chunks.push(
         "Here are some example translations:\n",
-        ...samples.map((sample) =>
-          `${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`
+        ...samples.map(
+          (sample) => `${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`,
         ),
       );
     }
 
-    chunks.push(
-      `Now translate this text from ${sourceLanguage} to ${targetLanguage}:\n${original}\n`,
-    );
+    chunks.push(`Now translate this text from ${sourceLanguage} to ${targetLanguage}:\n${original}\n`);
 
     if (previousTranslations.length > 0) {
       chunks.push(

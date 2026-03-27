@@ -1,8 +1,11 @@
 {
   "name": "impl-server-policy-summarizer",
   "private": true,
-  "workspaces": ["workspace/apps/*"],
   "scripts": {
+    "lint": "oxlint --react-plugin --import-plugin workspace/apps",
+    "lint:fix": "oxlint --fix --react-plugin --import-plugin workspace/apps",
+    "fmt": "oxfmt workspace/apps",
+    "fmt:check": "oxfmt --check workspace/apps",
     "typecheck": "bun run typecheck:server && bun run typecheck:ui",
     "typecheck:server": "tsc -p workspace/apps/server/tsconfig.json --noEmit",
     "typecheck:ui": "tsc -p workspace/apps/ui/tsconfig.json --noEmit",
@@ -17,7 +20,9 @@
   "devDependencies": {
     "@rsbuild/core": "1.7.4",
     "@rsbuild/plugin-react": "^1.4.6",
-    "concurrently": "^9.1.2",
-    "typescript": "^5.8.2"
+    "concurrently": "^9.2.1",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
+    "typescript": "^6.0.2"
   }
 }

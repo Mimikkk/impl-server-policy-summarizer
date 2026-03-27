@@ -38,7 +38,8 @@ export const TextSummaryResource = defineEntity({
   resourceName: "textSummary",
   columns: {
     textExtractionId: text("text_extraction_id")
-      .notNull().references(() => TextExtractionResource.table.id),
+      .notNull()
+      .references(() => TextExtractionResource.table.id),
     summary: text("summary").notNull(),
     details: text("details").notNull(),
     takeaways: text("takeaways", { mode: "json" }).$type<string[]>().notNull(),

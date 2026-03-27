@@ -15,7 +15,7 @@ export const ControlPanel = () => {
   }));
 
   return (
-    <div className="flex flex-col gap-2 max-w-80">
+    <div className="flex max-w-80 flex-col gap-2">
       <IconButton
         name={showMissingTranslations ? "EyeOff" : "Eye"}
         variant="solid"

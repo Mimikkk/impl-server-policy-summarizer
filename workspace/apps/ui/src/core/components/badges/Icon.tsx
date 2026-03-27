@@ -30,9 +30,7 @@ function stringifyIcon(name: IconName, size: Size): string {
   if (!cache.has(key)) {
     const IconComponent = icons[name];
     import("lucide-react");
-    const svg = renderToStaticMarkup(
-      createElement(IconComponent, { className: sizes[size] }),
-    );
+    const svg = renderToStaticMarkup(createElement(IconComponent, { className: sizes[size] }));
 
     cache.set(key, svg);
   }

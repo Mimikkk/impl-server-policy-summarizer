@@ -12,12 +12,15 @@ export const Breadcrumbs = memo(function Breadcrumbs() {
     <div className="flex items-center gap-1">
       <Text light>Location:</Text>
       <span className="flex items-center gap-1">
-        <Button variant="text" className="flex px-1 gap-1">
+        <Button variant="text" className="flex gap-1 px-1">
           <Icon name="HdmiPort" /> Home
         </Button>
         {parts.length ? <span>/</span> : null}
         {parts.map((part, index, parts) => (
-          <Button variant="text" className="px-1" key={part}>{part}{index < parts.length - 1 && <span>/</span>}</Button>
+          <Button variant="text" className="px-1" key={part}>
+            {part}
+            {index < parts.length - 1 && <span>/</span>}
+          </Button>
         ))}
       </span>
     </div>

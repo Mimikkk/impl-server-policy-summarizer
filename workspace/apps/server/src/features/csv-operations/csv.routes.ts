@@ -50,22 +50,24 @@ HonoClient.openapi(
       body: {
         content: {
           "application/json": {
-            schema: z.object({
-              headers: z.record(z.string(), z.string()).openapi({
-                description: "Mapping of column keys to display names",
-                example: { firstName: "First Name", lastName: "Last Name" },
+            schema: z
+              .object({
+                headers: z.record(z.string(), z.string()).openapi({
+                  description: "Mapping of column keys to display names",
+                  example: { firstName: "First Name", lastName: "Last Name" },
+                }),
+                data: z.array(z.record(z.string(), z.union([z.string(), z.number()]))).openapi({
+                  description: "Array of data rows matching the header keys",
+                  example: [
+                    { firstName: "John", lastName: "Doe" },
+                    { firstName: "Jane", lastName: "Smith" },
+                  ],
+                }),
+              })
+              .openapi({
+                title: "ExportCSVRequest",
+                description: "Request to create a CSV file from JSON data",
               }),
-              data: z.array(z.record(z.string(), z.union([z.string(), z.number()]))).openapi({
-                description: "Array of data rows matching the header keys",
-                example: [
-                  { firstName: "John", lastName: "Doe" },
-                  { firstName: "Jane", lastName: "Smith" },
-                ],
-              }),
-            }).openapi({
-              title: "ExportCSVRequest",
-              description: "Request to create a CSV file from JSON data",
-            }),
           },
         },
       },

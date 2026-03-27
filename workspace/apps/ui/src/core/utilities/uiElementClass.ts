@@ -38,19 +38,17 @@ const variants = {
         transition-colors duration-100
         `,
 };
-export const uiElementClass = (
-  {
-    color,
-    light = false,
-    disabled = false,
-    usesDisabled = false,
-    variant = "solid",
-    interactive = true,
-    active = false,
-    square = false,
-    group = false,
-  }: UIOptions,
-) => {
+export const uiElementClass = ({
+  color,
+  light = false,
+  disabled = false,
+  usesDisabled = false,
+  variant = "solid",
+  interactive = true,
+  active = false,
+  square = false,
+  group = false,
+}: UIOptions) => {
   let template = variants[variant];
 
   if (group) {
@@ -76,7 +74,5 @@ export const uiElementClass = (
   }
 
   const lightStr = light ? "11" : "12";
-  return template
-    .replaceAll("{{color}}", color)
-    .replaceAll("{{is-light}}", lightStr);
+  return template.replaceAll("{{color}}", color).replaceAll("{{is-light}}", lightStr);
 };

@@ -15,7 +15,7 @@ export interface Store<TState> {
   ) => TResult;
 }
 
-export const createStore = <TState,>(initialState: TState): Store<TState> => {
+export const createStore = <TState>(initialState: TState): Store<TState> => {
   const listeners = new Set<() => void>();
   let state = initialState;
 

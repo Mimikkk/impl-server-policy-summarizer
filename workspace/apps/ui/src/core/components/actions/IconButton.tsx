@@ -7,9 +7,16 @@ export interface IconButtonProps extends ButtonProps {
   iconClassName?: string;
 }
 
-export const IconButton = memo<IconButtonProps>(function IconButton(
-  { variant = "text", name, compact, children, square = !children, active, iconClassName, ...props },
-) {
+export const IconButton = memo<IconButtonProps>(function IconButton({
+  variant = "text",
+  name,
+  compact,
+  children,
+  square = !children,
+  active,
+  iconClassName,
+  ...props
+}) {
   return (
     <Button variant={variant} compact={compact} square={square} active={active} {...props}>
       <Icon name={name} size={compact ? "sm" : "md"} className={iconClassName} />

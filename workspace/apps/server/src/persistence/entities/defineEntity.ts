@@ -41,12 +41,12 @@ export interface EntityOptions<
 }
 
 const entityFields = {
-  id: text("id").primaryKey()
-    .$default(createUuid),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull()
-    .$default(createTimestamp),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull()
-    .$default(createTimestamp).$onUpdate(createTimestamp),
+  id: text("id").primaryKey().$default(createUuid),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull().$default(createTimestamp),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$default(createTimestamp)
+    .$onUpdate(createTimestamp),
 };
 
 const entityRefine = {
@@ -83,13 +83,13 @@ export const defineEntity = <
   const TName extends string,
   const TFields extends Record<keyof TFields, SQLiteColumnBuilderBase>,
   const TRefine extends ResultRefine<TName, TFields>,
->(
-  { tableName, resourceName, columns: fields, refine: schemaRefine, description }: EntityOptions<
-    TName,
-    TFields,
-    TRefine
-  >,
-): Entity<TName, TFields, TRefine> => {
+>({
+  tableName,
+  resourceName,
+  columns: fields,
+  refine: schemaRefine,
+  description,
+}: EntityOptions<TName, TFields, TRefine>): Entity<TName, TFields, TRefine> => {
   const table = sqliteTable(tableName, { ...fields, ...entityFields });
 
   const refine = {
@@ -97,10 +97,9 @@ export const defineEntity = <
     ...schemaRefine,
   } as never;
 
-  const schema = createSelectSchema(table, refine).openapi(
-    `Resources - ${upperFirst(resourceName)}Resource`,
-    { description },
-  ) as never;
+  const schema = createSelectSchema(table, refine).openapi(`Resources - ${upperFirst(resourceName)}Resource`, {
+    description,
+  }) as never;
 
   return { table, schema, options: { tableName, resourceName } };
 };

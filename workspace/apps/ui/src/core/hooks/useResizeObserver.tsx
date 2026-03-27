@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 
-export const useResizeObserver = ({ onChange, onStart }: {
+export const useResizeObserver = ({
+  onChange,
+  onStart,
+}: {
   onStart?: (observer: ResizeObserver) => void;
   onChange: ResizeObserverCallback;
 }) => {

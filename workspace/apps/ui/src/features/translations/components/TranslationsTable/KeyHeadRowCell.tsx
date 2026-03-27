@@ -5,26 +5,19 @@ import type { TableColumn } from "@core/components/tables/types.ts";
 import { memo } from "react";
 
 export const KeyHeadRowCell = memo<{ column: TableColumn<any, any> }>(function KeyColumnCellContent({ column }) {
-  const { value, set } = TableContext.use(
-    (s) => {
-      const { get, set } = s.features.columnFilters.of("key");
+  const { value, set } = TableContext.use((s) => {
+    const { get, set } = s.features.columnFilters.of("key");
 
-      return ({ value: get(), set });
-    },
-  );
+    return { value: get(), set };
+  });
 
   return (
     <div className="flex flex-col items-center">
-      <div className="flex justify-between w-full items-center h-7">
+      <div className="flex h-7 w-full items-center justify-between">
         <span className="px-3 first-letter:capitalize">{column.label}</span>
       </div>
-      <div className="flex justify-between w-full items-center h-7">
-        <InputField
-          compact
-          value={value}
-          onValueChange={set}
-          className="h-full w-full"
-        />
+      <div className="flex h-7 w-full items-center justify-between">
+        <InputField compact value={value} onValueChange={set} className="h-full w-full" />
         <IconButton name="Search" variant="solid" />
       </div>
     </div>

@@ -11,7 +11,10 @@ export class TranslationService {
   public readonly translate: typeof TranslationTranslator.prototype.translate;
   public readonly regenerate: typeof TranslationRegenerator.prototype.regenerate;
   public readonly verify: typeof TranslationVerifier.prototype.verify;
-  private constructor(public readonly llm: Container["llm"], public readonly logger: Container["logger"]) {
+  private constructor(
+    public readonly llm: Container["llm"],
+    public readonly logger: Container["logger"],
+  ) {
     const context = { llm, logger };
     const translator = TranslationTranslator.new(context);
     const regenerator = TranslationRegenerator.new(context);

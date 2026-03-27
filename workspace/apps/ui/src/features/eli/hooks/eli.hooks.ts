@@ -27,11 +27,10 @@ interface UseOptionsOptions<T> {
   sortBy?: (a: T, b: T) => number;
 }
 
-export const defineUseOptions = <T>({ valueBy, labelBy, sortBy }: UseOptionsOptions<T>) => (items: Nil<T[]>) =>
-  useMemo(
-    () => {
+export const defineUseOptions =
+  <T>({ valueBy, labelBy, sortBy }: UseOptionsOptions<T>) =>
+  (items: Nil<T[]>) =>
+    useMemo(() => {
       const sorted = (sortBy ? items?.sort(sortBy) : items) ?? [];
       return sorted.map((item) => ({ value: valueBy(item), label: labelBy(item) }));
-    },
-    [items],
-  );
+    }, [items]);

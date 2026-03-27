@@ -25,7 +25,7 @@ const isEditingParam = Param.boolean({ key: "is-editing" });
 const StorageParam = Param.new<Storage>({
   key: "translations-storage",
   serialize: (value) => JSON.stringify(value),
-  deserialize: (value) => value ? JSON.parse(value) : undefined,
+  deserialize: (value) => (value ? JSON.parse(value) : undefined),
 });
 
 const useStorage = () => {
@@ -54,7 +54,7 @@ const useStorage = () => {
       const result = updater(s);
       if (result === undefined) return s;
 
-      return ({ ...s, version: Date.now(), ...result });
+      return { ...s, version: Date.now(), ...result };
     });
   }, []);
 
@@ -79,7 +79,8 @@ export const TranslationsViewContext = defineContext(() => {
   useEffect(() => {
     translationsTable.features.externFilters.set([
       ({ values }) =>
-        !showMissingTranslations || Object.entries(values).some(([id, value]) => {
+        !showMissingTranslations ||
+        Object.entries(values).some(([id, value]) => {
           if (id === "key") return false;
           return value === "";
         }),
@@ -110,7 +111,7 @@ export const TranslationsViewContext = defineContext(() => {
       }
 
       setFocusedCell({ rowId: (s?.contents?.length ?? 0).toString(), columnId: "key" });
-      return ({ contents: [...s?.contents ?? [], { key: "", value: "" }] });
+      return { contents: [...(s?.contents ?? []), { key: "", value: "" }] };
     });
 
     const element = translationsTable.refs.table?.parentElement;
@@ -134,7 +135,7 @@ export const TranslationsViewContext = defineContext(() => {
         if (!result) return;
       }
 
-      return ({ contents: s?.contents?.filter((_, index) => index !== +rowId) ?? [] });
+      return { contents: s?.contents?.filter((_, index) => index !== +rowId) ?? [] };
     });
   }, []);
 
@@ -144,9 +145,8 @@ export const TranslationsViewContext = defineContext(() => {
     }));
 
     requestAnimationFrame(() => {
-      const theadCellLastElement = translationsTable.refs.table?.querySelector<HTMLElement>(
-        "thead th:last-child input",
-      );
+      const theadCellLastElement =
+        translationsTable.refs.table?.querySelector<HTMLElement>("thead th:last-child input");
 
       if (theadCellLastElement) {
         theadCellLastElement.focus();
@@ -169,7 +169,7 @@ export const TranslationsViewContext = defineContext(() => {
         delete item[columnId];
       }
 
-      return ({ contents });
+      return { contents };
     });
   }, []);
 
@@ -177,13 +177,19 @@ export const TranslationsViewContext = defineContext(() => {
   const [processingCells, setProcessingCells] = useState<Set<string>>(new Set());
   const [processingColumns, setProcessingColumns] = useState<Set<string>>(new Set());
 
-  const isCellProcessing = useCallback((rowId: string, columnId: string) => {
-    return processingCells.has(getCellKey(rowId, columnId));
-  }, [processingCells, getCellKey]);
+  const isCellProcessing = useCallback(
+    (rowId: string, columnId: string) => {
+      return processingCells.has(getCellKey(rowId, columnId));
+    },
+    [processingCells, getCellKey],
+  );
 
-  const isColumnProcessing = useCallback((columnId: string) => {
-    return processingColumns.has(columnId);
-  }, [processingColumns]);
+  const isColumnProcessing = useCallback(
+    (columnId: string) => {
+      return processingColumns.has(columnId);
+    },
+    [processingColumns],
+  );
 
   const addProcessingColumn = useCallback((columnId: string) => {
     setProcessingColumns((prev) => new Set(prev).add(columnId));
@@ -197,174 +203,201 @@ export const TranslationsViewContext = defineContext(() => {
     });
   }, []);
 
-  const addProcessingCell = useCallback((rowId: string, columnId: string) => {
-    setProcessingCells((prev) => new Set(prev).add(getCellKey(rowId, columnId)));
-  }, [getCellKey]);
+  const addProcessingCell = useCallback(
+    (rowId: string, columnId: string) => {
+      setProcessingCells((prev) => new Set(prev).add(getCellKey(rowId, columnId)));
+    },
+    [getCellKey],
+  );
 
-  const removeProcessingCell = useCallback((rowId: string, columnId: string) => {
-    setProcessingCells((prev) => {
-      const next = new Set(prev);
-      next.delete(getCellKey(rowId, columnId));
-      return next;
-    });
-  }, [getCellKey]);
+  const removeProcessingCell = useCallback(
+    (rowId: string, columnId: string) => {
+      setProcessingCells((prev) => {
+        const next = new Set(prev);
+        next.delete(getCellKey(rowId, columnId));
+        return next;
+      });
+    },
+    [getCellKey],
+  );
 
   const [sourceLanguage, setSourceLanguage] = sourceLanguageParam.use();
 
   const [resultsQueue, setResultsQueue] = useState<PreviewResult[]>([]);
   const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(null);
 
-  const buildSamples = useCallback((columnId: string, rowId?: string): TranslationSample[] => {
-    if (!storage?.contents || !sourceLanguage) return [];
+  const buildSamples = useCallback(
+    (columnId: string, rowId?: string): TranslationSample[] => {
+      if (!storage?.contents || !sourceLanguage) return [];
 
-    return storage.contents
-      .filter((_, index) => rowId === undefined || index.toString() !== rowId)
-      .map((row) => ({
-        original: row[sourceLanguage] || "",
-        translation: row[columnId] || "",
-      }))
-      .filter((sample) => sample.original && sample.translation)
-      .slice(0, 20);
-  }, [storage?.contents, sourceLanguage]);
+      return storage.contents
+        .filter((_, index) => rowId === undefined || index.toString() !== rowId)
+        .map((row) => ({
+          original: row[sourceLanguage] || "",
+          translation: row[columnId] || "",
+        }))
+        .filter((sample) => sample.original && sample.translation)
+        .slice(0, 20);
+    },
+    [storage?.contents, sourceLanguage],
+  );
 
-  const handleCellTranslate = useCallback(async (rowId: string, columnId: string) => {
-    if (!sourceLanguage || !storage?.contents) {
-      alert("Please select both source and target languages.");
-      return;
-    }
+  const handleCellTranslate = useCallback(
+    async (rowId: string, columnId: string) => {
+      if (!sourceLanguage || !storage?.contents) {
+        alert("Please select both source and target languages.");
+        return;
+      }
 
-    const row = storage.contents[+rowId];
-    if (!row) return;
+      const row = storage.contents[+rowId];
+      if (!row) return;
 
-    const original = row[sourceLanguage];
-    if (!original) {
-      alert("Source language cell is empty.");
-      return;
-    }
+      const original = row[sourceLanguage];
+      if (!original) {
+        alert("Source language cell is empty.");
+        return;
+      }
 
-    addProcessingCell(rowId, columnId);
+      addProcessingCell(rowId, columnId);
 
-    try {
-      const samples = buildSamples(rowId);
-      const result = await ServerClient.translate({
-        samples,
-        sourceLanguage,
-        targetLanguage: columnId,
-        original,
-        alternativesCount: 3,
-      });
+      try {
+        const samples = buildSamples(rowId);
+        const result = await ServerClient.translate({
+          samples,
+          sourceLanguage,
+          targetLanguage: columnId,
+          original,
+          alternativesCount: 3,
+        });
 
-      setResultsQueue((prev) => [...prev, {
-        type: "translate",
-        original,
-        currentTranslation: row[columnId],
-        translations: result.translations,
-        rowId,
-        columnId,
-      }]);
-    } catch (error) {
-      console.error("Translation failed:", error);
-      alert("Translation failed. Please try again.");
-    } finally {
-      removeProcessingCell(rowId, columnId);
-    }
-  }, [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
+        setResultsQueue((prev) => [
+          ...prev,
+          {
+            type: "translate",
+            original,
+            currentTranslation: row[columnId],
+            translations: result.translations,
+            rowId,
+            columnId,
+          },
+        ]);
+      } catch (error) {
+        console.error("Translation failed:", error);
+        alert("Translation failed. Please try again.");
+      } finally {
+        removeProcessingCell(rowId, columnId);
+      }
+    },
+    [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell],
+  );
 
-  const handleCellRegenerate = useCallback(async (rowId: string, columnId: string) => {
-    if (!sourceLanguage || !storage?.contents) {
-      alert("Please select both source and target languages.");
-      return;
-    }
+  const handleCellRegenerate = useCallback(
+    async (rowId: string, columnId: string) => {
+      if (!sourceLanguage || !storage?.contents) {
+        alert("Please select both source and target languages.");
+        return;
+      }
 
-    const row = storage.contents[+rowId];
-    if (!row) return;
+      const row = storage.contents[+rowId];
+      if (!row) return;
 
-    const original = row[sourceLanguage];
-    const translation = row[columnId];
+      const original = row[sourceLanguage];
+      const translation = row[columnId];
 
-    if (!original) {
-      alert("Source language cell is empty.");
-      return;
-    }
+      if (!original) {
+        alert("Source language cell is empty.");
+        return;
+      }
 
-    if (!translation) {
-      alert("Target translation is empty. Use translate instead.");
-      return;
-    }
+      if (!translation) {
+        alert("Target translation is empty. Use translate instead.");
+        return;
+      }
 
-    addProcessingCell(rowId, columnId);
+      addProcessingCell(rowId, columnId);
 
-    try {
-      const samples = buildSamples(rowId);
-      const result = await ServerClient.regenerate({
-        samples,
-        sourceLanguage,
-        targetLanguage: columnId,
-        original,
-        translation,
-        alternativesCount: 3,
-      });
+      try {
+        const samples = buildSamples(rowId);
+        const result = await ServerClient.regenerate({
+          samples,
+          sourceLanguage,
+          targetLanguage: columnId,
+          original,
+          translation,
+          alternativesCount: 3,
+        });
 
-      setResultsQueue((prev) => [...prev, {
-        type: "regenerate",
-        original,
-        currentTranslation: translation,
-        translations: result.translations,
-        rowId,
-        columnId,
-      }]);
-    } catch (error) {
-      console.error("Regeneration failed:", error);
-      alert("Regeneration failed. Please try again.");
-    } finally {
-      removeProcessingCell(rowId, columnId);
-    }
-  }, [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
+        setResultsQueue((prev) => [
+          ...prev,
+          {
+            type: "regenerate",
+            original,
+            currentTranslation: translation,
+            translations: result.translations,
+            rowId,
+            columnId,
+          },
+        ]);
+      } catch (error) {
+        console.error("Regeneration failed:", error);
+        alert("Regeneration failed. Please try again.");
+      } finally {
+        removeProcessingCell(rowId, columnId);
+      }
+    },
+    [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell],
+  );
 
-  const handleCellVerify = useCallback(async (rowId: string, columnId: string) => {
-    if (!sourceLanguage || !storage?.contents) {
-      alert("Please select both source and target languages.");
-      return;
-    }
+  const handleCellVerify = useCallback(
+    async (rowId: string, columnId: string) => {
+      if (!sourceLanguage || !storage?.contents) {
+        alert("Please select both source and target languages.");
+        return;
+      }
 
-    const row = storage.contents[+rowId];
-    if (!row) return;
+      const row = storage.contents[+rowId];
+      if (!row) return;
 
-    const original = row[sourceLanguage];
-    const translation = row[columnId];
+      const original = row[sourceLanguage];
+      const translation = row[columnId];
 
-    if (!original || !translation) {
-      alert("Both source and target cells must have content.");
-      return;
-    }
+      if (!original || !translation) {
+        alert("Both source and target cells must have content.");
+        return;
+      }
 
-    addProcessingCell(rowId, columnId);
+      addProcessingCell(rowId, columnId);
 
-    try {
-      const samples = buildSamples(rowId);
-      const verification = await ServerClient.verify({
-        samples,
-        sourceLanguage,
-        targetLanguage: columnId,
-        original,
-        translation,
-      });
+      try {
+        const samples = buildSamples(rowId);
+        const verification = await ServerClient.verify({
+          samples,
+          sourceLanguage,
+          targetLanguage: columnId,
+          original,
+          translation,
+        });
 
-      setResultsQueue((prev) => [...prev, {
-        type: "verify",
-        original,
-        translation,
-        verification,
-        rowId,
-        columnId,
-      }]);
-    } catch (error) {
-      console.error("Verification failed:", error);
-      alert("Verification failed. Please try again.");
-    } finally {
-      removeProcessingCell(rowId, columnId);
-    }
-  }, [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell]);
+        setResultsQueue((prev) => [
+          ...prev,
+          {
+            type: "verify",
+            original,
+            translation,
+            verification,
+            rowId,
+            columnId,
+          },
+        ]);
+      } catch (error) {
+        console.error("Verification failed:", error);
+        alert("Verification failed. Please try again.");
+      } finally {
+        removeProcessingCell(rowId, columnId);
+      }
+    },
+    [sourceLanguage, storage?.contents, buildSamples, addProcessingCell, removeProcessingCell],
+  );
 
   const handleColumnFillInMissingTranslations = useCallback(async (language: string) => {
     addProcessingColumn(language);
@@ -394,34 +427,40 @@ export const TranslationsViewContext = defineContext(() => {
 
   // review module
 
-  const hasPendingReview = useCallback((rowId: string, columnId: string) => {
-    return resultsQueue.some((result) => result.rowId === rowId && result.columnId === columnId);
-  }, [resultsQueue]);
+  const hasPendingReview = useCallback(
+    (rowId: string, columnId: string) => {
+      return resultsQueue.some((result) => result.rowId === rowId && result.columnId === columnId);
+    },
+    [resultsQueue],
+  );
 
   const handleSelectResult = useCallback((index: number) => {
     setSelectedResultIndex(index);
   }, []);
 
-  const currentResult = selectedResultIndex !== null ? resultsQueue[selectedResultIndex] ?? null : null;
-  const handlePreviewAccept = useCallback((selectedTranslation?: string) => {
-    if (selectedResultIndex === null || !currentResult) {
-      return;
-    }
+  const currentResult = selectedResultIndex !== null ? (resultsQueue[selectedResultIndex] ?? null) : null;
+  const handlePreviewAccept = useCallback(
+    (selectedTranslation?: string) => {
+      if (selectedResultIndex === null || !currentResult) {
+        return;
+      }
 
-    if (currentResult.type !== "verify" && selectedTranslation) {
-      const { rowId, columnId } = currentResult;
-      updateStorage((s) => {
-        const contents = structuredClone(s?.contents ?? []);
-        if (contents[+rowId]) {
-          contents[+rowId][columnId] = selectedTranslation;
-        }
-        return { contents };
-      });
-    }
+      if (currentResult.type !== "verify" && selectedTranslation) {
+        const { rowId, columnId } = currentResult;
+        updateStorage((s) => {
+          const contents = structuredClone(s?.contents ?? []);
+          if (contents[+rowId]) {
+            contents[+rowId][columnId] = selectedTranslation;
+          }
+          return { contents };
+        });
+      }
 
-    setResultsQueue((prev) => prev.filter((_, idx) => idx !== selectedResultIndex));
-    setSelectedResultIndex(null);
-  }, [selectedResultIndex, currentResult, updateStorage]);
+      setResultsQueue((prev) => prev.filter((_, idx) => idx !== selectedResultIndex));
+      setSelectedResultIndex(null);
+    },
+    [selectedResultIndex, currentResult, updateStorage],
+  );
 
   const handlePreviewReject = useCallback(() => {
     if (selectedResultIndex === null) {

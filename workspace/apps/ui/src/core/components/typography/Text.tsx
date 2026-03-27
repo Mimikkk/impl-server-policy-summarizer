@@ -8,19 +8,24 @@ interface TextProps extends PropsWithChildren, HTMLAttributes<HTMLDivElement> {
   className?: string;
   ellipsis?: boolean;
 }
-export const Text = memo(
-  function Text({ color = "primary", light, children, className, ellipsis, ...props }: TextProps) {
-    return (
-      <span
-        className={cx(
-          `text-${color}-${light ? 11 : 12}`,
-          className,
-          ellipsis && "text-ellipsis overflow-hidden whitespace-nowrap",
-        )}
-        {...props}
-      >
-        {children}
-      </span>
-    );
-  },
-);
+export const Text = memo(function Text({
+  color = "primary",
+  light,
+  children,
+  className,
+  ellipsis,
+  ...props
+}: TextProps) {
+  return (
+    <span
+      className={cx(
+        `text-${color}-${light ? 11 : 12}`,
+        className,
+        ellipsis && "text-ellipsis overflow-hidden whitespace-nowrap",
+      )}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+});

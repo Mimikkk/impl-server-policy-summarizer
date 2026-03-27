@@ -51,9 +51,14 @@ export class TranslationVerifier {
     private readonly logger: Container["logger"],
   ) {}
 
-  async verify(
-    { samples, context, sourceLanguage, targetLanguage, original, translation }: VerifyPayload,
-  ): Promise<Verification | undefined> {
+  async verify({
+    samples,
+    context,
+    sourceLanguage,
+    targetLanguage,
+    original,
+    translation,
+  }: VerifyPayload): Promise<Verification | undefined> {
     const systemPrompt = this.#buildSystemPrompt({ context, sourceLanguage, targetLanguage });
     const userPrompt = this.#buildUserPrompt({
       samples,
@@ -79,9 +84,15 @@ export class TranslationVerifier {
     }
   }
 
-  #buildSystemPrompt(
-    { context, sourceLanguage, targetLanguage }: { context?: string; sourceLanguage: string; targetLanguage: string },
-  ): string {
+  #buildSystemPrompt({
+    context,
+    sourceLanguage,
+    targetLanguage,
+  }: {
+    context?: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+  }): string {
     return compactMessage(`
       You are a translation quality evaluator. You verify translations from ${sourceLanguage} to ${targetLanguage}.
       ${context ? `Context: ${context}` : ""}
@@ -99,22 +110,26 @@ export class TranslationVerifier {
     `);
   }
 
-  #buildUserPrompt(
-    { samples, original, translation, sourceLanguage, targetLanguage }: {
-      samples?: TranslationSample[];
-      original: string;
-      translation: string;
-      sourceLanguage: string;
-      targetLanguage: string;
-    },
-  ): string {
+  #buildUserPrompt({
+    samples,
+    original,
+    translation,
+    sourceLanguage,
+    targetLanguage,
+  }: {
+    samples?: TranslationSample[];
+    original: string;
+    translation: string;
+    sourceLanguage: string;
+    targetLanguage: string;
+  }): string {
     const chunks: string[] = [];
 
     if (samples && samples.length > 0) {
       chunks.push(
         "Here are some reference translations for comparison:",
-        ...samples.map((sample) =>
-          `- ${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`
+        ...samples.map(
+          (sample) => `- ${sample.original} (${sourceLanguage}) -> ${sample.translation} (${targetLanguage})`,
         ),
       );
     }

@@ -6,13 +6,17 @@ interface ResponseResponseOptions<TStatus extends number, TName extends string> 
   example: { message: string; status: TStatus };
 }
 
-const ResponseSchema = <const TStatus extends number, const TName extends string>(
-  { status, name, example }: ResponseResponseOptions<TStatus, TName>,
-): z.ZodObject<{ message: z.ZodString; status: z.ZodLiteral<TStatus> }> =>
-  z.object({
-    message: z.string().describe("The error message of the response."),
-    status: z.literal(status).describe("The status code of the response."),
-  }).openapi(name, { example });
+const ResponseSchema = <const TStatus extends number, const TName extends string>({
+  status,
+  name,
+  example,
+}: ResponseResponseOptions<TStatus, TName>): z.ZodObject<{ message: z.ZodString; status: z.ZodLiteral<TStatus> }> =>
+  z
+    .object({
+      message: z.string().describe("The error message of the response."),
+      status: z.literal(status).describe("The status code of the response."),
+    })
+    .openapi(name, { example });
 
 export const badRequestResponse = {
   status: 400,

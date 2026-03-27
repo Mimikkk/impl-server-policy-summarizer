@@ -1,15 +1,14 @@
 import type { ColumnId, Table, TableColumn } from "../types.ts";
 import type { FeatureContentOf, FeatureOptionsOf, TableFeature } from "./tableFeature.ts";
 
-export interface SearchFilterFeature extends
-  TableFeature<
-    {
-      get: () => string;
-      set: (value: string) => void;
-    },
-    { value: string },
-    { value: string }
-  > {}
+export interface SearchFilterFeature extends TableFeature<
+  {
+    get: () => string;
+    set: (value: string) => void;
+  },
+  { value: string },
+  { value: string }
+> {}
 
 export const createSearchFeature = <TData, TColumns extends TableColumn<TData, ColumnId<TData>>[]>(
   api: Table<TData, TColumns>,

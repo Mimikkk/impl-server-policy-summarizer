@@ -23,12 +23,10 @@ export const TranslationsStats = () => {
   }));
 
   return (
-    <div className="flex items-center gap-1 col-span-full">
+    <div className="col-span-full flex items-center gap-1">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-1">
-          <Text light>
-            Filtered rows:
-          </Text>
+          <Text light>Filtered rows:</Text>
           <div className="flex items-center gap-1">
             <span>{counts.filtered}</span>
             <span>/</span>

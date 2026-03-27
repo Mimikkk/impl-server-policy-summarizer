@@ -13,8 +13,7 @@ import {
 import { IconButton } from "../../actions/IconButton.tsx";
 import { Text } from "../../typography/Text.tsx";
 
-export interface CardProps
-  extends PropsWithChildren<HTMLAttributes<HTMLDivElement>> {
+export interface CardProps extends PropsWithChildren<HTMLAttributes<HTMLDivElement>> {
   color?: ColorName;
   className?: string;
   label?: ReactNode;
@@ -26,18 +25,16 @@ export interface CardProps
   maxizable?: boolean;
 }
 
-export const Card = memo<CardProps>(function Card(
-  {
-    children,
-    className,
-    label,
-    compact,
-    color = "primary",
-    slots,
-    maxizable,
-    ...props
-  },
-) {
+export const Card = memo<CardProps>(function Card({
+  children,
+  className,
+  label,
+  compact,
+  color = "primary",
+  slots,
+  maxizable,
+  ...props
+}) {
   const [isMaximized, setIsMaximized] = useState(false);
 
   const handleMaximize = useCallback(() => {
@@ -62,11 +59,7 @@ export const Card = memo<CardProps>(function Card(
   }, [isMaximized]);
 
   const maximize = maxizable && (
-    <IconButton
-      key="maximize"
-      name={isMaximized ? "Minimize" : "Maximize"}
-      onClick={handleMaximize}
-    />
+    <IconButton key="maximize" name={isMaximized ? "Minimize" : "Maximize"} onClick={handleMaximize} />
   );
 
   const content = (
@@ -75,58 +68,42 @@ export const Card = memo<CardProps>(function Card(
       aria-modal={isMaximized ? "true" : undefined}
       {...props}
       className={cx(
-        `
-            relative
-            bg-${color}-1
-            border rounded-sm border-${color}-6 
-            hover:border-${color}-10
-            active:border-${color}-10
-            shadow-sm
-            transition-colors
-        `,
+        `relative bg-${color}-1 rounded-sm border border-${color}-6 hover:border-${color}-10 active:border-${color}-10 shadow-sm transition-colors`,
         label && "mt-2",
         isMaximized ? "w-full" : undefined,
-        compact ? undefined : (label ? "p-4 pb-2" : "px-4 py-2"),
+        compact ? undefined : label ? "p-4 pb-2" : "px-4 py-2",
         className,
       )}
     >
       {label && (
         <Text
           light
-          className={`
-            absolute -top-2 left-2
-            max-w-[calc(100%-1rem)]
-            px-1
-            bg-${color}-2 
-            rounded-xs
-            text-xs truncate
-          `}
+          className={`absolute -top-2 left-2 max-w-[calc(100%-1rem)] px-1 bg-${color}-2 truncate rounded-xs text-xs`}
         >
           {label}
         </Text>
       )}
       {children}
-      {!!slots?.icons?.length || maximize && (
-            <div
-              className={cx(
-                "absolute flex gap-0.5",
-                slots?.iconsPosition === "bottom-right"
-                  ? "bottom-2 right-2"
-                  : "top-2 right-2",
-              )}
-            >
-              {slots?.icons?.map((icon, index) => (
-                <div key={index}>{icon}</div>
-              ))}
-              {maximize}
-            </div>
-          )}
+      {!!slots?.icons?.length ||
+        (maximize && (
+          <div
+            className={cx(
+              "absolute flex gap-0.5",
+              slots?.iconsPosition === "bottom-right" ? "bottom-2 right-2" : "top-2 right-2",
+            )}
+          >
+            {slots?.icons?.map((icon, index) => (
+              <div key={index}>{icon}</div>
+            ))}
+            {maximize}
+          </div>
+        ))}
     </div>
   );
 
   if (isMaximized) {
     return (
-      <div className="rounded-sm fixed z-50 top-0 left-0 w-full h-full px-10 py-6 mx-auto backdrop-blur-sm *:h-full flex items-center justify-center">
+      <div className="fixed top-0 left-0 z-50 mx-auto flex h-full w-full items-center justify-center rounded-sm px-10 py-6 backdrop-blur-sm *:h-full">
         {content}
       </div>
     );

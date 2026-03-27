@@ -3,19 +3,18 @@ import type { ColumnId, Table, TableColumn } from "../types.ts";
 import type { FeatureContentOf, FeatureOptionsOf, TableFeature } from "./tableFeature.ts";
 
 export type ColumnFilterRecord<TData> = Partial<Record<ColumnId<TData>, string>>;
-export interface ColumnFiltersFeature<TData> extends
-  TableFeature<
-    {
-      of: (columnId: ColumnId<TData>) => {
-        get: () => string;
-        set: (value: string) => void;
-      };
-      get: () => ColumnFilterRecord<TData>;
-      set: (value: ColumnFilterRecord<TData>) => void;
-    },
-    { record: ColumnFilterRecord<TData> },
-    { record: ColumnFilterRecord<TData> }
-  > {}
+export interface ColumnFiltersFeature<TData> extends TableFeature<
+  {
+    of: (columnId: ColumnId<TData>) => {
+      get: () => string;
+      set: (value: string) => void;
+    };
+    get: () => ColumnFilterRecord<TData>;
+    set: (value: ColumnFilterRecord<TData>) => void;
+  },
+  { record: ColumnFilterRecord<TData> },
+  { record: ColumnFilterRecord<TData> }
+> {}
 
 export const createColumnFiltersFeature = <TData, TColumns extends TableColumn<TData, ColumnId<TData>>[]>(
   api: Table<TData, TColumns>,
@@ -23,7 +22,7 @@ export const createColumnFiltersFeature = <TData, TColumns extends TableColumn<T
 ): FeatureContentOf<ColumnFiltersFeature<TData>> => {
   api.store.get().features.columnFilters.record = options.record;
 
-  return ({
+  return {
     of: memoize((columnId) => ({
       get: () => api.store.get().features.columnFilters.record[columnId] ?? "",
       set: (value) =>
@@ -47,5 +46,5 @@ export const createColumnFiltersFeature = <TData, TColumns extends TableColumn<T
           columnFilters: { ...previous.features.columnFilters, record: value },
         },
       })),
-  });
+  };
 };

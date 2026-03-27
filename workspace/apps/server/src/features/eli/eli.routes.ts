@@ -37,7 +37,10 @@ HonoClient.openapi(
     const url = eli;
 
     let entity = await context.var.database
-      .select().from(EliResource.table).where(eq(EliResource.table.eli, eli)).get();
+      .select()
+      .from(EliResource.table)
+      .where(eq(EliResource.table.eli, eli))
+      .get();
 
     if (!entity) {
       entity = await context.var.database.insert(EliResource.table).values({ eli }).returning().get();

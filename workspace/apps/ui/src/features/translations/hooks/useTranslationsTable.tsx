@@ -11,28 +11,31 @@ interface useTranslationsTableProps {
 }
 
 export const useTranslationsTable = ({ storage }: useTranslationsTableProps) =>
-  useMemo(() =>
-    defineTable({
-      data: storage?.contents ?? [],
-      columns: Object.keys(storage?.contents?.[0] ?? {}).map((key) => ({
-        id: key,
-        label: key,
-        HeadRowCell: key === "key" ? KeyHeadRowCell : LanguageHeadRowCell,
-        BodyRowCell: key === "key" ? KeyBodyRowCell : LanguageBodyRowCell,
-        searchFilter: (value: string, query) => value.toLowerCase().includes(query),
-        columnFilter: (value: string, query) => value.toLowerCase().includes(query),
-      })),
-      props: {
-        bodyRow: {
-          className: `
+  useMemo(
+    () =>
+      defineTable({
+        data: storage?.contents ?? [],
+        columns: Object.keys(storage?.contents?.[0] ?? {}).map((key) => ({
+          id: key,
+          label: key,
+          HeadRowCell: key === "key" ? KeyHeadRowCell : LanguageHeadRowCell,
+          BodyRowCell: key === "key" ? KeyBodyRowCell : LanguageBodyRowCell,
+          searchFilter: (value: string, query) => value.toLowerCase().includes(query),
+          columnFilter: (value: string, query) => value.toLowerCase().includes(query),
+        })),
+        props: {
+          bodyRow: {
+            className: `
             hover:**:data-source:bg-success-4  **:data-source:bg-success-5 data-even:**:data-source:bg-success-6
             hover:**:data-target:bg-info-4 **:data-target:bg-info-5 data-even:**:data-target:bg-info-6
           `,
+          },
         },
-      },
-      options: {
-        externFilters: { list: [] },
-        columnFilters: { record: {} },
-        searchFilter: { value: "" },
-      },
-    }), [storage?.contents]);
+        options: {
+          externFilters: { list: [] },
+          columnFilters: { record: {} },
+          searchFilter: { value: "" },
+        },
+      }),
+    [storage?.contents],
+  );

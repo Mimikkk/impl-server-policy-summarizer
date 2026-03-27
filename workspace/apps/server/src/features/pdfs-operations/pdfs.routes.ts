@@ -6,12 +6,15 @@ import { samples } from "../docs/samples.ts";
 import { TextExtractionResource, TextSummaryResource } from "./pdfs.resource.ts";
 import type { TextSource } from "./pdfs.service.ts";
 
-const sourceContentSchema = z.object({
-  url: z.url().describe("The url containing an pdf file."),
-}).transform((values) => ({ type: "url", ref: values.url }) satisfies TextSource).openapi({
-  title: "URL content",
-  description: "The url containing an pdf file to extract text from.",
-});
+const sourceContentSchema = z
+  .object({
+    url: z.url().describe("The url containing an pdf file."),
+  })
+  .transform((values) => ({ type: "url", ref: values.url }) satisfies TextSource)
+  .openapi({
+    title: "URL content",
+    description: "The url containing an pdf file to extract text from.",
+  });
 export const sourceContentExample = { url: samples.urls.pdf };
 
 HonoClient.openapi(

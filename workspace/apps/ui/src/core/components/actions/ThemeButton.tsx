@@ -16,31 +16,38 @@ const getTitle = (mode: ThemeMode) => {
   return "Toggle to system theme";
 };
 
-export const ThemeButton = memo(
-  function ThemeButton({ className, theme, mode, onChangeMode, ...props }: ThemeButtonProps) {
-    const title = getTitle(mode);
+export const ThemeButton = memo(function ThemeButton({
+  className,
+  theme,
+  mode,
+  onChangeMode,
+  ...props
+}: ThemeButtonProps) {
+  const title = getTitle(mode);
 
-    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       event.stopPropagation();
 
       onChangeMode(ThemeService.next(mode));
-    }, [onChangeMode, mode]);
+    },
+    [onChangeMode, mode],
+  );
 
-    return (
-      <div className={className}>
-        <IconButton
-          className="relative"
-          onClick={handleClick}
-          title={title}
-          aria-label={title}
-          {...props}
-          name={theme === "dark" ? "Moon" : "Sun"}
-          square
-        >
-          {mode === "system" && <Icon name="Settings" size="xs" className="absolute top-0 right-0 stroke-3" />}
-        </IconButton>
-      </div>
-    );
-  },
-);
+  return (
+    <div className={className}>
+      <IconButton
+        className="relative"
+        onClick={handleClick}
+        title={title}
+        aria-label={title}
+        {...props}
+        name={theme === "dark" ? "Moon" : "Sun"}
+        square
+      >
+        {mode === "system" && <Icon name="Settings" size="xs" className="absolute top-0 right-0 stroke-3" />}
+      </IconButton>
+    </div>
+  );
+});

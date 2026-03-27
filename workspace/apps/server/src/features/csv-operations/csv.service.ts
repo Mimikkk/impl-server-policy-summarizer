@@ -6,9 +6,7 @@ export class CsvService {
     return new CsvService(logger);
   }
 
-  private constructor(
-    private readonly logger: Container["logger"],
-  ) {}
+  private constructor(private readonly logger: Container["logger"]) {}
 
   async importCsv(file: File): Promise<Record<string, string>[] | undefined> {
     const { promise, resolve } = Promise.withResolvers<Record<string, string>[] | undefined>();

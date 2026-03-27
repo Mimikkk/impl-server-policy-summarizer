@@ -11,14 +11,11 @@ const preparedIcons = Object.entries(icons);
 export const IconPalleteView = () => {
   const [query, setQuery] = useState("");
 
-  const filteredIcons = useMemo(
-    () => {
-      const filter = query.replaceAll(" ", "").toLowerCase();
+  const filteredIcons = useMemo(() => {
+    const filter = query.replaceAll(" ", "").toLowerCase();
 
-      return preparedIcons.filter(([name]) => name.toLowerCase().includes(filter));
-    },
-    [query],
-  );
+    return preparedIcons.filter(([name]) => name.toLowerCase().includes(filter));
+  }, [query]);
 
   const columns = useResponsiveValue({ xl: 12, lg: 8, md: 6, sm: 4, xs: 3 });
   const rowCount = Math.ceil(filteredIcons.length / columns);
@@ -28,26 +25,29 @@ export const IconPalleteView = () => {
       <InputField placeholder="Search..." value={query} onValueChange={setQuery} />
       <Card className="h-[480px] overflow-auto">
         <List items={filteredIcons} estimateSize={82 + 2} maxHeight={440} count={rowCount}>
-          {useCallback(({ key, start, index }: ListItem<[string, ComponentType]>, i: number) => (
-            <For
-              key={key}
-              each={filteredIcons.slice(index * columns, (index + 1) * columns)}
-              as="div"
-              className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-2 absolute left-0 top-0 w-full"
-              style={{ transform: `translateY(${start + (i * 2)}px)` }}
-            >
-              {([name, Icon]: [string, ComponentType]) => (
-                <Card
-                  key={name}
-                  onClick={() => navigator.clipboard.writeText(name)}
-                  className="flex flex-col items-center justify-center gap-1 cursor-pointer hover:text-primary-11"
-                >
-                  <Icon />
-                  <Text className="pb-1 text-xs overflow-auto max-w-full select-all">{name}</Text>
-                </Card>
-              )}
-            </For>
-          ), [])}
+          {useCallback(
+            ({ key, start, index }: ListItem<[string, ComponentType]>, i: number) => (
+              <For
+                key={key}
+                each={filteredIcons.slice(index * columns, (index + 1) * columns)}
+                as="div"
+                className="absolute top-0 left-0 grid w-full grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12"
+                style={{ transform: `translateY(${start + i * 2}px)` }}
+              >
+                {([name, Icon]: [string, ComponentType]) => (
+                  <Card
+                    key={name}
+                    onClick={() => navigator.clipboard.writeText(name)}
+                    className="flex cursor-pointer flex-col items-center justify-center gap-1 hover:text-primary-11"
+                  >
+                    <Icon />
+                    <Text className="max-w-full overflow-auto pb-1 text-xs select-all">{name}</Text>
+                  </Card>
+                )}
+              </For>
+            ),
+            [],
+          )}
         </List>
       </Card>
     </div>

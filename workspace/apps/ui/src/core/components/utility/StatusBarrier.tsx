@@ -18,7 +18,7 @@ export const StatusBarrier = memo(function StatusBarrier({ children, status, err
     case "fetching":
     case "pending":
       return (
-        <div className="w-full h-full flex gap-1 items-center justify-center">
+        <div className="flex h-full w-full items-center justify-center gap-1">
           <Loader />
           {loading}
         </div>

@@ -15,25 +15,23 @@ export const PendingReviews = () => {
       className="flex flex-col gap-2"
       label={
         <div className="flex items-center gap-2">
-          <Text light className="font-bold">Pending Reviews:</Text>
-          <Text>{resultsQueue.length} {resultsQueue.length === 1 ? "result" : "results"}</Text>
+          <Text light className="font-bold">
+            Pending Reviews:
+          </Text>
+          <Text>
+            {resultsQueue.length} {resultsQueue.length === 1 ? "result" : "results"}
+          </Text>
         </div>
       }
     >
       {resultsQueue.length === 0 && <div>Add some tasks to get started.</div>}
       <div className="flex flex-wrap gap-2">
         {resultsQueue.slice(0, 6).map((result, idx) => {
-          const icon = result.type === "translate"
-            ? "WandSparkles"
-            : result.type === "regenerate"
-            ? "RotateCcw"
-            : "BrainCircuit";
+          const icon =
+            result.type === "translate" ? "WandSparkles" : result.type === "regenerate" ? "RotateCcw" : "BrainCircuit";
           const color = result.type === "translate" ? "success" : result.type === "regenerate" ? "warning" : "info";
-          const label = result.type === "translate"
-            ? "Translate"
-            : result.type === "regenerate"
-            ? "Regenerate"
-            : "Verify";
+          const label =
+            result.type === "translate" ? "Translate" : result.type === "regenerate" ? "Regenerate" : "Verify";
 
           return (
             <IconButton
@@ -41,7 +39,7 @@ export const PendingReviews = () => {
               name={icon}
               variant="solid"
               color={color}
-              className={selectedResultIndex === idx ? "ring-2 ring-offset-2 ring-info-7" : ""}
+              className={selectedResultIndex === idx ? "ring-2 ring-info-7 ring-offset-2" : ""}
               title={`${label} for row ${result.rowId}, column ${result.columnId}`}
               onClick={() => handleSelectResult(idx)}
             >
@@ -50,12 +48,7 @@ export const PendingReviews = () => {
           );
         })}
         {resultsQueue.length > 6 && (
-          <IconButton
-            name="Plus"
-            variant="solid"
-            color="secondary"
-            title={`${resultsQueue.length - 6} more results`}
-          >
+          <IconButton name="Plus" variant="solid" color="secondary" title={`${resultsQueue.length - 6} more results`}>
             +{resultsQueue.length - 6}
           </IconButton>
         )}

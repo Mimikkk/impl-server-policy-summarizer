@@ -11,13 +11,7 @@ export const TableSearchField = memo(function TableSearchField() {
 
   return (
     <div className="flex">
-      <InputField
-        compact
-        label="Search..."
-        value={value}
-        onValueChange={set}
-        className="w-full"
-      />
+      <InputField compact label="Search..." value={value} onValueChange={set} className="w-full" />
       <IconButton name="Search" variant="solid" />
     </div>
   );

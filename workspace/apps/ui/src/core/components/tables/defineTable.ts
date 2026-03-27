@@ -24,17 +24,12 @@ export interface TableOptions<TData, TColumns extends TableColumn<TData, ColumnI
   };
 }
 
-export const defineTable = <TData, TColumns extends TableColumn<TData, ColumnId<TData>>[]>(
-  {
-    data: initialData,
-    columns,
-    props,
-    options,
-  }: TableOptions<
-    TData,
-    TColumns
-  >,
-): Table<TData, TColumns> => {
+export const defineTable = <TData, TColumns extends TableColumn<TData, ColumnId<TData>>[]>({
+  data: initialData,
+  columns,
+  props,
+  options,
+}: TableOptions<TData, TColumns>): Table<TData, TColumns> => {
   const defaultState = {
     data: initialData,
     columns,

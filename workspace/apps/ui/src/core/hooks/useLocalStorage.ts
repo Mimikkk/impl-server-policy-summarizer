@@ -19,11 +19,14 @@ export const useLocalStorage = <T>({ key, serialize, deserialize }: LocalStorage
 
   useEventListener(
     "local-storage",
-    useCallback((event) => {
-      if (event.detail.key !== key) return;
+    useCallback(
+      (event) => {
+        if (event.detail.key !== key) return;
 
-      setValue(deserialize(event.detail.newValue));
-    }, [key, deserialize]),
+        setValue(deserialize(event.detail.newValue));
+      },
+      [key, deserialize],
+    ),
   );
 
   useEffect(() => {
@@ -39,7 +42,7 @@ export interface ParamOptions<T> {
   deserialize: (value: string | null) => T;
 }
 
-export interface ParamUseOptions<T> {
+export interface ParamUseOptions {
   key?: string;
 }
 
@@ -70,12 +73,18 @@ export class Param<T> {
     });
   }
 
-  static enum<T extends string>(
-    { key, list: values, defaultValue }: { key: string; list: readonly T[]; defaultValue: NoInfer<T> },
-  ): Param<NoInfer<T>> {
+  static enum<T extends string>({
+    key,
+    list: values,
+    defaultValue,
+  }: {
+    key: string;
+    list: readonly T[];
+    defaultValue: NoInfer<T>;
+  }): Param<NoInfer<T>> {
     return Param.new({
       key,
-      serialize: (value) => value === defaultValue ? null : value,
+      serialize: (value) => (value === defaultValue ? null : value),
       deserialize: (value) => values.find((v) => v === value) ?? defaultValue,
     });
   }
@@ -84,21 +93,24 @@ export class Param<T> {
     return Param.new({
       key,
       serialize: (value) => JSON.stringify(value),
-      deserialize: (value) => value ? JSON.parse(value) : undefined,
+      deserialize: (value) => (value ? JSON.parse(value) : undefined),
     });
   }
 
-  use(options?: ParamUseOptions<T>) {
+  use(options?: ParamUseOptions) {
     const key = options?.key ?? this.key;
     const [value, setValue] = useState(() => this.deserialize(LocalStorageService.get(key)));
 
     useEventListener(
       "local-storage",
-      useCallback((event) => {
-        if (event.detail.key !== key) return;
+      useCallback(
+        (event) => {
+          if (event.detail.key !== key) return;
 
-        setValue(this.deserialize(event.detail.newValue));
-      }, [key, this.deserialize]),
+          setValue(this.deserialize(event.detail.newValue));
+        },
+        [key, this.deserialize],
+      ),
     );
 
     useEffect(() => {

@@ -23,8 +23,8 @@ const Content = memo(function Content() {
   return (
     <div className="flex flex-col gap-2">
       <TableSearchField />
-      <div ref={scrollRef} className="overflow-auto block h-[500px] relative border border-primary-6 rounded-sm">
-        <table ref={setupTableRef} className="border-separate w-full" cellSpacing="0" cellPadding="0">
+      <div ref={scrollRef} className="relative block h-[500px] overflow-auto rounded-sm border border-primary-6">
+        <table ref={setupTableRef} className="w-full border-separate" cellSpacing="0" cellPadding="0">
           <TableHead />
           <TableBody />
         </table>

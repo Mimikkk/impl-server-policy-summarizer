@@ -104,11 +104,13 @@ HonoClient.openapi(
     description: "Check the health of the server",
     responses: defineResponses({
       200: {
-        schema: z.object({
-          status: z.string().describe("Health status"),
-          uptimeMs: z.number().describe("Server uptime in milliseconds"),
-          startTs: z.number().describe("Server start timestamp"),
-        }).openapi("Metrics - Results - Health"),
+        schema: z
+          .object({
+            status: z.string().describe("Health status"),
+            uptimeMs: z.number().describe("Server uptime in milliseconds"),
+            startTs: z.number().describe("Server start timestamp"),
+          })
+          .openapi("Metrics - Results - Health"),
         description: "Health status information",
         example: { status: "healthy", uptimeMs: 3600000, startTimeTs: 1703123456789 },
       },

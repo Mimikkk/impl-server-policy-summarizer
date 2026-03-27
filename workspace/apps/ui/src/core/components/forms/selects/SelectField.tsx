@@ -27,100 +27,105 @@ export interface SelectFieldProps<T extends string> {
   id?: string;
 }
 
-export const SelectField = memo(
-  function SelectField<T extends string>(
-    { color = "primary", id, label, onValueChange, className, options, value, disabled }: SelectFieldProps<T>,
-  ) {
-    const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState<T | null>(value ?? null);
+export const SelectField = memo(function SelectField<T extends string>({
+  color = "primary",
+  id,
+  label,
+  onValueChange,
+  className,
+  options,
+  value,
+  disabled,
+}: SelectFieldProps<T>) {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<T | null>(value ?? null);
 
-    useEffect(() => {
-      setSelected(value ?? null);
-    }, [value]);
+  useEffect(() => {
+    setSelected(value ?? null);
+  }, [value]);
 
-    const [query, setQuery] = useState("");
-    const filteredOptions = useMemo(() => {
-      if (!query) return options;
+  const [query, setQuery] = useState("");
+  const filteredOptions = useMemo(() => {
+    if (!query) return options;
 
-      return options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase()));
-    }, [options, query]);
+    return options.filter((option) => option.label.toLowerCase().includes(query.toLowerCase()));
+  }, [options, query]);
 
-    const selectedLabel = useMemo(
-      () => options.find((o) => o.value === selected)?.label ?? "Select option...",
-      [options, selected],
-    );
+  const selectedLabel = useMemo(
+    () => options.find((o) => o.value === selected)?.label ?? "Select option...",
+    [options, selected],
+  );
 
-    const handleSelect = useCallback((value: string) => {
+  const handleSelect = useCallback(
+    (value: string) => {
       const next = value === selected ? null : (value as T);
 
       setSelected(next);
       onValueChange?.(next);
 
       setOpen(false);
-    }, [selected, onValueChange]);
+    },
+    [selected, onValueChange],
+  );
 
-    const triggerRef = useRef<HTMLButtonElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-    const handleResize = useCallback(() => {
-      contentRef.current!.style.width = `${triggerRef.current!.getBoundingClientRect().width}px`;
-    }, [triggerRef, contentRef]);
+  const handleResize = useCallback(() => {
+    contentRef.current!.style.width = `${triggerRef.current!.getBoundingClientRect().width}px`;
+  }, [triggerRef, contentRef]);
 
-    const handleContentRef = useCallback((ref: HTMLDivElement) => {
+  const handleContentRef = useCallback(
+    (ref: HTMLDivElement) => {
       contentRef.current = ref;
       observer.current?.observe(ref);
       handleResize();
       return () => observer.current?.unobserve(ref);
-    }, [contentRef]);
+    },
+    [contentRef],
+  );
 
-    const observer = useResizeObserver({ onChange: handleResize });
+  const observer = useResizeObserver({ onChange: handleResize });
 
-    return (
-      <Field color={color} id={id} label={label} className={className} disabled={disabled}>
-        <Popover.Root open={open && !disabled} onOpenChange={setOpen}>
-          <Popover.Trigger asChild>
-            <Button
-              ref={triggerRef}
-              variant="text"
-              role="combobox"
-              color={color}
-              aria-expanded={open}
-              className="!justify-between gap-2 px-3 py-2 h-8 w-full"
-              disabled={disabled}
-            >
-              <Text ellipsis>{selectedLabel}</Text>
-              <IconButton
-                className="shrink-0"
-                color="secondary"
-                variant="text"
-                as="span"
-                disabled={disabled}
-                name="ChevronDown"
-                compact
-              />
-            </Button>
-          </Popover.Trigger>
-          <Popover.Content
-            ref={handleContentRef}
-            className={cx(
-              uiElementClass({ color, variant: "solid" }),
-              "z-10 px-4 py-2 overflow-auto shadow",
-            )}
-            sideOffset={10}
+  return (
+    <Field color={color} id={id} label={label} className={className} disabled={disabled}>
+      <Popover.Root open={open && !disabled} onOpenChange={setOpen}>
+        <Popover.Trigger asChild>
+          <Button
+            ref={triggerRef}
+            variant="text"
+            role="combobox"
+            color={color}
+            aria-expanded={open}
+            className="h-8 w-full !justify-between gap-2 px-3 py-2"
+            disabled={disabled}
           >
-            <SelectDropdown className="flex flex-col gap-2">
-              <SelectSearch
-                value={query}
-                onValueChange={setQuery}
-                color={color}
-                placeholder="Search options..."
-              />
-              <SelectSeparator color={color} />
-              <Tooltip.TooltipProvider delayDuration={0}>
-                <SelectList>
-                  <SelectEmpty>No options found.</SelectEmpty>
-                  <List items={filteredOptions} estimateSize={28} maxHeight={400}>
-                    {useCallback(({ item: { label, value }, size, key, start }: ListItem<Option<T>>) => {
+            <Text ellipsis>{selectedLabel}</Text>
+            <IconButton
+              className="shrink-0"
+              color="secondary"
+              variant="text"
+              as="span"
+              disabled={disabled}
+              name="ChevronDown"
+              compact
+            />
+          </Button>
+        </Popover.Trigger>
+        <Popover.Content
+          ref={handleContentRef}
+          className={cx(uiElementClass({ color, variant: "solid" }), "z-10 px-4 py-2 overflow-auto shadow")}
+          sideOffset={10}
+        >
+          <SelectDropdown className="flex flex-col gap-2">
+            <SelectSearch value={query} onValueChange={setQuery} color={color} placeholder="Search options..." />
+            <SelectSeparator color={color} />
+            <Tooltip.TooltipProvider delayDuration={0}>
+              <SelectList>
+                <SelectEmpty>No options found.</SelectEmpty>
+                <List items={filteredOptions} estimateSize={28} maxHeight={400}>
+                  {useCallback(
+                    ({ item: { label, value }, size, key, start }: ListItem<Option<T>>) => {
                       return (
                         <Tooltip.Root key={key}>
                           <Tooltip.Trigger asChild>
@@ -134,9 +139,7 @@ export const SelectField = memo(
                               style={{ height: `${size}px`, transform: `translateY(${start}px)` }}
                             >
                               {selected === value && <Icon name="Check" size="sm" />}
-                              <Text ellipsis>
-                                {label}
-                              </Text>
+                              <Text ellipsis>{label}</Text>
                             </SelectOption>
                           </Tooltip.Trigger>
                           <Tooltip.Content
@@ -151,17 +154,18 @@ export const SelectField = memo(
                           </Tooltip.Content>
                         </Tooltip.Root>
                       );
-                    }, [color, handleSelect, selected])}
-                  </List>
-                </SelectList>
-              </Tooltip.TooltipProvider>
-            </SelectDropdown>
-          </Popover.Content>
-        </Popover.Root>
-      </Field>
-    );
-  },
-) as <T extends string>(props: SelectFieldProps<T>) => ReactNode;
+                    },
+                    [color, handleSelect, selected],
+                  )}
+                </List>
+              </SelectList>
+            </Tooltip.TooltipProvider>
+          </SelectDropdown>
+        </Popover.Content>
+      </Popover.Root>
+    </Field>
+  );
+}) as <T extends string>(props: SelectFieldProps<T>) => ReactNode;
 
 function SelectDropdown({ className, ...props }: ComponentProps<typeof CMDK>) {
   return (
@@ -181,11 +185,7 @@ function SelectSearch({ color, className, ...props }: ComponentProps<typeof CMDK
     <div data-slot="command-input-wrapper" className="flex items-center gap-2">
       <CMDK.Input
         data-slot="command-input"
-        className={cx(
-          uiElementClass({ color, variant: "solid" }),
-          className,
-          "w-full outline-none px-2 py-1",
-        )}
+        className={cx(uiElementClass({ color, variant: "solid" }), className, "w-full outline-none px-2 py-1")}
         {...props}
         value={value}
         onValueChange={setValue}
@@ -202,16 +202,10 @@ function SelectEmpty(props: ComponentProps<typeof CMDK.Empty>) {
   return <CMDK.Empty data-slot="command-empty" {...props} />;
 }
 
-function SelectSeparator(
-  { color, className, ...props }: ComponentProps<typeof CMDK.Separator> & { color: ColorName },
-) {
+function SelectSeparator({ color, className, ...props }: ComponentProps<typeof CMDK.Separator> & { color: ColorName }) {
   return (
     <div
-      className={cx(
-        uiElementClass({ color, variant: "solid", interactive: false }),
-        "border-b-0",
-        className,
-      )}
+      className={cx(uiElementClass({ color, variant: "solid", interactive: false }), "border-b-0", className)}
       {...props}
     />
   );

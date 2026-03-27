@@ -21,7 +21,10 @@ const useTableVirtualizer = <TData,>(rows: TableRow<TData>[]) => {
 };
 
 export const TableContext = defineContext(({ table }: { table: Table<any, TableColumn<any, any>[]> }) => {
-  const { store: { use }, rows } = table;
+  const {
+    store: { use },
+    rows,
+  } = table;
   use();
 
   return {

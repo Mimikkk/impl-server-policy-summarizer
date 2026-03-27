@@ -13,4 +13,3 @@ export interface Verification {
   score: number;
   suggestions: string[];
 }
-

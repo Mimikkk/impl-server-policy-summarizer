@@ -10,7 +10,8 @@ export const ThemeContext = defineContext(({ storage }: ThemeContextProps) => {
   const [mode, setMode] = ThemeService.param.use({ key: storage });
 
   const theme = useMemo(
-    () => mode === "system" ? globalThis.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light" : mode,
+    () =>
+      mode === "system" ? (globalThis.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : mode,
     [mode],
   );
 

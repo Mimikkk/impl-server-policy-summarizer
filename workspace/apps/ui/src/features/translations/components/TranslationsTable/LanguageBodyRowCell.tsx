@@ -70,76 +70,72 @@ export const LanguageBodyRowCell = memo<{ row: TableRow<any>; column: TableColum
     const buttonColor = buttonColorMap[type];
     const inputColor = inputColorMap[type];
     return (
-      <div
-        ref={ref}
-        data-source={isSourceLanguage ? "" : undefined}
-        className="flex justify-between h-full w-full"
-      >
-        {isEditing
-          ? (
-            <div className="flex w-full min-w-0">
-              <InputField
-                onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
-                onBlur={() => setFocusedCell(null)}
-                className="w-full"
-                color={inputColor}
-                value={value}
-                onValueChange={setValue}
-                disabled={isProcessing}
-              />
-              <ButtonGroup>
-                {isProcessing && (
-                  <IconButton
-                    title="Processing..."
-                    name="Loader"
-                    variant="solid"
-                    color="warning"
-                    iconClassName="animate-spin"
-                  />
-                )}
-                {isPendingReview && !isProcessing && (
-                  <IconButton
-                    title="Pending review"
-                    name="MessageSquare"
-                    variant="solid"
-                    color="warning"
-                    iconClassName="animate-pulse"
-                  />
-                )}
-                {!isProcessing && (
-                  <>
-                    {!isSourceLanguage && (
-                      <IconButton
-                        title="Translate"
-                        name="WandSparkles"
-                        variant="solid"
-                        color={buttonColor}
-                        onClick={handleTranslate}
-                        className={opacity}
-                      />
-                    )}
+      <div ref={ref} data-source={isSourceLanguage ? "" : undefined} className="flex h-full w-full justify-between">
+        {isEditing ? (
+          <div className="flex w-full min-w-0">
+            <InputField
+              onFocus={() => setFocusedCell({ rowId: row.id, columnId: column.id })}
+              onBlur={() => setFocusedCell(null)}
+              className="w-full"
+              color={inputColor}
+              value={value}
+              onValueChange={setValue}
+              disabled={isProcessing}
+            />
+            <ButtonGroup>
+              {isProcessing && (
+                <IconButton
+                  title="Processing..."
+                  name="Loader"
+                  variant="solid"
+                  color="warning"
+                  iconClassName="animate-spin"
+                />
+              )}
+              {isPendingReview && !isProcessing && (
+                <IconButton
+                  title="Pending review"
+                  name="MessageSquare"
+                  variant="solid"
+                  color="warning"
+                  iconClassName="animate-pulse"
+                />
+              )}
+              {!isProcessing && (
+                <>
+                  {!isSourceLanguage && (
                     <IconButton
-                      title="Verify translation"
-                      name="BrainCircuit"
+                      title="Translate"
+                      name="WandSparkles"
                       variant="solid"
                       color={buttonColor}
-                      onClick={handleVerify}
+                      onClick={handleTranslate}
                       className={opacity}
                     />
-                    <IconButton
-                      title="Regenerate translation"
-                      name="RotateCcw"
-                      variant="solid"
-                      color={buttonColor}
-                      onClick={handleRegenerate}
-                      className={opacity}
-                    />
-                  </>
-                )}
-              </ButtonGroup>
-            </div>
-          )
-          : <span className="truncate text-ellipsis self-center px-[13px]">{value}</span>}
+                  )}
+                  <IconButton
+                    title="Verify translation"
+                    name="BrainCircuit"
+                    variant="solid"
+                    color={buttonColor}
+                    onClick={handleVerify}
+                    className={opacity}
+                  />
+                  <IconButton
+                    title="Regenerate translation"
+                    name="RotateCcw"
+                    variant="solid"
+                    color={buttonColor}
+                    onClick={handleRegenerate}
+                    className={opacity}
+                  />
+                </>
+              )}
+            </ButtonGroup>
+          </div>
+        ) : (
+          <span className="self-center truncate px-[13px] text-ellipsis">{value}</span>
+        )}
       </div>
     );
   },

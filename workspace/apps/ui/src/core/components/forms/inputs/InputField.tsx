@@ -14,33 +14,42 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   compact?: boolean;
   as?: "input" | "textarea";
 }
-export const InputField = memo(
-  function InputField(
-    { id, label, onValueChange, className, color, disabled, compact, as: As = "input", ...props }: InputFieldProps,
-  ) {
-    const [value, setValue] = useDebounceState(props.value ?? "", onValueChange ?? noop);
+export const InputField = memo(function InputField({
+  id,
+  label,
+  onValueChange,
+  className,
+  color,
+  disabled,
+  compact,
+  as: As = "input",
+  ...props
+}: InputFieldProps) {
+  const [value, setValue] = useDebounceState(props.value ?? "", onValueChange ?? noop);
 
-    const handleChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       event.preventDefault();
 
       setValue(event.target.value);
-    }, [setValue]);
+    },
+    [setValue],
+  );
 
-    return (
-      <Field id={id} label={label} className={className} color={color} disabled={disabled}>
-        <As
-          id={id}
-          {...props}
-          value={value}
-          onChange={handleChange}
-          className={clsx(
-            "outline-none w-full h-full px-3 text-ellipsis",
-            compact ? "h-7" : "py-2",
-            As === "textarea" ? "focus:min-h-24 resize-none" : "",
-          )}
-          disabled={disabled}
-        />
-      </Field>
-    );
-  },
-);
+  return (
+    <Field id={id} label={label} className={className} color={color} disabled={disabled}>
+      <As
+        id={id}
+        {...props}
+        value={value}
+        onChange={handleChange}
+        className={clsx(
+          "h-full w-full px-3 text-ellipsis outline-none",
+          compact ? "h-7" : "py-2",
+          As === "textarea" ? "resize-none focus:min-h-24" : "",
+        )}
+        disabled={disabled}
+      />
+    </Field>
+  );
+});

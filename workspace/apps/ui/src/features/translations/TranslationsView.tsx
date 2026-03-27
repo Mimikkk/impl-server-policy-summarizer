@@ -7,12 +7,7 @@ import { TranslationsTable } from "./components/TranslationsTable/TranslationsTa
 import { TranslationsToolbar } from "./components/TranslationsToolbar.tsx";
 
 const Content = () => {
-  const {
-    hasStorage,
-    currentResult,
-    handlePreviewAccept,
-    handlePreviewReject,
-  } = TranslationsViewContext.use((s) => ({
+  const { hasStorage, currentResult, handlePreviewAccept, handlePreviewReject } = TranslationsViewContext.use((s) => ({
     hasStorage: !!s.storage,
     currentResult: s.currentResult,
     handlePreviewAccept: s.handlePreviewAccept,

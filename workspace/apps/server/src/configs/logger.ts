@@ -14,6 +14,9 @@ export const Logger = pino(
   }),
 );
 
-Logger.info({
-  "Logging Level": Environment.Logging.Level,
-}, "[Logger] initialized.");
+Logger.info(
+  {
+    "Logging Level": Environment.Logging.Level,
+  },
+  "[Logger] initialized.",
+);

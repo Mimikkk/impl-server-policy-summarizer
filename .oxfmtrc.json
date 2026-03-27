@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [],
+  "arrowParens": "always",
+  "trailingComma": "all",
+  "printWidth": 120,
+  "tabWidth": 2,
+  "endOfLine": "lf",
+  "insertFinalNewline": true,
+  "embeddedLanguageFormatting": "auto",
+  "sortTailwindcss": {
+    "functions": ["clsx"],
+    "preserveWhitespace": false,
+    "preserveDuplicates": false,
+    "stylesheet": "./workspace/apps/ui/src/configs/tailwindcss/theme.css"
+  }
+}

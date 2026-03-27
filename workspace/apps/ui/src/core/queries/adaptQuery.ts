@@ -23,23 +23,22 @@ type MutationOptions<
   TClient extends ClientRecord<TKey>,
   TKey extends ClientKey<TClient>,
   TContext extends AdaptResult<TClient, any, any>,
-> =
-  & Omit<
-    UseMutationOptions<Awaited<ReturnType<TClient[TKey]>>, Error, Parameters<TClient[TKey]>>,
-    "mutationKey" | "mutationFn"
-  >
-  & {
-    toInvalidate: (values: {
-      data: Awaited<ReturnType<TClient[TKey]>>;
-      variables: Parameters<TClient[TKey]>;
-      client: QueryClient;
-      context: TContext;
-    }) => Promise<QueryKey[]> | QueryKey[];
-  };
+> = Omit<
+  UseMutationOptions<Awaited<ReturnType<TClient[TKey]>>, Error, Parameters<TClient[TKey]>>,
+  "mutationKey" | "mutationFn"
+> & {
+  toInvalidate: (values: {
+    data: Awaited<ReturnType<TClient[TKey]>>;
+    variables: Parameters<TClient[TKey]>;
+    client: QueryClient;
+    context: TContext;
+  }) => Promise<QueryKey[]> | QueryKey[];
+};
 
-interface AdaptMutationOptions<M extends Method>
-  extends Omit<UseMutationOptions<Awaited<ReturnType<M>>, Error, Parameters<M>>, "mutationKey" | "mutationFn"> {
-}
+interface AdaptMutationOptions<M extends Method> extends Omit<
+  UseMutationOptions<Awaited<ReturnType<M>>, Error, Parameters<M>>,
+  "mutationKey" | "mutationFn"
+> {}
 
 interface AdaptMutationResult<M extends Method> {
   (options?: AdaptMutationOptions<M>): UseMutationResult<Awaited<ReturnType<M>>, Error, Parameters<M>>;
@@ -74,11 +73,10 @@ const adaptToMutation = <
   };
 };
 
-interface QueryOptions<TClient extends ClientRecord<TKey>, TKey extends ClientKey<TClient>> extends
-  Omit<
-    UseQueryOptions<Awaited<ReturnType<TClient[TKey]>>, Error, Awaited<ReturnType<TClient[TKey]>>>,
-    "queryKey" | "queryFn" | "select"
-  > {}
+interface QueryOptions<TClient extends ClientRecord<TKey>, TKey extends ClientKey<TClient>> extends Omit<
+  UseQueryOptions<Awaited<ReturnType<TClient[TKey]>>, Error, Awaited<ReturnType<TClient[TKey]>>>,
+  "queryKey" | "queryFn" | "select"
+> {}
 
 export type AdaptQueryResult<M extends Method> = <TSelect = Awaited<ReturnType<M>>>(
   ...params: [
@@ -87,22 +85,23 @@ export type AdaptQueryResult<M extends Method> = <TSelect = Awaited<ReturnType<M
   ]
 ) => UseQueryResult<TSelect, Error>;
 
-const adaptToQuery = <TClient extends ClientRecord<TKey>, TKey extends ClientKey<TClient>>(
-  method: TClient[TKey],
-  options: QueryOptions<TClient, TKey>,
-  key: MethodKey<TClient[TKey]>,
-): AdaptQueryResult<TClient[TKey]> =>
-(...params) => {
-  if (params.length > method.length) {
-    options = { ...options, ...params.pop() };
-  }
+const adaptToQuery =
+  <TClient extends ClientRecord<TKey>, TKey extends ClientKey<TClient>>(
+    method: TClient[TKey],
+    options: QueryOptions<TClient, TKey>,
+    key: MethodKey<TClient[TKey]>,
+  ): AdaptQueryResult<TClient[TKey]> =>
+  (...params) => {
+    if (params.length > method.length) {
+      options = { ...options, ...params.pop() };
+    }
 
-  return useQuery({
-    ...options,
-    queryKey: key(...(params as never)),
-    queryFn: () => method(...params),
-  });
-};
+    return useQuery({
+      ...options,
+      queryKey: key(...(params as never)),
+      queryFn: () => method(...params),
+    });
+  };
 
 interface AdaptOptions<
   TClient extends ClientRecord<MKey | QKey>,
@@ -120,21 +119,17 @@ type AdaptResult<
   TMutationKey extends ClientKey<TClient>,
   TQueryKey extends ClientKey<TClient>,
 > = Prettify<
-  & {
+  {
     [K in TQueryKey as `use${Capitalize<K>}`]: AdaptQueryResult<TClient[K]>;
-  }
-  & {
+  } & {
     [K in TMutationKey as `use${Capitalize<K>}`]: AdaptMutationResult<TClient[K]>;
-  }
-  & {
+  } & {
     [K in TQueryKey as `${K}Key`]: PartialMethodKey<TClient[K]>;
-  }
-  & {
+  } & {
     [K in TQueryKey as `${K}Invalidate`]: (
       ...params: Parameters<TClient[K]>
     ) => Awaited<ReturnType<TClient[K]>> | undefined;
-  }
-  & {
+  } & {
     key(): QueryKey;
   }
 >;

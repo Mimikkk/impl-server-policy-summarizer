@@ -5,10 +5,7 @@ import { tanstackRouter } from "@tanstack/router-plugin/rspack";
 const env = loadEnv();
 
 const define = Object.fromEntries(
-  Object.entries(env.parsed).map(([key, value]) => [
-    `import.meta.env.${key}`,
-    JSON.stringify(value),
-  ]),
+  Object.entries(env.parsed).map(([key, value]) => [`import.meta.env.${key}`, JSON.stringify(value)]),
 );
 
 export default defineConfig({

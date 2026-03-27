@@ -8,13 +8,7 @@ export class GlobalMetricMonitor {
     failureCount: number,
     timesMs: number[],
   ): GlobalMetricMonitor {
-    return new GlobalMetricMonitor(
-      cacheSuccessCount,
-      cacheFailureCount,
-      successCount,
-      failureCount,
-      timesMs,
-    );
+    return new GlobalMetricMonitor(cacheSuccessCount, cacheFailureCount, successCount, failureCount, timesMs);
   }
 
   static empty(): GlobalMetricMonitor {
