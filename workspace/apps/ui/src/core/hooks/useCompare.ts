@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react";
 import equals from "react-fast-compare";
 
-export const useCompare = <T>(value: T, isEqual: (a: T, b: T) => boolean = equals) => {
+export const useStableCompare = <T>(value: T, isEqual: (a: T, b: T) => boolean = equals) => {
   const ref = useRef<T>(value);
   const signalRef = useRef<number>(0);
 

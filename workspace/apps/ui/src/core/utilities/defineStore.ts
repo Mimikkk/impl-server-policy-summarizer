@@ -1,4 +1,4 @@
-import { useCompare } from "@hooks/useCompare.ts";
+import { useStableCompare } from "@hooks/useCompare.ts";
 import type { Updater } from "@tanstack/react-query";
 import { useCallback, useSyncExternalStore } from "react";
 import equals from "react-fast-compare";
@@ -36,7 +36,7 @@ export const createStore = <TState>(initialState: TState): Store<TState> => {
     use: (selector = identity, isEqual = equals) => {
       const select = useCallback(() => selector(store.get()), [selector]);
 
-      return useCompare(useSyncExternalStore(store.subscribe, select), isEqual);
+      return useStableCompare(useSyncExternalStore(store.subscribe, select), isEqual);
     },
   };
 

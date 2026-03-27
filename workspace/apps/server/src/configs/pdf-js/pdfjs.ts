@@ -1,8 +1,15 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { getDocument, type PDFDocumentProxy } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { Logger } from "../logger.ts";
 
-let code = readFileSync("../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs", "utf-8");
+/** Resolved from this module so paths work regardless of `process.cwd()` (Bun/Node differ from Deno). */
+const pdfjsDistRoot = dirname(createRequire(import.meta.url).resolve("pdfjs-dist/package.json"));
+const workerPath = join(pdfjsDistRoot, "legacy/build/pdf.worker.mjs");
+
+let code = readFileSync(workerPath, "utf-8");
 if (!code.includes("(? - Unknown Array.random method)")) {
   Logger.debug("[PDFJS] Applying patch to pdf.worker.mjs.");
 
@@ -11,15 +18,15 @@ if (!code.includes("(? - Unknown Array.random method)")) {
     `// throw new Error(buildMsg("Array", prop)); (? - Unknown Array.random method)`,
   );
 
-  writeFileSync("../../../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs", code);
+  writeFileSync(workerPath, code);
   Logger.info("[PDFJS:success] Applied patch to pdf.worker.mjs.");
 } else {
   Logger.debug("[PDFJS:skip] Already applied patch to pdf.worker.mjs, skipping...");
 }
 
-const CMAP_URL = "../../../node_modules/pdfjs-dist/cmaps/";
+const CMAP_URL = `${pathToFileURL(join(pdfjsDistRoot, "cmaps")).href}/`;
 const CMAP_PACKED = true;
-const STANDARD_FONT_DATA_URL = "../../../node_modules/pdfjs-dist/standard_fonts/";
+const STANDARD_FONT_DATA_URL = `${pathToFileURL(join(pdfjsDistRoot, "standard_fonts")).href}/`;
 
 interface TextItem {
   /** Text content */
