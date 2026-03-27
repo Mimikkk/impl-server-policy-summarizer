@@ -1,4 +1,4 @@
-import type { Translation, Verification } from "@clients/server/resources/TranslationResource.ts";
+import type { Translation, Verification } from "@clients/server/serverTypes.ts";
 import { IconButton } from "@core/components/actions/IconButton.tsx";
 import { Card } from "@core/components/containers/card/Card.tsx";
 import { Text } from "@core/components/typography/Text.tsx";

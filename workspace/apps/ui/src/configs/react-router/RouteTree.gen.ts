@@ -8,114 +8,130 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./../../routes/__root";
-import { Route as TranslationsIndexRouteImport } from "./../../routes/translations/index";
-import { Route as EliIndexRouteImport } from "./../../routes/eli/index";
-import { Route as DxRoutesRouteImport } from "./../../routes/dx/routes";
-import { Route as DxComponentsRouteImport } from "./../../routes/dx/components";
-import { Route as DxColorPaletteRouteImport } from "./../../routes/dx/color-palette";
+import { Route as rootRouteImport } from './../../routes/__root'
+import { Route as TranslationsIndexRouteImport } from './../../routes/translations/index'
+import { Route as EliIndexRouteImport } from './../../routes/eli/index'
+import { Route as DxRoutesRouteImport } from './../../routes/dx/routes'
+import { Route as DxComponentsRouteImport } from './../../routes/dx/components'
+import { Route as DxColorPaletteRouteImport } from './../../routes/dx/color-palette'
 
 const TranslationsIndexRoute = TranslationsIndexRouteImport.update({
-  id: "/translations/",
-  path: "/translations/",
+  id: '/translations/',
+  path: '/translations/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const EliIndexRoute = EliIndexRouteImport.update({
-  id: "/eli/",
-  path: "/eli/",
+  id: '/eli/',
+  path: '/eli/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DxRoutesRoute = DxRoutesRouteImport.update({
-  id: "/dx/routes",
-  path: "/dx/routes",
+  id: '/dx/routes',
+  path: '/dx/routes',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DxComponentsRoute = DxComponentsRouteImport.update({
-  id: "/dx/components",
-  path: "/dx/components",
+  id: '/dx/components',
+  path: '/dx/components',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DxColorPaletteRoute = DxColorPaletteRouteImport.update({
-  id: "/dx/color-palette",
-  path: "/dx/color-palette",
+  id: '/dx/color-palette',
+  path: '/dx/color-palette',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/dx/color-palette": typeof DxColorPaletteRoute;
-  "/dx/components": typeof DxComponentsRoute;
-  "/dx/routes": typeof DxRoutesRoute;
-  "/eli/": typeof EliIndexRoute;
-  "/translations/": typeof TranslationsIndexRoute;
+  '/dx/color-palette': typeof DxColorPaletteRoute
+  '/dx/components': typeof DxComponentsRoute
+  '/dx/routes': typeof DxRoutesRoute
+  '/eli/': typeof EliIndexRoute
+  '/translations/': typeof TranslationsIndexRoute
 }
 export interface FileRoutesByTo {
-  "/dx/color-palette": typeof DxColorPaletteRoute;
-  "/dx/components": typeof DxComponentsRoute;
-  "/dx/routes": typeof DxRoutesRoute;
-  "/eli": typeof EliIndexRoute;
-  "/translations": typeof TranslationsIndexRoute;
+  '/dx/color-palette': typeof DxColorPaletteRoute
+  '/dx/components': typeof DxComponentsRoute
+  '/dx/routes': typeof DxRoutesRoute
+  '/eli': typeof EliIndexRoute
+  '/translations': typeof TranslationsIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/dx/color-palette": typeof DxColorPaletteRoute;
-  "/dx/components": typeof DxComponentsRoute;
-  "/dx/routes": typeof DxRoutesRoute;
-  "/eli/": typeof EliIndexRoute;
-  "/translations/": typeof TranslationsIndexRoute;
+  __root__: typeof rootRouteImport
+  '/dx/color-palette': typeof DxColorPaletteRoute
+  '/dx/components': typeof DxComponentsRoute
+  '/dx/routes': typeof DxRoutesRoute
+  '/eli/': typeof EliIndexRoute
+  '/translations/': typeof TranslationsIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/dx/color-palette" | "/dx/components" | "/dx/routes" | "/eli/" | "/translations/";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/dx/color-palette" | "/dx/components" | "/dx/routes" | "/eli" | "/translations";
-  id: "__root__" | "/dx/color-palette" | "/dx/components" | "/dx/routes" | "/eli/" | "/translations/";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/dx/color-palette'
+    | '/dx/components'
+    | '/dx/routes'
+    | '/eli/'
+    | '/translations/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/dx/color-palette'
+    | '/dx/components'
+    | '/dx/routes'
+    | '/eli'
+    | '/translations'
+  id:
+    | '__root__'
+    | '/dx/color-palette'
+    | '/dx/components'
+    | '/dx/routes'
+    | '/eli/'
+    | '/translations/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  DxColorPaletteRoute: typeof DxColorPaletteRoute;
-  DxComponentsRoute: typeof DxComponentsRoute;
-  DxRoutesRoute: typeof DxRoutesRoute;
-  EliIndexRoute: typeof EliIndexRoute;
-  TranslationsIndexRoute: typeof TranslationsIndexRoute;
+  DxColorPaletteRoute: typeof DxColorPaletteRoute
+  DxComponentsRoute: typeof DxComponentsRoute
+  DxRoutesRoute: typeof DxRoutesRoute
+  EliIndexRoute: typeof EliIndexRoute
+  TranslationsIndexRoute: typeof TranslationsIndexRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/translations/": {
-      id: "/translations/";
-      path: "/translations";
-      fullPath: "/translations/";
-      preLoaderRoute: typeof TranslationsIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/eli/": {
-      id: "/eli/";
-      path: "/eli";
-      fullPath: "/eli/";
-      preLoaderRoute: typeof EliIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/dx/routes": {
-      id: "/dx/routes";
-      path: "/dx/routes";
-      fullPath: "/dx/routes";
-      preLoaderRoute: typeof DxRoutesRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/dx/components": {
-      id: "/dx/components";
-      path: "/dx/components";
-      fullPath: "/dx/components";
-      preLoaderRoute: typeof DxComponentsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/dx/color-palette": {
-      id: "/dx/color-palette";
-      path: "/dx/color-palette";
-      fullPath: "/dx/color-palette";
-      preLoaderRoute: typeof DxColorPaletteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/translations/': {
+      id: '/translations/'
+      path: '/translations'
+      fullPath: '/translations/'
+      preLoaderRoute: typeof TranslationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eli/': {
+      id: '/eli/'
+      path: '/eli'
+      fullPath: '/eli/'
+      preLoaderRoute: typeof EliIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dx/routes': {
+      id: '/dx/routes'
+      path: '/dx/routes'
+      fullPath: '/dx/routes'
+      preLoaderRoute: typeof DxRoutesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dx/components': {
+      id: '/dx/components'
+      path: '/dx/components'
+      fullPath: '/dx/components'
+      preLoaderRoute: typeof DxComponentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dx/color-palette': {
+      id: '/dx/color-palette'
+      path: '/dx/color-palette'
+      fullPath: '/dx/color-palette'
+      preLoaderRoute: typeof DxColorPaletteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,5 +141,7 @@ const rootRouteChildren: RootRouteChildren = {
   DxRoutesRoute: DxRoutesRoute,
   EliIndexRoute: EliIndexRoute,
   TranslationsIndexRoute: TranslationsIndexRoute,
-};
-export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
+}
+export const routeTree = rootRouteImport
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()

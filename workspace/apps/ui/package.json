@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",
-    "test": "bun test"
+    "test": "bun test",
+    "generate:api-server": "openapi-typescript openapi/server.openapi.json -o src/clients/auto/server-api.ts",
+    "generate:api-eli": "openapi-typescript openapi/eli.openapi.yaml -o src/clients/auto/eli-api.ts",
+    "generate:all": "concurrently -n api,eli -c green,blue \"bun run generate:api-server\" \"bun run generate:api-eli\""
   },
   "dependencies": {
     "@rsbuild/core": "1.7.4",
@@ -19,6 +22,7 @@
     "cmdk": "^1.1.1",
     "ky": "^1.14.3",
     "lucide-react": "^1.7.0",
+    "openapi-fetch": "^0.17.0",
     "prettier": "^3.8.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
@@ -33,6 +37,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "openapi-typescript": "^7.13.0"
   }
 }

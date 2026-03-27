@@ -1,5 +1,5 @@
 import { ServerClient } from "@clients/server/ServerClient.ts";
-import type { TranslationSample } from "@clients/server/resources/TranslationResource.ts";
+import type { TranslationSample } from "@clients/server/serverTypes.ts";
 import { Param } from "@hooks/useLocalStorage.ts";
 import { sleep } from "@utilities/common.ts";
 import { defineContext } from "@utilities/defineContext.ts";

@@ -1,6 +1,5 @@
 import type { EliClient } from "@clients/eli/EliClient.ts";
-import type { PublisherResource } from "@clients/eli/resources/PublisherResource.ts";
-import type { YearItemResource } from "@clients/eli/resources/YearResource.ts";
+import type { PublisherResource, YearItemResource } from "@clients/eli/eliTypes.ts";
 import { Button } from "@components/actions/Button.tsx";
 import { SelectField } from "@components/forms/selects/SelectField.tsx";
 import { IconButton } from "@core/components/actions/IconButton.tsx";
@@ -9,7 +8,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react
 import { defineUseOptions, useEliPublisher, useEliPublishers, useEliYear } from "../hooks/eli.hooks.ts";
 
 const usePublisherOptions = defineUseOptions<PublisherResource>({
-  valueBy: (publisher) => publisher.code,
+  valueBy: (publisher) => publisher.code ?? "",
   labelBy: (publisher) => `${publisher.code}: ${publisher.name} (acts: ${publisher.actsCount})`,
 });
 
@@ -59,12 +58,12 @@ const YearSelect = ({
 
   const nextYear = useMemo(() => {
     if (!publisherId) return undefined;
-    return publisher?.years.find((year) => year > +value!);
+    return (publisher?.years ?? []).find((year) => year > +value!);
   }, [publisherId, value, publisher?.years]);
 
   const previousYear = useMemo(() => {
     if (!publisherId) return undefined;
-    return publisher?.years.find((year) => year < +value!);
+    return (publisher?.years ?? []).find((year) => year < +value!);
   }, [publisherId, value, publisher?.years]);
 
   const handleNextYear = useCallback(() => {
@@ -111,9 +110,9 @@ const YearSelect = ({
 };
 
 const useActOptions = defineUseOptions<YearItemResource>({
-  valueBy: (item) => `${item.pos}`,
+  valueBy: (item) => `${item.pos ?? ""}`,
   labelBy: (item) => `${item.promulgation} - ${item.pos}: ${item.title}`,
-  sortBy: (a, b) => b.pos - a.pos,
+  sortBy: (a, b) => (b.pos ?? 0) - (a.pos ?? 0),
 });
 
 const ActSelect = ({
@@ -136,22 +135,22 @@ const ActSelect = ({
 
   const nextPosition = useMemo(() => {
     if (!yearId) return undefined;
-    return year?.items.find((item) => item.pos > +value!);
+    return (year?.items ?? []).find((item) => (item.pos ?? 0) > +value!);
   }, [yearId, value, year?.items]);
 
   const previousPosition = useMemo(() => {
     if (!yearId) return undefined;
-    return year?.items.find((item) => item.pos < +value!);
+    return (year?.items ?? []).find((item) => (item.pos ?? 0) < +value!);
   }, [yearId, value, year?.items]);
 
   const handlePreviousPosition = useCallback(() => {
-    if (!previousPosition) return;
+    if (previousPosition?.pos == null) return;
 
     onValueChange(previousPosition.pos.toString());
   }, [onValueChange, previousPosition]);
 
   const handleNextPosition = useCallback(() => {
-    if (!nextPosition) return;
+    if (nextPosition?.pos == null) return;
 
     onValueChange(nextPosition.pos.toString());
   }, [onValueChange, nextPosition]);

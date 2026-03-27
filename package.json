@@ -15,7 +15,8 @@
     "test:server": "bun run --cwd workspace/apps/server test",
     "dev:server": "bun run --cwd workspace/apps/server dev",
     "start:server": "bun run --cwd workspace/apps/server start",
-    "dev:all": "concurrently -n ui,server -c blue,green \"bun run --cwd workspace/apps/ui dev\" \"bun run --cwd workspace/apps/server dev\""
+    "dev:all": "concurrently -n ui,server -c blue,green \"bun run --cwd workspace/apps/ui dev\" \"bun run --cwd workspace/apps/server dev\"",
+    "generate:all": "concurrently -n ui,server -c blue,green \"bun run --cwd workspace/apps/server generate:all\" \"bun run --cwd workspace/apps/ui generate:all\""
   },
   "devDependencies": {
     "@rsbuild/core": "1.7.4",

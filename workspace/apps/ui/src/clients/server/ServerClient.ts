@@ -1,81 +1,62 @@
-import { Environment } from "@configs/Environment.ts";
+import type { components } from "@clients/auto/server-api.ts";
 import { adaptQuery } from "@core/queries/adaptQuery.ts";
-import { TimeMs } from "@utilities/common.ts";
-import { Client } from "../Client.ts";
-import type { SummaryResource } from "./resources/SummaryResource.ts";
-import type { Translation, TranslationSample, Verification } from "./resources/TranslationResource.ts";
+import { serverHttp } from "./serverHttp.ts";
+import type {
+  ExportCsvPayload,
+  RegeneratePayload,
+  TranslatePayload,
+  Verification,
+  VerifyPayload,
+} from "./serverTypes.ts";
+
+const unwrap = (result: { data?: unknown; error?: unknown }): unknown => {
+  if (result.error != null) throw result.error;
+  if (result.data === undefined) throw new Error("Empty response");
+  return result.data;
+};
 
 export namespace ServerClient {
-  export const client = Client.new({ url: Environment.Clients.ServerUrl });
-
-  export const summarize = async (values: { content: string } | { url: string }): Promise<SummaryResource> => {
-    const response = await client.api.post("api/v1/pdf-operations/summarize", { json: values, timeout: TimeMs.s30 });
-
-    return response.json();
+  export const summarize = async (values: {
+    url: string;
+  }): Promise<components["schemas"]["Resources - TextSummaryResource"]> => {
+    return unwrap(
+      await serverHttp.POST("/api/v1/pdf-operations/summarize", { body: values }),
+    ) as components["schemas"]["Resources - TextSummaryResource"];
   };
 
   export const importCsv = async (file: File): Promise<Record<string, string>[]> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    /* @ts-expect-error - multipart/form-data is not supported in ky types */
-    const response = await client.api.post("api/v1/csv-operations/import", { body: formData, timeout: TimeMs.s30 });
-
-    return response.json();
+    const body = new FormData();
+    body.append("file", file);
+    return unwrap(
+      await serverHttp.POST("/api/v1/csv-operations/import", {
+        body: body as never,
+      }),
+    ) as Record<string, string>[];
   };
-
-  export interface ExportCsvPayload {
-    headers: Record<string, string>;
-    data: Record<string, string | number>[];
-  }
 
   export const exportCsv = async (payload: ExportCsvPayload): Promise<File> => {
-    const response = await client.api.post("api/v1/csv-operations/export", { json: payload, timeout: TimeMs.s30 });
-
-    const buffer = await response.arrayBuffer();
-    return new File([buffer], "export.csv", { type: "text/csv" });
+    const csv = unwrap(await serverHttp.POST("/api/v1/csv-operations/export", { body: payload })) as string;
+    return new File([csv], "export.csv", { type: "text/csv" });
   };
 
-  export interface TranslatePayload {
-    samples?: TranslationSample[];
-    context?: string;
-    sourceLanguage: string;
-    targetLanguage: string;
-    original: string;
-    alternativesCount?: number;
-  }
-
-  export const translate = async (payload: TranslatePayload): Promise<{ translations: Translation[] }> => {
-    return await client.api.post("api/v1/translations/translate", { json: payload, timeout: TimeMs.s30 }).json();
+  export const translate = async (payload: TranslatePayload) => {
+    return unwrap(await serverHttp.POST("/api/v1/translations/translate", { body: payload })) as {
+      translations: { translation: string }[];
+    };
   };
 
-  export interface RegeneratePayload {
-    samples?: TranslationSample[];
-    context?: string;
-    sourceLanguage: string;
-    targetLanguage: string;
-    original: string;
-    translation: string;
-    alternativesCount?: number;
-  }
-
-  export const regenerate = async (payload: RegeneratePayload): Promise<{ translations: Translation[] }> => {
-    return await client.api.post("api/v1/translations/regenerate", { json: payload, timeout: TimeMs.s30 }).json();
+  export const regenerate = async (payload: RegeneratePayload) => {
+    return unwrap(await serverHttp.POST("/api/v1/translations/regenerate", { body: payload })) as {
+      translations: { translation: string }[];
+    };
   };
-
-  export interface VerifyPayload {
-    samples?: TranslationSample[];
-    context?: string;
-    sourceLanguage: string;
-    targetLanguage: string;
-    original: string;
-    translation: string;
-  }
 
   export const verify = async (payload: VerifyPayload): Promise<Verification> => {
-    return await client.api.post("api/v1/translations/verify", { json: payload, timeout: TimeMs.s30 }).json();
+    return unwrap(await serverHttp.POST("/api/v1/translations/verify", { body: payload })) as Verification;
   };
 }
+
+export type { ExportCsvPayload } from "./serverTypes.ts";
 
 export const ServerQuery = adaptQuery({
   prefix: "server",

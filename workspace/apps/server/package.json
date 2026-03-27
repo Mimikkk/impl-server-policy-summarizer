@@ -7,7 +7,10 @@
     "dev": "bun --watch src/main.ts",
     "start": "bun src/main.ts",
     "preview": "bun src/main.ts",
-    "test": "bun test"
+    "test": "bun test",
+    "generate:api-openapi": "bun scripts/generate-api-openapi.ts",
+    "generate:eli-openapi": "bun scripts/generate-eli-openapi.ts",
+    "generate:all": "concurrently -n api,eli -c green,blue \"bun run generate:api-openapi\" \"bun run generate:eli-openapi\""
   },
   "dependencies": {
     "@hono/zod-openapi": "1.1.3",

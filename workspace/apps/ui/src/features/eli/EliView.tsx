@@ -113,7 +113,7 @@ export const EliView = memo(() => {
               <div className="flex flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-1">
                   <span>Keywords:</span>
-                  <For each={actDetails?.keywords.slice(0, 3)}>
+                  <For each={(actDetails?.keywords ?? []).slice(0, 3)}>
                     {(keyword) => (
                       <Text
                         title={keyword}
@@ -125,9 +125,9 @@ export const EliView = memo(() => {
                       </Text>
                     )}
                   </For>
-                  {(actDetails?.keywords.length ?? 0) > 3 && (
+                  {((actDetails?.keywords?.length ?? 0) > 3) && (
                     <Button color="primary" compact>
-                      +{actDetails!.keywords.length - 3}
+                      +{(actDetails?.keywords?.length ?? 0) - 3}
                       <Icon name="Expand" size="xs" />
                     </Button>
                   )}
@@ -148,7 +148,9 @@ export const EliView = memo(() => {
                         {reference.slice(0, 3).map((v) => (
                           <Button
                             onClick={() => {
-                              const [publisher, year, position] = v.id.split("/");
+                              const id = v.id;
+                              if (id == null) return;
+                              const [publisher, year, position] = id.split("/");
                               const actParams = {
                                 publisher,
                                 year: +year,
@@ -185,7 +187,7 @@ export const EliView = memo(() => {
       <div className="container grid h-full w-full grid-cols-1 items-center gap-2 md:grid-cols-2 lg:grid-cols-3">
         <CardPDF url={pdfUrl} className="col-span-1 row-span-2 md:col-span-2 lg:col-span-3" />
         <CardJSON content={actDetails} />
-        <CardText content={summary?.content} status={summaryStatus} />
+        <CardText content={summary?.details} status={summaryStatus} />
         <CardText content={summary?.summary} status={summaryStatus} />
       </div>
     </div>
