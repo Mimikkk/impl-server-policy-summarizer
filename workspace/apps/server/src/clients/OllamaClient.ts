@@ -42,7 +42,7 @@ export class OllamaClient {
     Logger.info({ Model: model }, "[OllamaClient] [prepare] model preparing...");
 
     const stream = await this.api.pull({ model, stream: true });
-    const progressLog: PullProgressLogCursor = { lastStatus: undefined, lastEmitMs: 0 };
+    const log: PullProgressLogCursor = { lastStatus: undefined, lastEmitMs: 0 };
 
     for await (const response of stream) {
       if (response.status === "success") {
@@ -52,13 +52,12 @@ export class OllamaClient {
 
       const status = response.status;
       const now = Date.now();
-      if (!shouldEmitPullProgress(progressLog, status, now)) {
+      if (!shouldEmitPullProgress(log, status, now)) {
         continue;
       }
 
-      progressLog.lastStatus = status;
-      progressLog.lastEmitMs = now;
-
+      log.lastStatus = status;
+      log.lastEmitMs = now;
       const progress = layerPullPercent(status, response.completed, response.total);
       Logger.info(
         progress === undefined ? { Status: status } : { Status: status, Progress: `${progress}%` },
