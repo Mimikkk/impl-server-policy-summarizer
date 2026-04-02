@@ -1,5 +1,6 @@
-*/dist
-node_modules
+**/node_modules
+**/dist
 vendor
 .vscode
 .git
+workspace/apps/ollama

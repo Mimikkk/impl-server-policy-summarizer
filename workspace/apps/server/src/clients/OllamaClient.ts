@@ -3,6 +3,21 @@ import { Logger } from "@configs/logger.ts";
 import { compactMessage } from "@utilities/messages.ts";
 import { Ollama } from "ollama";
 
+const PullIntervalMs = 2000;
+
+function layerPullPercent(status: string, completed: unknown, total: unknown): number | undefined {
+  const isBlobLayer = status.startsWith("pulling") && status !== "pulling manifest";
+  if (!isBlobLayer || typeof completed !== "number" || typeof total !== "number" || total <= 0) {
+    return undefined;
+  }
+  return Math.round((completed / total) * 100);
+}
+
+type PullProgressLogCursor = { lastStatus: string | undefined; lastEmitMs: number };
+function shouldEmitPullProgress(cursor: PullProgressLogCursor, status: string, now: number): boolean {
+  return status !== cursor.lastStatus || now - cursor.lastEmitMs >= PullIntervalMs;
+}
+
 interface InferOptions {
   prompt: string;
   system?: string;
@@ -27,22 +42,28 @@ export class OllamaClient {
     Logger.info({ Model: model }, "[OllamaClient] [prepare] model preparing...");
 
     const stream = await this.api.pull({ model, stream: true });
+    const progressLog: PullProgressLogCursor = { lastStatus: undefined, lastEmitMs: 0 };
+
     for await (const response of stream) {
       if (response.status === "success") {
         Logger.info("[OllamaClient] [prepare:success] model prepared.");
-      } else {
-        if (response.status === "pulling manifest" || !response.status.startsWith("pulling")) {
-          Logger.info({ Status: response.status }, "[OllamaClient] [prepare:progress]");
-        } else {
-          Logger.info(
-            {
-              Status: response.status,
-              Progress: `${Math.round((response.completed / response.total) * 100)}%`,
-            },
-            "[OllamaClient] [prepare:progress]",
-          );
-        }
+        continue;
       }
+
+      const status = response.status;
+      const now = Date.now();
+      if (!shouldEmitPullProgress(progressLog, status, now)) {
+        continue;
+      }
+
+      progressLog.lastStatus = status;
+      progressLog.lastEmitMs = now;
+
+      const progress = layerPullPercent(status, response.completed, response.total);
+      Logger.info(
+        progress === undefined ? { Status: status } : { Status: status, Progress: `${progress}%` },
+        "[OllamaClient] [prepare:progress]",
+      );
     }
 
     return this;
